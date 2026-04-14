@@ -44,7 +44,6 @@ public class ClusterCollector {
 
             JsonNode clustersResponse = client.listClusters();
             JsonNode jobsResponse = client.listJobs();
-            JsonNode runsResponse = client.listRuns();
             JsonNode warehousesResponse = client.listWarehouses();
             JsonNode pipelinesResponse = client.listPipelines();
             JsonNode poolsResponse = client.listInstancePools();
@@ -187,98 +186,76 @@ public class ClusterCollector {
                     setValue(jobNode, "scheduleCron", scheduleCron, false);
                     setValue(jobNode, "scheduleStatus", scheduleStatus, false);
 
-                    jobNodes.put(jobId, jobNode);
-                }
-            }
+                    // fetch runs for this job
+                    try {
+                        JsonNode runsResponse = client.listRunsForJob(jobId);
+                        if (runsResponse != null
+                                && runsResponse.has("runs")
+                                && runsResponse.get("runs").isArray()
+                                && runsResponse.get("runs").size() > 0) {
 
-            // ---------------------------------------------------------------------
-            // runs -> DatabricksJobRun
-            // ---------------------------------------------------------------------
-            if (runsResponse != null
-                    && runsResponse.has("runs")
-                    && runsResponse.get("runs").isArray()) {
+                            List<JsonNode> jobRuns = new ArrayList<>();
+                            for (JsonNode run : runsResponse.get("runs")) {
+                                jobRuns.add(run);
+                            }
 
-                Map<String, List<JsonNode>> runsByJobId = new HashMap<>();
+                            // last run summary (API returns newest-first)
+                            JsonNode lastRun = jobRuns.get(0);
+                            long lastStart = lastRun.path("start_time").asLong(0L);
+                            long lastEnd   = lastRun.path("end_time").asLong(lastStart);
+                            setValue(jobNode, "lastRunState",       lastRun.path("state").path("life_cycle_state").asText(""), false);
+                            setValue(jobNode, "lastRunResult",      lastRun.path("state").path("result_state").asText(""), false);
+                            setValue(jobNode, "lastRunStartStr",    String.valueOf(lastStart), false);
+                            setValue(jobNode, "lastRunDurationStr", String.valueOf(Math.max(0, lastEnd - lastStart)), false);
 
-                for (JsonNode run : runsResponse.get("runs")) {
-                    String jobId = run.path("job_id").asText();
-                    if (jobId == null || jobId.isBlank()) {
-                        continue;
-                    }
+                            TopologyNode runsNode = jobNode.createNode("runs");
 
-                    runsByJobId.computeIfAbsent(jobId, k -> new ArrayList<>()).add(run);
-                }
+                            for (JsonNode run : jobRuns) {
+                                String runId = run.path("run_id").asText();
+                                if (runId == null || runId.isBlank()) continue;
 
-                for (Map.Entry<String, List<JsonNode>> entry : runsByJobId.entrySet()) {
-                    String jobId = entry.getKey();
-                    List<JsonNode> jobRuns = entry.getValue();
+                                runCount++;
 
-                    TopologyNode jobNode = jobNodes.get(jobId);
-                    if (jobNode == null) {
-                        jobNode = jobsNode.createNode(jobId);
-                        jobNode.setId(jobId);
-                        setValue(jobNode, "jobId", jobId, true);
-                        setValue(jobNode, "jobName", jobId, false);
-                        setValue(jobNode, "creatorUserName", "", false);
-                        setValue(jobNode, "scheduleCron", "", false);
-                        setValue(jobNode, "scheduleStatus", "", false);
-                        jobNodes.put(jobId, jobNode);
-                    }
+                                String runName = run.path("run_name").asText(runId);
+                                String lifeCycleState = run.path("state").path("life_cycle_state").asText("");
+                                String resultState = run.path("state").path("result_state").asText("");
+                                String runType = run.path("run_type").asText("");
+                                String triggerType = run.path("trigger").isTextual()
+                                        ? run.path("trigger").asText("")
+                                        : run.path("trigger").path("trigger_type").asText("");
 
-                    // last run summary (API returns newest-first)
-                    JsonNode lastRun = jobRuns.get(0);
-                    long lastStart = lastRun.path("start_time").asLong(0L);
-                    long lastEnd   = lastRun.path("end_time").asLong(lastStart);
-                    setValue(jobNode, "lastRunState",       lastRun.path("state").path("life_cycle_state").asText(""), false);
-                    setValue(jobNode, "lastRunResult",      lastRun.path("state").path("result_state").asText(""), false);
-                    setValue(jobNode, "lastRunStartStr",    String.valueOf(lastStart), false);
-                    setValue(jobNode, "lastRunDurationStr", String.valueOf(Math.max(0, lastEnd - lastStart)), false);
+                                long startTime = run.path("start_time").asLong(0L);
+                                long endTime = run.path("end_time").asLong(startTime);
+                                long durationMs = Math.max(0, endTime - startTime);
+                                int taskCount = run.path("tasks").isArray()
+                                        ? run.path("tasks").size()
+                                        : run.path("number_of_tasks").asInt(0);
 
-                    TopologyNode runsNode = jobNode.createNode("runs");
+                                TopologyNode runNode = runsNode.createNode(runId);
+                                runNode.setId(runId);
 
-                    for (JsonNode run : jobRuns) {
-                        String runId = run.path("run_id").asText();
-                        if (runId == null || runId.isBlank()) {
-                            continue;
+                                setValue(runNode, "runId", runId, true);
+                                setValue(runNode, "runName", runName, false);
+                                setValue(runNode, "lifeCycleState", lifeCycleState, false);
+                                setValue(runNode, "lifeCycleStateStr", lifeCycleState, false);
+                                setValue(runNode, "resultState", resultState, false);
+                                setValue(runNode, "resultStateStr", resultState, false);
+                                setValue(runNode, "runType", runType, false);
+                                setValue(runNode, "triggerType", triggerType, false);
+
+                                runNode.createValue("startTime").setSampleValue(startTime);
+                                setValue(runNode, "startTimeStr", String.valueOf(startTime), false);
+                                runNode.createValue("durationMs").setSampleValue(durationMs);
+                                setValue(runNode, "durationMsStr", String.valueOf(durationMs), false);
+                                runNode.createValue("taskCount").setSampleValue(taskCount);
+                                setValue(runNode, "taskCountStr", String.valueOf(taskCount), false);
+                            }
                         }
-
-                        runCount++;
-
-                        String runName = run.path("run_name").asText(runId);
-                        String lifeCycleState = run.path("state").path("life_cycle_state").asText("");
-                        String resultState = run.path("state").path("result_state").asText("");
-                        String runType = run.path("run_type").asText("");
-                        String triggerType = run.path("trigger").isTextual()
-                                ? run.path("trigger").asText("")
-                                : run.path("trigger").path("trigger_type").asText("");
-
-                        long startTime = run.path("start_time").asLong(0L);
-                        long endTime = run.path("end_time").asLong(startTime);
-                        long durationMs = Math.max(0, endTime - startTime);
-                        int taskCount = run.path("tasks").isArray()
-                                ? run.path("tasks").size()
-                                : run.path("number_of_tasks").asInt(0);
-
-                        TopologyNode runNode = runsNode.createNode(runId);
-                        runNode.setId(runId);
-
-                        setValue(runNode, "runId", runId, true);
-                        setValue(runNode, "runName", runName, false);
-                        setValue(runNode, "lifeCycleState", lifeCycleState, false);
-                        setValue(runNode, "lifeCycleStateStr", lifeCycleState, false);
-                        setValue(runNode, "resultState", resultState, false);
-                        setValue(runNode, "resultStateStr", resultState, false);
-                        setValue(runNode, "runType", runType, false);
-                        setValue(runNode, "triggerType", triggerType, false);
-
-
-                        runNode.createValue("startTime").setSampleValue(startTime);
-                        setValue(runNode, "startTimeStr", String.valueOf(startTime), false);
-                        runNode.createValue("durationMs").setSampleValue(durationMs);
-                        setValue(runNode, "durationMsStr", String.valueOf(durationMs), false);
-                        runNode.createValue("taskCount").setSampleValue(taskCount);
-                        setValue(runNode, "taskCountStr", String.valueOf(taskCount), false);
+                    } catch (Exception e) {
+                        log.log("ClusterCollector: failed to fetch runs for job " + jobId + ": " + e.getMessage());
                     }
+
+                    jobNodes.put(jobId, jobNode);
                 }
             }
 

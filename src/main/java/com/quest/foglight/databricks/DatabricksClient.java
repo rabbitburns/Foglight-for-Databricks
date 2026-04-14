@@ -33,8 +33,8 @@ public class DatabricksClient {
         return get("/api/2.1/jobs/list?limit=100");
     }
 
-    public JsonNode listRuns() throws Exception {
-        return get("/api/2.1/jobs/runs/list?limit=25&expand_tasks=true");
+    public JsonNode listRunsForJob(String jobId) throws Exception {
+        return get("/api/2.1/jobs/runs/list?job_id=" + jobId + "&limit=10&expand_tasks=true");
     }
 
     public JsonNode listWarehouses() throws Exception {
