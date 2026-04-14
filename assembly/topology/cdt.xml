@@ -97,6 +97,21 @@
                 <node pattern="clusterCores">
                   <value><metric type="clusterCores"/></value>
                 </node>
+                <node pattern="creatorUserName">
+                  <value var="$v"><attr name="creatorUserName" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="startTimeStr">
+                  <value var="$v"><attr name="startTimeStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastActivityTimeStr">
+                  <value var="$v"><attr name="lastActivityTimeStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="terminatedTimeStr">
+                  <value var="$v"><attr name="terminatedTimeStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="pinnedByUserName">
+                  <value var="$v"><attr name="pinnedByUserName" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
                 <node pattern="terminationCode">
                   <value var="$v"><attr name="terminationCode" target="{{$clusterVar}}" val="{$v}"/></value>
                 </node>
@@ -291,6 +306,34 @@
                     </node>
                     <node pattern="durationMsStr">
                       <value var="$v"><attr name="durationMsStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="attemptNumber">
+                      <value var="$v"><attr name="attemptNumber" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="isRetry">
+                      <value var="$v"><attr name="isRetry" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="originalAttemptRunId">
+                      <value var="$v"><attr name="originalAttemptRunId" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="stateMessage">
+                      <value var="$v"><attr name="stateMessage" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="queueDuration"><value><metric type="queueDuration"/></value></node>
+                    <node pattern="queueDurationStr">
+                      <value var="$v"><attr name="queueDurationStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="setupDuration"><value><metric type="setupDuration"/></value></node>
+                    <node pattern="setupDurationStr">
+                      <value var="$v"><attr name="setupDurationStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="executionDuration"><value><metric type="executionDuration"/></value></node>
+                    <node pattern="executionDurationStr">
+                      <value var="$v"><attr name="executionDurationStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="cleanupDuration"><value><metric type="cleanupDuration"/></value></node>
+                    <node pattern="cleanupDurationStr">
+                      <value var="$v"><attr name="cleanupDurationStr" target="{{$runVar}}" val="{$v}"/></value>
                     </node>
                     <node pattern="taskCount">
                       <value><metric type="taskCount"/></value>

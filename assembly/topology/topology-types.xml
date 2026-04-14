@@ -70,21 +70,33 @@
     </type>
 
     <type name="DatabricksJobRun" extends="TopologyObject">
-        <property name="runId"             type="String" is-identity="true"/>
-        <property name="clusterId"         type="String"/>
-        <property name="runName"           type="String"/>
-        <property name="lifeCycleState"    type="String"/>
-        <property name="lifeCycleStateStr" type="String"/>
-        <property name="resultState"       type="String"/>
-        <property name="resultStateStr"    type="String"/>
-        <property name="runType"           type="String"/>
-        <property name="triggerType"       type="String"/>
-        <property name="startTime"         type="Metric" is-containment="true"/>
-        <property name="startTimeStr"      type="String"/>
-        <property name="durationMs"        type="Metric" is-containment="true"/>
-        <property name="durationMsStr"     type="String"/>
-        <property name="taskCount"         type="Metric" is-containment="true"/>
-        <property name="taskCountStr"      type="String"/>
+        <property name="runId"                  type="String" is-identity="true"/>
+        <property name="clusterId"              type="String"/>
+        <property name="runName"                type="String"/>
+        <property name="lifeCycleState"         type="String"/>
+        <property name="lifeCycleStateStr"      type="String"/>
+        <property name="resultState"            type="String"/>
+        <property name="resultStateStr"         type="String"/>
+        <property name="runType"                type="String"/>
+        <property name="triggerType"            type="String"/>
+        <property name="attemptNumber"          type="String"/>
+        <property name="isRetry"                type="String"/>
+        <property name="originalAttemptRunId"   type="String"/>
+        <property name="stateMessage"           type="String"/>
+        <property name="startTime"              type="Metric" is-containment="true"/>
+        <property name="startTimeStr"           type="String"/>
+        <property name="durationMs"             type="Metric" is-containment="true"/>
+        <property name="durationMsStr"          type="String"/>
+        <property name="queueDuration"          type="Metric" is-containment="true"/>
+        <property name="queueDurationStr"       type="String"/>
+        <property name="setupDuration"          type="Metric" is-containment="true"/>
+        <property name="setupDurationStr"       type="String"/>
+        <property name="executionDuration"      type="Metric" is-containment="true"/>
+        <property name="executionDurationStr"   type="String"/>
+        <property name="cleanupDuration"        type="Metric" is-containment="true"/>
+        <property name="cleanupDurationStr"     type="String"/>
+        <property name="taskCount"              type="Metric" is-containment="true"/>
+        <property name="taskCountStr"           type="String"/>
     </type>
 
     <type name="DatabricksCluster" extends="TopologyObject">
@@ -96,6 +108,11 @@
         <property name="nodeTypeId"                   type="String"/>
         <property name="driverNodeTypeId"             type="String"/>
         <property name="sparkVersion"                 type="String"/>
+        <property name="creatorUserName"              type="String"/>
+        <property name="startTimeStr"                 type="String"/>
+        <property name="lastActivityTimeStr"          type="String"/>
+        <property name="terminatedTimeStr"            type="String"/>
+        <property name="pinnedByUserName"             type="String"/>
         <property name="autoscaleEnabled"             type="Boolean"/>
         <property name="autoscaleMinWorkers"          type="Metric"  is-containment="true"/>
         <property name="autoscaleMaxWorkers"          type="Metric"  is-containment="true"/>

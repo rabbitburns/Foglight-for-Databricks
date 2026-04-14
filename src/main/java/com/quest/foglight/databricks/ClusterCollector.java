@@ -121,6 +121,11 @@ public class ClusterCollector {
                     setValue(clusterNode, "nodeTypeId", nodeTypeId, false);
                     setValue(clusterNode, "driverNodeTypeId", driverNodeTypeId, false);
                     setValue(clusterNode, "sparkVersion", sparkVersion, false);
+                    setValue(clusterNode, "creatorUserName", cluster.path("creator_user_name").asText(""), false);
+                    setValue(clusterNode, "pinnedByUserName", cluster.path("pinned_by_user_name").asText(""), false);
+                    setValue(clusterNode, "startTimeStr", String.valueOf(cluster.path("start_time").asLong(0)), false);
+                    setValue(clusterNode, "lastActivityTimeStr", String.valueOf(cluster.path("last_activity_time").asLong(0)), false);
+                    setValue(clusterNode, "terminatedTimeStr", String.valueOf(cluster.path("terminated_time").asLong(0)), false);
 
                     JsonNode autoscale = cluster.path("autoscale");
                     if (autoscale.isObject()) {
@@ -224,9 +229,14 @@ public class ClusterCollector {
                                         ? run.path("trigger").asText("")
                                         : run.path("trigger").path("trigger_type").asText("");
 
-                                long startTime = run.path("start_time").asLong(0L);
-                                long endTime = run.path("end_time").asLong(startTime);
-                                long durationMs = Math.max(0, endTime - startTime);
+                                long startTime    = run.path("start_time").asLong(0L);
+                                long endTime      = run.path("end_time").asLong(startTime);
+                                long durationMs   = Math.max(0, endTime - startTime);
+                                long queueDur     = run.path("queue_duration").asLong(0);
+                                long setupDur     = run.path("setup_duration").asLong(0);
+                                long executionDur = run.path("execution_duration").asLong(0);
+                                long cleanupDur   = run.path("cleanup_duration").asLong(0);
+                                int  attemptNum   = run.path("attempt_number").asInt(0);
                                 int taskCount = run.path("tasks").isArray()
                                         ? run.path("tasks").size()
                                         : run.path("number_of_tasks").asInt(0);
@@ -242,11 +252,23 @@ public class ClusterCollector {
                                 setValue(runNode, "resultStateStr", resultState, false);
                                 setValue(runNode, "runType", runType, false);
                                 setValue(runNode, "triggerType", triggerType, false);
+                                setValue(runNode, "attemptNumber", String.valueOf(attemptNum), false);
+                                setValue(runNode, "isRetry", attemptNum > 0 ? "true" : "false", false);
+                                setValue(runNode, "originalAttemptRunId", run.path("original_attempt_run_id").asText(""), false);
+                                setValue(runNode, "stateMessage", run.path("state").path("state_message").asText(""), false);
 
                                 runNode.createValue("startTime").setSampleValue(startTime);
                                 setValue(runNode, "startTimeStr", String.valueOf(startTime), false);
                                 runNode.createValue("durationMs").setSampleValue(durationMs);
                                 setValue(runNode, "durationMsStr", String.valueOf(durationMs), false);
+                                runNode.createValue("queueDuration").setSampleValue(queueDur);
+                                setValue(runNode, "queueDurationStr", String.valueOf(queueDur), false);
+                                runNode.createValue("setupDuration").setSampleValue(setupDur);
+                                setValue(runNode, "setupDurationStr", String.valueOf(setupDur), false);
+                                runNode.createValue("executionDuration").setSampleValue(executionDur);
+                                setValue(runNode, "executionDurationStr", String.valueOf(executionDur), false);
+                                runNode.createValue("cleanupDuration").setSampleValue(cleanupDur);
+                                setValue(runNode, "cleanupDurationStr", String.valueOf(cleanupDur), false);
                                 runNode.createValue("taskCount").setSampleValue(taskCount);
                                 setValue(runNode, "taskCountStr", String.valueOf(taskCount), false);
                             }
