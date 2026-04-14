@@ -66,6 +66,12 @@
         <property name="lastRunResult"      type="String"/>
         <property name="lastRunStartStr"    type="String"/>
         <property name="lastRunDurationStr" type="String"/>
+        <property name="successRateStr"     type="String"/>
+        <property name="avgDurationStr"     type="String"/>
+        <property name="minDurationStr"     type="String"/>
+        <property name="maxDurationStr"     type="String"/>
+        <property name="successCountStr"    type="String"/>
+        <property name="failureCountStr"    type="String"/>
         <property name="runs"               type="DatabricksJobRun" is-many="true" is-containment="true"/>
     </type>
 

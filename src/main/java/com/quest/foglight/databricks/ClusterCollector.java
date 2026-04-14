@@ -213,7 +213,35 @@ public class ClusterCollector {
                             setValue(jobNode, "lastRunState",       lastRun.path("state").path("life_cycle_state").asText(""), false);
                             setValue(jobNode, "lastRunResult",      lastRun.path("state").path("result_state").asText(""), false);
                             setValue(jobNode, "lastRunStartStr",    fmtTs(lastStart), false);
-                            setValue(jobNode, "lastRunDurationStr", String.valueOf(Math.max(0, lastEnd - lastStart)), false);
+                            setValue(jobNode, "lastRunDurationStr", fmtDur(Math.max(0, lastEnd - lastStart)), false);
+
+                            // --- run stats across all fetched runs ---
+                            int successCount = 0, failureCount = 0, durationCount = 0;
+                            long totalDuration = 0, minDuration = Long.MAX_VALUE, maxDuration = 0;
+                            for (JsonNode r : jobRuns) {
+                                String lc  = r.path("state").path("life_cycle_state").asText("");
+                                String res = r.path("state").path("result_state").asText("");
+                                if ("TERMINATED".equals(lc) || "SKIPPED".equals(lc)) {
+                                    if ("SUCCESS".equals(res)) successCount++;
+                                    else if (!res.isEmpty()) failureCount++;
+                                }
+                                long rs = r.path("start_time").asLong(0);
+                                long re = r.path("end_time").asLong(rs);
+                                if (rs > 0 && re > rs) {
+                                    long dur = re - rs;
+                                    totalDuration += dur;
+                                    minDuration = Math.min(minDuration, dur);
+                                    maxDuration = Math.max(maxDuration, dur);
+                                    durationCount++;
+                                }
+                            }
+                            int rated = successCount + failureCount;
+                            setValue(jobNode, "successCountStr", String.valueOf(successCount), false);
+                            setValue(jobNode, "failureCountStr", String.valueOf(failureCount), false);
+                            setValue(jobNode, "successRateStr",  rated > 0 ? (successCount * 100 / rated) + "%" : "", false);
+                            setValue(jobNode, "avgDurationStr",  durationCount > 0 ? fmtDur(totalDuration / durationCount) : "", false);
+                            setValue(jobNode, "minDurationStr",  durationCount > 0 ? fmtDur(minDuration) : "", false);
+                            setValue(jobNode, "maxDurationStr",  durationCount > 0 ? fmtDur(maxDuration) : "", false);
 
                             TopologyNode runsNode = jobNode.createNode("runs");
 
@@ -407,6 +435,16 @@ public class ClusterCollector {
         } catch (Exception e) {
             log.errorUnexpected("ClusterCollector failed", e);
         }
+    }
+
+    private static String fmtDur(long ms) {
+        if (ms <= 0) return "";
+        long s = ms / 1000;
+        long m = s / 60;
+        long h = m / 60;
+        if (h > 0) return h + "h " + (m % 60) + "m";
+        if (m > 0) return m + "m " + (s % 60) + "s";
+        return s + "s";
     }
 
     private static String fmtTs(long epochMs) {

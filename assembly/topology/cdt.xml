@@ -263,6 +263,24 @@
                 <node pattern="lastRunDurationStr">
                   <value var="$v"><attr name="lastRunDurationStr" target="{{$jobVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="successRateStr">
+                  <value var="$v"><attr name="successRateStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="avgDurationStr">
+                  <value var="$v"><attr name="avgDurationStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="minDurationStr">
+                  <value var="$v"><attr name="minDurationStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="maxDurationStr">
+                  <value var="$v"><attr name="maxDurationStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="successCountStr">
+                  <value var="$v"><attr name="successCountStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="failureCountStr">
+                  <value var="$v"><attr name="failureCountStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
 
                 <node pattern="runs">
                   <node>
