@@ -253,6 +253,7 @@ public class ClusterCollector {
                         }
                     } catch (Exception e) {
                         log.log("ClusterCollector: failed to fetch runs for job " + jobId + ": " + e.getMessage());
+                        System.out.println("=== runs fetch FAILED for job " + jobId + ": " + e.getMessage());
                     }
 
                     jobNodes.put(jobId, jobNode);
