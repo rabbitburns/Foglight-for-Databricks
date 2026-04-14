@@ -124,6 +124,7 @@ public class ClusterCollector {
                     setValue(clusterNode, "driverNodeTypeId", driverNodeTypeId, false);
                     setValue(clusterNode, "sparkVersion", sparkVersion, false);
                     setValue(clusterNode, "creatorUserName", cluster.path("creator_user_name").asText(""), false);
+                    setValue(clusterNode, "customTagsStr", serializeTags(cluster.path("custom_tags")), false);
                     setValue(clusterNode, "pinnedByUserName", cluster.path("pinned_by_user_name").asText(""), false);
                     setValue(clusterNode, "startTimeStr",        fmtTs(cluster.path("start_time").asLong(0)), false);
                     setValue(clusterNode, "lastActivityTimeStr", fmtTs(cluster.path("last_activity_time").asLong(0)), false);
@@ -192,6 +193,13 @@ public class ClusterCollector {
                     setValue(jobNode, "creatorUserName", creatorUserName, false);
                     setValue(jobNode, "scheduleCron", scheduleCron, false);
                     setValue(jobNode, "scheduleStatus", scheduleStatus, false);
+
+                    JsonNode triggerNode = job.path("settings").path("trigger");
+                    String jobTriggerType = triggerNode.isMissingNode()
+                            ? ""
+                            : triggerNode.path("trigger_type").asText(triggerNode.path("pause_status").asText(""));
+                    setValue(jobNode, "triggerType", jobTriggerType, false);
+                    setValue(jobNode, "tagsStr", serializeTags(job.path("settings").path("tags")), false);
 
                     // fetch runs for this job
                     try {
@@ -435,6 +443,16 @@ public class ClusterCollector {
         } catch (Exception e) {
             log.errorUnexpected("ClusterCollector failed", e);
         }
+    }
+
+    private static String serializeTags(JsonNode tagsNode) {
+        if (tagsNode == null || !tagsNode.isObject() || tagsNode.size() == 0) return "";
+        StringBuilder sb = new StringBuilder();
+        tagsNode.fields().forEachRemaining(e -> {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(e.getKey()).append("=").append(e.getValue().asText());
+        });
+        return sb.toString();
     }
 
     private static String fmtDur(long ms) {

@@ -100,6 +100,9 @@
                 <node pattern="creatorUserName">
                   <value var="$v"><attr name="creatorUserName" target="{{$clusterVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="customTagsStr">
+                  <value var="$v"><attr name="customTagsStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
                 <node pattern="startTimeStr">
                   <value var="$v"><attr name="startTimeStr" target="{{$clusterVar}}" val="{$v}"/></value>
                 </node>
@@ -250,6 +253,12 @@
                 </node>
                 <node pattern="scheduleStatus">
                   <value var="$v"><attr name="scheduleStatus" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="triggerType">
+                  <value var="$v"><attr name="triggerType" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="tagsStr">
+                  <value var="$v"><attr name="tagsStr" target="{{$jobVar}}" val="{$v}"/></value>
                 </node>
                 <node pattern="lastRunState">
                   <value var="$v"><attr name="lastRunState" target="{{$jobVar}}" val="{$v}"/></value>

@@ -62,6 +62,8 @@
         <property name="creatorUserName" type="String"/>
         <property name="scheduleCron"       type="String"/>
         <property name="scheduleStatus"     type="String"/>
+        <property name="triggerType"        type="String"/>
+        <property name="tagsStr"            type="String"/>
         <property name="lastRunState"       type="String"/>
         <property name="lastRunResult"      type="String"/>
         <property name="lastRunStartStr"    type="String"/>
@@ -115,6 +117,7 @@
         <property name="driverNodeTypeId"             type="String"/>
         <property name="sparkVersion"                 type="String"/>
         <property name="creatorUserName"              type="String"/>
+        <property name="customTagsStr"                type="String"/>
         <property name="startTimeStr"                 type="String"/>
         <property name="lastActivityTimeStr"          type="String"/>
         <property name="terminatedTimeStr"            type="String"/>
