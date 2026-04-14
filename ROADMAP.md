@@ -11,22 +11,27 @@
 | DLT Pipelines (state, name, creator, run-as user) | 1.0.24 |
 | Instance Pools (state, node type, idle/used/max counts) | 1.0.24 |
 | Cluster enrichment (creator, start time, last activity, terminated time, pinned-by) | 1.0.27 |
+| Cluster custom tags | 1.0.30 |
 | Job Run timing breakdown (queue/setup/execution/cleanup durations) | 1.0.27 |
 | Job Run retry tracking (attempt number, isRetry, originalAttemptRunId, stateMessage) | 1.0.27 |
+| Job run stats per job (success rate %, avg/min/max duration, success/failure counts) | 1.0.29 |
+| Job trigger type (FILE_ARRIVAL, TABLE, PERIODIC, etc.) | 1.0.30 |
+| Job tags / custom metadata | 1.0.30 |
+| Timestamp formatting (epoch → yyyy-MM-dd HH:mm:ss) on all time fields | 1.0.28 |
+| Duration formatting (ms → "2m 34s") on all duration fields | 1.0.29 |
+| Flat job runs table — Groovy script (text + WCF HTML) | 1.0.30 |
 
 ---
 
 ## Backlog
 
-### Tier 1 — Job & Cluster Depth
+### Tier 1 — Job & Cluster Depth (remaining)
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Job run task-level detail | `tasks[]` array already in run response (when `expand_tasks=true`) | Low | Each task has state, duration, cluster used, error message. Already fetched — just not extracted. Would add `DatabricksJobTask` type under each run. |
-| Job tags / custom metadata | `job.settings.tags` in jobs list response | Low | Key-value pairs; useful for cost attribution and filtering by team/project. |
-| Cluster custom tags | `cluster.custom_tags` in clusters list response | Low | Same use case — cost attribution, ownership. |
-| Multi-workspace support | Config change + agent instance per workspace | Medium | Currently one workspace per agent instance. Config could support a list of workspace URLs, or deploy multiple agent instances. |
-| Job trigger type on job (not run) | `job.settings.trigger` for file-arrival / table triggers | Low | Currently only `schedule` (cron) is captured. New trigger types introduced in Databricks 2023+. |
+| Job run task-level detail | `tasks[]` array in run response (`expand_tasks=true`) | Low | Deferred until drill-downs are built (Tier 7). `DatabricksJobTask` type ready to add. |
+| Multi-workspace support | Config change + agent instance per workspace | Medium | Currently one workspace per agent instance. Config could support a list of workspace URLs. |
+| WCF job runs portlet | Groovy script already written (`job-runs-wcf.groovy`) | Medium | Need to identify correct WCF portlet type in Foglight 8.2. Investigating via existing cartridge `.car` inspection. |
 
 ### Tier 2 — SQL Warehouse Query Metrics
 
@@ -56,8 +61,8 @@
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Spark executor metrics | Spark REST API on running cluster (`/api/v1/applications`) | High | CPU, memory, GC, shuffle per executor. Requires network access to the cluster driver. Not available via Databricks REST API. |
-| Node-level CPU / memory / disk | Infrastructure agent installed via cluster init script | Very High | How New Relic and Datadog do it. Requires deploying an agent binary to every cluster node at startup. Out of scope for a Foglight agent approach. |
+| Spark executor metrics | Spark REST API on running cluster (`/api/v1/applications`) | High | CPU, memory, GC, shuffle per executor. Requires network access to cluster driver. Not available via Databricks REST API. |
+| Node-level CPU / memory / disk | Infrastructure agent via cluster init script | Very High | Out of scope for a Foglight agent approach — requires deploying an agent binary to every cluster node at startup. |
 | Streaming metrics | Spark Streaming REST API | High | Input/processing rates, batch delay. Same access constraints as executor metrics. |
 
 ### Tier 6 — Model Serving
@@ -71,7 +76,8 @@
 
 | Gap | Effort | Notes |
 |---|---|---|
-| Drill-down dashboards (cluster detail, job detail, warehouse detail) | Medium | Click a row → full detail view with sparklines and recent history. |
+| WCF job runs / task flat table portlet | Medium | Groovy query written. Blocked on identifying correct WCF portlet type in Foglight 8.2 — investigating via existing cartridge inspection. |
+| Drill-down dashboards (cluster, job, warehouse detail) | Medium | Click a row → full detail view with sparklines and recent history. Enables job run task detail from Tier 1. |
 | Packaged dashboard in cartridge | Medium | Export from Foglight UI, embed XML in .car. Hold until dashboard design is stable. |
 | Pre-built alert rules | Medium | Failed job alert, cluster stuck in PENDING, warehouse auto-stopped, long queue duration. Best practices research needed before implementation. |
 
@@ -79,9 +85,24 @@
 
 ## Priority Order (agreed)
 
-1. **Tier 1** — Job & cluster depth (in progress)
+1. **Tier 1** — Job & cluster depth ✓ (mostly complete — WCF portlet and multi-workspace pending)
 2. **Tier 2** — SQL Warehouse query metrics
 3. **Tier 3** — DBU consumption & cost
 4. **Tier 4** — DLT Pipeline depth
-5. **Tier 7** — Dashboards & alerting
+5. **Tier 7** — Dashboards & alerting (WCF portlet investigation in parallel)
 6. **Tier 5/6** — Runtime metrics & model serving (lower priority, higher effort)
+
+---
+
+## Version History
+
+| Version | Summary |
+|---|---|
+| 1.0.20 | Initial working topology — clusters, jobs, job runs |
+| 1.0.24 | Added warehouses, pipelines, instance pools; clusterCountStr fix |
+| 1.0.25 | Per-job run fetching (was bulk, starving most jobs of run history) |
+| 1.0.26 | Debug logging for run fetch failures; removed expand_tasks |
+| 1.0.27 | Cluster enrichment; job run timing breakdown; retry tracking |
+| 1.0.28 | Timestamp formatting (epoch → readable date) |
+| 1.0.29 | Job run stats (success rate, avg/min/max duration); runs limit 5→10 |
+| 1.0.30 | Job trigger type; job tags; cluster custom tags |
