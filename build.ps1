@@ -66,6 +66,28 @@ $ZIP = "target\DatabricksAgent-$Version-dist.zip"
 Compress-Archive -Path "$DIST_DIR\*" -DestinationPath $ZIP -Force
 Write-Host "Distribution zip: $ZIP"
 
+$GH = 'C:\Program Files\GitHub CLI\gh.exe'
+
+# --- git commit & push ---
+Write-Host "Pushing to GitHub..."
+git add -A
+git diff --cached --quiet
+if ($LASTEXITCODE -ne 0) {
+    git commit -m "v$Version"
+    git push
+} else {
+    Write-Host "No source changes to commit."
+}
+
+# --- GitHub release ---
+Write-Host "Creating GitHub release v$Version..."
+& $GH release delete "v$Version" --repo rabbitburns/Foglight-for-Databricks --yes 2>$null
+& $GH release create "v$Version" $ZIP `
+    --repo rabbitburns/Foglight-for-Databricks `
+    --title "v$Version" `
+    --notes "Release v$Version"
+if ($LASTEXITCODE -ne 0) { Write-Host "GitHub release failed (non-fatal)" }
+
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. Install target\DatabricksAgent-$Version.car via Foglight UI (Admin > Cartridges)"
