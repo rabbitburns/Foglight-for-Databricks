@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<types>
+
+    <type name="DatabricksAccount" extends="TopologyObject">
+        <property name="accountId"  type="String"              is-identity="true"/>
+        <property name="name"       type="String"/>
+        <property name="workspaces" type="DatabricksWorkspace" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksWorkspace" extends="TopologyObject">
+        <property name="workspaceUrl"   type="String"                is-identity="true"/>
+        <property name="clusterCount"    type="Metric"                is-containment="true"/>
+        <property name="clusterCountStr" type="String"/>
+        <property name="clusters"       type="DatabricksCluster"     is-many="true" is-containment="true"/>
+        <property name="jobs"           type="DatabricksJob"         is-many="true" is-containment="true"/>
+        <property name="warehouses"     type="DatabricksWarehouse"   is-many="true" is-containment="true"/>
+        <property name="pipelines"      type="DatabricksPipeline"    is-many="true" is-containment="true"/>
+        <property name="instancePools"  type="DatabricksInstancePool" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksWarehouse" extends="TopologyObject">
+        <property name="warehouseId"    type="String" is-identity="true"/>
+        <property name="warehouseName"  type="String"/>
+        <property name="state"          type="String"/>
+        <property name="stateStr"       type="String"/>
+        <property name="warehouseType"  type="String"/>
+        <property name="size"           type="String"/>
+        <property name="creatorName"    type="String"/>
+        <property name="enablePhoton"    type="String"/>
+        <property name="autoResume"     type="String"/>
+        <property name="numClusters"    type="Metric" is-containment="true"/>
+        <property name="numClustersStr" type="String"/>
+        <property name="minClusters"    type="Metric" is-containment="true"/>
+        <property name="maxClusters"    type="Metric" is-containment="true"/>
+        <property name="autoStopMins"   type="Metric" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksPipeline" extends="TopologyObject">
+        <property name="pipelineId"       type="String" is-identity="true"/>
+        <property name="pipelineName"     type="String"/>
+        <property name="state"            type="String"/>
+        <property name="stateStr"         type="String"/>
+        <property name="creatorUserName"  type="String"/>
+        <property name="runAsUserName"    type="String"/>
+    </type>
+
+    <type name="DatabricksInstancePool" extends="TopologyObject">
+        <property name="instancePoolId"    type="String" is-identity="true"/>
+        <property name="instancePoolName"  type="String"/>
+        <property name="state"             type="String"/>
+        <property name="stateStr"          type="String"/>
+        <property name="nodeTypeId"        type="String"/>
+        <property name="minIdleInstances"  type="Metric" is-containment="true"/>
+        <property name="maxCapacity"       type="Metric" is-containment="true"/>
+        <property name="idleCount"         type="Metric" is-containment="true"/>
+        <property name="usedCount"         type="Metric" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksJob" extends="TopologyObject">
+        <property name="jobId"           type="String"           is-identity="true"/>
+        <property name="jobName"         type="String"/>
+        <property name="creatorUserName" type="String"/>
+        <property name="scheduleCron"       type="String"/>
+        <property name="scheduleStatus"     type="String"/>
+        <property name="lastRunState"       type="String"/>
+        <property name="lastRunResult"      type="String"/>
+        <property name="lastRunStartStr"    type="String"/>
+        <property name="lastRunDurationStr" type="String"/>
+        <property name="runs"               type="DatabricksJobRun" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksJobRun" extends="TopologyObject">
+        <property name="runId"             type="String" is-identity="true"/>
+        <property name="clusterId"         type="String"/>
+        <property name="runName"           type="String"/>
+        <property name="lifeCycleState"    type="String"/>
+        <property name="lifeCycleStateStr" type="String"/>
+        <property name="resultState"       type="String"/>
+        <property name="resultStateStr"    type="String"/>
+        <property name="runType"           type="String"/>
+        <property name="triggerType"       type="String"/>
+        <property name="startTime"         type="Metric" is-containment="true"/>
+        <property name="startTimeStr"      type="String"/>
+        <property name="durationMs"        type="Metric" is-containment="true"/>
+        <property name="durationMsStr"     type="String"/>
+        <property name="taskCount"         type="Metric" is-containment="true"/>
+        <property name="taskCountStr"      type="String"/>
+    </type>
+
+    <type name="DatabricksCluster" extends="TopologyObject">
+        <property name="clusterId"                    type="String"  is-identity="true"/>
+        <property name="clusterName"                  type="String"/>
+        <property name="state"                        type="String"/>
+        <property name="stateStr"                     type="String"/>
+        <property name="clusterSource"                type="String"/>
+        <property name="nodeTypeId"                   type="String"/>
+        <property name="driverNodeTypeId"             type="String"/>
+        <property name="sparkVersion"                 type="String"/>
+        <property name="autoscaleEnabled"             type="Boolean"/>
+        <property name="autoscaleMinWorkers"          type="Metric"  is-containment="true"/>
+        <property name="autoscaleMaxWorkers"          type="Metric"  is-containment="true"/>
+        <property name="autoscaleTargetWorkers"       type="Metric"  is-containment="true"/>
+        <property name="numWorkers"                   type="Metric"  is-containment="true"/>
+        <property name="clusterMemoryMb"              type="Metric"  is-containment="true"/>
+        <property name="clusterCores"                 type="Metric"  is-containment="true"/>
+        <property name="terminationCode"              type="String"/>
+        <property name="terminationType"              type="String"/>
+        <property name="terminationInactivityMinutes" type="Metric"  is-containment="true"/>
+    </type>
+
+    <type name="DatabricksModelRoot" extends="ModelRoot">
+        <property name="name"     type="String" is-identity="true"/>
+        <property name="accounts" type="DatabricksAccount" is-many="true" is-containment="true"/>
+    </type>
+
+</types>

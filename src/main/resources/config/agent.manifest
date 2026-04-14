@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<agent-manifest xmlns="urn:X-quest.com:glue/agent/manifest/1.9"
+                dev-kit-version="8.2.0.0"
+                dev-kit-build-number="8.2.0.0-202603110530-c653f370-1029"
+                name="DatabricksAgent"
+                ver="1.0.6"
+                build-id="1.0.6"
+                out-of-process="false"
+                allow-asynchronous-access="true">
+    <version min="8.2.0.0"/>
+    <runtime>
+        <upstream-queues>
+            <upstream-queue type="upstream" max-queue-size="500" max-disk-space="10240"/>
+        </upstream-queues>
+    </runtime>
+    <agents>
+        <agent class="com.quest.foglight.databricks.DatabricksAgent"
+               ha="false"
+               name="DatabricksAgent">
+            <jvm-memory pre-allocation-count="0" min="64" max="128" units="megabyte"/>
+        </agent>
+    </agents>
+</agent-manifest>

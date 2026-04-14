@@ -1,0 +1,9 @@
+target/
+__pycache__/
+*.class
+*.7z
+*.BKUP
+build_cartridge.py_BKUP
+dashboard-probe*.groovy
+test.ps1
+delete-snapshot-jar.ps1

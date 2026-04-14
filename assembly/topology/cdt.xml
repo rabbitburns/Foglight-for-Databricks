@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topology-adapter PUBLIC "-//Quest Software//Catalyst::topology-adapter.dtd//EN" "../../dtd/topology-adapter.dtd">
+<topology-adapter>
+  <transformation>
+
+    <node pattern="DatabricksModelRoot">
+      <node_name var="$rootVar"/>
+      <obj type="DatabricksModelRoot" var="{$rootVar}"/>
+      <metrics_group object="{{$rootVar}}"/>
+      <attr name="name" target="{{$rootVar}}" val="{$rootVar}"/>
+
+      <node pattern="DatabricksAccount">
+        <node_name var="$accountVar"/>
+        <obj type="DatabricksAccount" var="{$accountVar}"/>
+        <metrics_group object="{{$accountVar}}"/>
+        <attr name="accounts" target="{{$rootVar}}" val="{{$accountVar}}" replace="false"/>
+
+        <node pattern="accountId">
+          <value var="$v">
+            <attr name="accountId" target="{{$accountVar}}" val="{$v}"/>
+          </value>
+        </node>
+
+        <node pattern="name">
+          <value var="$v">
+            <attr name="name" target="{{$accountVar}}" val="{$v}"/>
+          </value>
+        </node>
+
+        <node pattern="workspaces">
+          <node>
+            <node_name var="$wsVar"/>
+            <obj type="DatabricksWorkspace" var="{$wsVar}"/>
+            <metrics_group object="{{$wsVar}}"/>
+            <attr name="workspaces" target="{{$accountVar}}" val="{{$wsVar}}" replace="false"/>
+
+            <node pattern="workspaceUrl">
+              <value var="$v">
+                <attr name="name" target="{{$wsVar}}" val="{$v}"/>
+                <attr name="workspaceUrl" target="{{$wsVar}}" val="{$v}"/>
+              </value>
+            </node>
+            <node pattern="clusterCount"><value><metric type="clusterCount"/></value></node>
+            <node pattern="clusterCountStr">
+              <value var="$v"><attr name="clusterCountStr" target="{{$wsVar}}" val="{$v}"/></value>
+            </node>
+
+            <node pattern="clusters">
+              <node>
+                <node_name var="$clusterVar"/>
+                <obj type="DatabricksCluster" var="{$clusterVar}"/>
+                <metrics_group object="{{$clusterVar}}"/>
+                <attr name="clusters" target="{{$wsVar}}" val="{{$clusterVar}}" replace="false"/>
+
+                <node pattern="clusterId">
+                  <value var="$v"><attr name="clusterId" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="clusterName">
+                  <value var="$v"><attr name="clusterName" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="state">
+                  <value var="$v"><attr name="state" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="stateStr">
+                  <value var="$v"><attr name="stateStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="clusterSource">
+                  <value var="$v"><attr name="clusterSource" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="nodeTypeId">
+                  <value var="$v"><attr name="nodeTypeId" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="driverNodeTypeId">
+                  <value var="$v"><attr name="driverNodeTypeId" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="sparkVersion">
+                  <value var="$v"><attr name="sparkVersion" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="autoscaleEnabled">
+                  <value var="$v"><attr name="autoscaleEnabled" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="autoscaleMinWorkers">
+                  <value><metric type="autoscaleMinWorkers"/></value>
+                </node>
+                <node pattern="autoscaleMaxWorkers">
+                  <value><metric type="autoscaleMaxWorkers"/></value>
+                </node>
+                <node pattern="autoscaleTargetWorkers">
+                  <value><metric type="autoscaleTargetWorkers"/></value>
+                </node>
+                <node pattern="numWorkers">
+                  <value><metric type="numWorkers"/></value>
+                </node>
+                <node pattern="clusterMemoryMb">
+                  <value><metric type="clusterMemoryMb"/></value>
+                </node>
+                <node pattern="clusterCores">
+                  <value><metric type="clusterCores"/></value>
+                </node>
+                <node pattern="terminationCode">
+                  <value var="$v"><attr name="terminationCode" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="terminationType">
+                  <value var="$v"><attr name="terminationType" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="terminationInactivityMinutes">
+                  <value><metric type="terminationInactivityMinutes"/></value>
+                </node>
+
+              </node>
+            </node>
+
+            <node pattern="warehouses">
+              <node>
+                <node_name var="$whVar"/>
+                <obj type="DatabricksWarehouse" var="{$whVar}"/>
+                <metrics_group object="{{$whVar}}"/>
+                <attr name="warehouses" target="{{$wsVar}}" val="{{$whVar}}" replace="false"/>
+
+                <node pattern="warehouseId">
+                  <value var="$v"><attr name="warehouseId" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="warehouseName">
+                  <value var="$v"><attr name="warehouseName" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="state">
+                  <value var="$v"><attr name="state" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="stateStr">
+                  <value var="$v"><attr name="stateStr" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="warehouseType">
+                  <value var="$v"><attr name="warehouseType" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="size">
+                  <value var="$v"><attr name="size" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="creatorName">
+                  <value var="$v"><attr name="creatorName" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="enablePhoton">
+                  <value var="$v"><attr name="enablePhoton" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="autoResume">
+                  <value var="$v"><attr name="autoResume" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="numClusters"><value><metric type="numClusters"/></value></node>
+                <node pattern="numClustersStr">
+                  <value var="$v"><attr name="numClustersStr" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="minClusters"><value><metric type="minClusters"/></value></node>
+                <node pattern="maxClusters"><value><metric type="maxClusters"/></value></node>
+                <node pattern="autoStopMins"><value><metric type="autoStopMins"/></value></node>
+
+              </node>
+            </node>
+
+            <node pattern="pipelines">
+              <node>
+                <node_name var="$plVar"/>
+                <obj type="DatabricksPipeline" var="{$plVar}"/>
+                <metrics_group object="{{$plVar}}"/>
+                <attr name="pipelines" target="{{$wsVar}}" val="{{$plVar}}" replace="false"/>
+
+                <node pattern="pipelineId">
+                  <value var="$v"><attr name="pipelineId" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="pipelineName">
+                  <value var="$v"><attr name="pipelineName" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="state">
+                  <value var="$v"><attr name="state" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="stateStr">
+                  <value var="$v"><attr name="stateStr" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="creatorUserName">
+                  <value var="$v"><attr name="creatorUserName" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="runAsUserName">
+                  <value var="$v"><attr name="runAsUserName" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
+
+              </node>
+            </node>
+
+            <node pattern="instancePools">
+              <node>
+                <node_name var="$poolVar"/>
+                <obj type="DatabricksInstancePool" var="{$poolVar}"/>
+                <metrics_group object="{{$poolVar}}"/>
+                <attr name="instancePools" target="{{$wsVar}}" val="{{$poolVar}}" replace="false"/>
+
+                <node pattern="instancePoolId">
+                  <value var="$v"><attr name="instancePoolId" target="{{$poolVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="instancePoolName">
+                  <value var="$v"><attr name="instancePoolName" target="{{$poolVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="state">
+                  <value var="$v"><attr name="state" target="{{$poolVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="stateStr">
+                  <value var="$v"><attr name="stateStr" target="{{$poolVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="nodeTypeId">
+                  <value var="$v"><attr name="nodeTypeId" target="{{$poolVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="minIdleInstances"><value><metric type="minIdleInstances"/></value></node>
+                <node pattern="maxCapacity"><value><metric type="maxCapacity"/></value></node>
+                <node pattern="idleCount"><value><metric type="idleCount"/></value></node>
+                <node pattern="usedCount"><value><metric type="usedCount"/></value></node>
+
+              </node>
+            </node>
+
+            <node pattern="jobs">
+              <node>
+                <node_name var="$jobVar"/>
+                <obj type="DatabricksJob" var="{$jobVar}"/>
+                <metrics_group object="{{$jobVar}}"/>
+                <attr name="jobs" target="{{$wsVar}}" val="{{$jobVar}}" replace="false"/>
+
+                <node pattern="jobId">
+                  <value var="$v"><attr name="jobId" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="jobName">
+                  <value var="$v"><attr name="jobName" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="creatorUserName">
+                  <value var="$v"><attr name="creatorUserName" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="scheduleCron">
+                  <value var="$v"><attr name="scheduleCron" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="scheduleStatus">
+                  <value var="$v"><attr name="scheduleStatus" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastRunState">
+                  <value var="$v"><attr name="lastRunState" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastRunResult">
+                  <value var="$v"><attr name="lastRunResult" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastRunStartStr">
+                  <value var="$v"><attr name="lastRunStartStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastRunDurationStr">
+                  <value var="$v"><attr name="lastRunDurationStr" target="{{$jobVar}}" val="{$v}"/></value>
+                </node>
+
+                <node pattern="runs">
+                  <node>
+                    <node_name var="$runVar"/>
+                    <obj type="DatabricksJobRun" var="{$runVar}"/>
+                    <metrics_group object="{{$runVar}}"/>
+                    <attr name="runs" target="{{$jobVar}}" val="{{$runVar}}" replace="false"/>
+
+                    <node pattern="runId">
+                      <value var="$v"><attr name="runId" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="runName">
+                      <value var="$v"><attr name="runName" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="lifeCycleState">
+                      <value var="$v"><attr name="lifeCycleState" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="lifeCycleStateStr">
+                      <value var="$v"><attr name="lifeCycleStateStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="resultState">
+                      <value var="$v"><attr name="resultState" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="resultStateStr">
+                      <value var="$v"><attr name="resultStateStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="runType">
+                      <value var="$v"><attr name="runType" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="triggerType">
+                      <value var="$v"><attr name="triggerType" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="startTime">
+                      <value><metric type="startTime"/></value>
+                    </node>
+                    <node pattern="startTimeStr">
+                      <value var="$v"><attr name="startTimeStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="durationMs">
+                      <value><metric type="durationMs"/></value>
+                    </node>
+                    <node pattern="durationMsStr">
+                      <value var="$v"><attr name="durationMsStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="taskCount">
+                      <value><metric type="taskCount"/></value>
+                    </node>
+                    <node pattern="taskCountStr">
+                      <value var="$v"><attr name="taskCountStr" target="{{$runVar}}" val="{$v}"/></value>
+                    </node>
+
+                  </node>
+                </node>
+
+              </node>
+            </node>
+
+          </node>
+        </node>
+
+      </node>
+    </node>
+
+  </transformation>
+</topology-adapter>
