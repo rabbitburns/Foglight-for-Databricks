@@ -6,7 +6,9 @@ import com.quest.glue.api.services.TopologyDataSubmissionService3;
 import com.quest.glue.api.services.TopologyNode;
 import com.quest.glue.api.services.TopologyValue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,9 +125,9 @@ public class ClusterCollector {
                     setValue(clusterNode, "sparkVersion", sparkVersion, false);
                     setValue(clusterNode, "creatorUserName", cluster.path("creator_user_name").asText(""), false);
                     setValue(clusterNode, "pinnedByUserName", cluster.path("pinned_by_user_name").asText(""), false);
-                    setValue(clusterNode, "startTimeStr", String.valueOf(cluster.path("start_time").asLong(0)), false);
-                    setValue(clusterNode, "lastActivityTimeStr", String.valueOf(cluster.path("last_activity_time").asLong(0)), false);
-                    setValue(clusterNode, "terminatedTimeStr", String.valueOf(cluster.path("terminated_time").asLong(0)), false);
+                    setValue(clusterNode, "startTimeStr",        fmtTs(cluster.path("start_time").asLong(0)), false);
+                    setValue(clusterNode, "lastActivityTimeStr", fmtTs(cluster.path("last_activity_time").asLong(0)), false);
+                    setValue(clusterNode, "terminatedTimeStr",   fmtTs(cluster.path("terminated_time").asLong(0)), false);
 
                     JsonNode autoscale = cluster.path("autoscale");
                     if (autoscale.isObject()) {
@@ -210,7 +212,7 @@ public class ClusterCollector {
                             long lastEnd   = lastRun.path("end_time").asLong(lastStart);
                             setValue(jobNode, "lastRunState",       lastRun.path("state").path("life_cycle_state").asText(""), false);
                             setValue(jobNode, "lastRunResult",      lastRun.path("state").path("result_state").asText(""), false);
-                            setValue(jobNode, "lastRunStartStr",    String.valueOf(lastStart), false);
+                            setValue(jobNode, "lastRunStartStr",    fmtTs(lastStart), false);
                             setValue(jobNode, "lastRunDurationStr", String.valueOf(Math.max(0, lastEnd - lastStart)), false);
 
                             TopologyNode runsNode = jobNode.createNode("runs");
@@ -258,7 +260,7 @@ public class ClusterCollector {
                                 setValue(runNode, "stateMessage", run.path("state").path("state_message").asText(""), false);
 
                                 runNode.createValue("startTime").setSampleValue(startTime);
-                                setValue(runNode, "startTimeStr", String.valueOf(startTime), false);
+                                setValue(runNode, "startTimeStr", fmtTs(startTime), false);
                                 runNode.createValue("durationMs").setSampleValue(durationMs);
                                 setValue(runNode, "durationMsStr", String.valueOf(durationMs), false);
                                 runNode.createValue("queueDuration").setSampleValue(queueDur);
@@ -405,6 +407,11 @@ public class ClusterCollector {
         } catch (Exception e) {
             log.errorUnexpected("ClusterCollector failed", e);
         }
+    }
+
+    private static String fmtTs(long epochMs) {
+        if (epochMs <= 0) return "";
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(epochMs));
     }
 
     private void setValue(TopologyNode node, String name, String value, boolean isIdentity) {
