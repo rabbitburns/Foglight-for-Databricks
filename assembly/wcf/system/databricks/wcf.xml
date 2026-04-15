@@ -2,33 +2,10 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="3"
-        main-view="main">
+        last-entity-id="2"
+        main-view="1">
 
-    <view id="main" display-name="Databricks" public="true" component="wcf.grid2">
-        <uuid>c3d4e5f6-a7b8-9012-cdef-012345678902</uuid>
-        <purpose name="page"/>
-        <purpose name="homepage"/>
-        <inputs>
-            <entry key="timeRange" data-type="wcf:TimeRange"/>
-        </inputs>
-        <flow/>
-        <config>
-            <property name="spacing">
-                <integer value="0"/>
-            </property>
-        </config>
-        <window id="1" view="system:databricks.2">
-            <size/>
-            <config>
-                <property name="align"><enum value="stretch"/></property>
-                <property name="valign"><enum value="stretch"/></property>
-                <property name="row"><integer value="1"/></property>
-            </config>
-        </window>
-    </view>
-
-    <view id="2" display-name="Databricks Job Runs" public="true" component="wcf.table.row-table">
+    <view id="1" display-name="Databricks Job Runs" public="true" component="wcf.table.row-table">
         <uuid>b2c3d4e5-f6a7-8901-bcde-f01234567891</uuid>
         <purpose name="page"/>
         <purpose name="pagelet"/>
@@ -39,7 +16,7 @@
         <flow/>
         <config>
             <property name="rows">
-                <function-rv id="system:databricks.1">
+                <function-rv id="system:databricks.2">
                     <context-rv input-key="timeRange"/>
                 </function-rv>
             </property>
@@ -148,7 +125,7 @@
         </config>
     </view>
 
-    <script-function type="groovy" id="1" display-name="Get Job Runs"
+    <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
         <uuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</uuid>
