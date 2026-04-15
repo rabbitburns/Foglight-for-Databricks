@@ -11,7 +11,7 @@
 You should have received a zip file containing:
 
 ```
-DatabricksAgent-1.0.24.car
+DatabricksAgent-*.car
 agent-deploy/
   config/
     agent.manifest
@@ -69,7 +69,7 @@ accountName=Databricks
 1. Log into the Foglight UI as an administrator
 2. Go to **Administration > Cartridges**
 3. Click **Install or Upgrade a Cartridge**
-4. Upload `DatabricksAgent-1.0.24.car`
+4. Upload the `.car` file included in the zip (`DatabricksAgent-*.car`)
 5. Confirm the install
 
 ---
