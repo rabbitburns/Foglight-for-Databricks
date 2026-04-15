@@ -21,6 +21,8 @@
 | Duration formatting (ms → "2m 34s") on all duration fields | 1.0.29 |
 | Flat job runs table — Groovy script (text + WCF HTML) | 1.0.30 |
 | WCF job runs portlet (`databricks_jobruns` module, `wcf.table.row-table`) | 1.0.33 |
+| Databricks nav module — top-level nav entry, Job Runs as landing page | 1.0.39 |
+| SQL Warehouse query history, slow query leaderboard, user activity portlets | 1.0.40–1.0.42 |
 
 ---
 
@@ -33,22 +35,25 @@
 | Job run task-level detail | `tasks[]` array in run response (`expand_tasks=true`) | Low | **Deferred** — waiting on drill-down dashboards (Tier 2). `DatabricksJobTask` type ready to add. |
 | Multi-workspace support | Config change + agent instance per workspace | Medium | **Deferred** — low priority for now; single workspace covers most use cases. Numbered config pairs (`workspace.1.url`, etc.) is the planned approach. |
 
-### Tier 2 — Dashboards & Packaging
+### Tier 2 — Dashboards & Packaging (remaining)
 
 | Gap | Effort | Notes |
 |---|---|---|
-| Package "Databricks" nav module in cartridge | Medium | ✓ Done in 1.0.39 — top-level nav entry with Job Runs table as landing page. |
-| Drill-down dashboards (cluster, job, warehouse detail) | Medium | **Deferred** — hold until more data sources (Tier 3+) are collected. Enables job run task detail from Tier 1. |
+| Composite landing page for Databricks nav entry | Medium | **Next** — package a multi-portlet landing page (Job Runs + Query History + User Activity) as the module main-view. Replicates Databricks #1/2 dashboards in the cartridge. |
+| Drill-down dashboards (cluster, job, warehouse detail) | Medium | **Deferred** — hold until more data sources (Tier 3+) are collected. |
 | Packaged dashboard in cartridge | Medium | **Deferred** — hold until dashboard design is stable. |
 | Pre-built alert rules | Medium | **Deferred** — best practices research needed before implementation. |
 
-### Tier 3 — SQL Warehouse Query Metrics
+### Tier 3 — SQL Warehouse Query Metrics ✓
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Query history per warehouse | `GET /api/2.0/sql/history/queries` | Medium | Returns query ID, user, status, duration, bytes read, rows, cache hit, queue wait. New type `DatabricksQuery` under each warehouse. High-value for performance monitoring. |
-| Query execution breakdown | Same response — `compilation_time`, `execution_time`, `fetch_time` | Low | Comes free with query history fetch. |
-| Warehouse query volume (count per interval) | Derived from query history | Low | Count of queries in collection window; good metric for warehouse utilization trending. |
+| Query history per warehouse | `GET /api/2.0/sql/history/queries` | Medium | ✓ Done 1.0.40 — query ID, user, status, duration, bytes read, rows, cache hit. |
+| Query execution breakdown | Same response — `compilation_time`, `execution_time`, `fetch_time` | Low | ✓ Done 1.0.40 — included in query history fetch. |
+| Warehouse query volume (count per interval) | Derived from query history | Low | ✓ Done 1.0.40 — `queryCountStr` on each warehouse. |
+| Query History portlet | WCF | Low | ✓ Done 1.0.41 — flat cross-warehouse query table. |
+| Slow Query leaderboard portlet | WCF | Low | ✓ Done 1.0.41 — top 25 by duration. |
+| User Activity summary portlet | WCF | Low | ✓ Done 1.0.41 — per-user query count, avg duration, bytes, cache hits, errors. |
 
 ### Tier 4 — DBU Consumption & Cost
 
@@ -85,9 +90,9 @@
 
 ## Priority Order (agreed)
 
-1. **Tier 1** — Job & cluster depth ✓ (mostly complete — multi-workspace pending)
-2. **Tier 2** — Dashboards & packaging (nav module, drill-downs, alerts)
-3. **Tier 3** — SQL Warehouse query metrics
+1. **Tier 1** — Job & cluster depth ✓ (mostly complete — multi-workspace deferred)
+2. **Tier 2** — Dashboards & packaging (nav module ✓, landing page next)
+3. **Tier 3** — SQL Warehouse query metrics ✓
 4. **Tier 4** — DBU consumption & cost
 5. **Tier 5** — DLT Pipeline depth
 6. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
@@ -109,3 +114,6 @@
 | 1.0.37 | WCF portlet (`databricks_jobruns`) — flat cross-job runs table; page + portlet purposes; wcf_support parent |
 | 1.0.38 | Renamed WCF module to `databricks`; top-level nav entry with main-view; Job Runs table as landing page |
 | 1.0.39 | Fixed WCF module load failure (composite-view not valid in module); Job Runs table is now the main-view directly |
+| 1.0.40 | SQL Warehouse query history collection — DatabricksQuery type, per-warehouse query fetch |
+| 1.0.41 | Query History, Slow Queries, User Activity WCF portlets |
+| 1.0.42 | Role visibility fix — all portlets now show for Operator/Dashboard roles |
