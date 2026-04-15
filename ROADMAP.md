@@ -20,6 +20,7 @@
 | Timestamp formatting (epoch → yyyy-MM-dd HH:mm:ss) on all time fields | 1.0.28 |
 | Duration formatting (ms → "2m 34s") on all duration fields | 1.0.29 |
 | Flat job runs table — Groovy script (text + WCF HTML) | 1.0.30 |
+| WCF job runs portlet (`databricks_jobruns` module, `wcf.table.row-table`) | 1.0.33 |
 
 ---
 
@@ -31,7 +32,6 @@
 |---|---|---|---|
 | Job run task-level detail | `tasks[]` array in run response (`expand_tasks=true`) | Low | Deferred until drill-downs are built (Tier 7). `DatabricksJobTask` type ready to add. |
 | Multi-workspace support | Config change + agent instance per workspace | Medium | Currently one workspace per agent instance. Config could support a list of workspace URLs. |
-| WCF job runs portlet | Groovy script already written (`job-runs-wcf.groovy`) | Medium | Need to identify correct WCF portlet type in Foglight 8.2. Investigating via existing cartridge `.car` inspection. |
 
 ### Tier 2 — SQL Warehouse Query Metrics
 
@@ -85,7 +85,7 @@
 
 ## Priority Order (agreed)
 
-1. **Tier 1** — Job & cluster depth ✓ (mostly complete — WCF portlet and multi-workspace pending)
+1. **Tier 1** — Job & cluster depth ✓ (mostly complete — multi-workspace pending)
 2. **Tier 2** — SQL Warehouse query metrics
 3. **Tier 3** — DBU consumption & cost
 4. **Tier 4** — DLT Pipeline depth
@@ -106,3 +106,6 @@
 | 1.0.28 | Timestamp formatting (epoch → readable date) |
 | 1.0.29 | Job run stats (success rate, avg/min/max duration); runs limit 5→10 |
 | 1.0.30 | Job trigger type; job tags; cluster custom tags |
+| 1.0.31 | WCF Dashboard component added to cartridge build |
+| 1.0.32 | Fixed WCF script filename (must match function id) |
+| 1.0.33 | Fixed WCF module element order (views before script-functions per JiBX schema) |
