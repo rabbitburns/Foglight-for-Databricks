@@ -17,4 +17,30 @@
         <property name="retry"     type="wcf:String"/>
         <property name="message"   type="wcf:String"/>
     </type>
+    <type name="DatabricksQueryRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="warehouseName"   type="wcf:String"/>
+        <property name="userName"        type="wcf:String"/>
+        <property name="statementType"   type="wcf:String"/>
+        <property name="status"          type="wcf:String"/>
+        <property name="startedAt"       type="wcf:String"/>
+        <property name="duration"        type="wcf:String"/>
+        <property name="compilation"     type="wcf:String"/>
+        <property name="execution"       type="wcf:String"/>
+        <property name="fetch"           type="wcf:String"/>
+        <property name="bytesRead"       type="wcf:String"/>
+        <property name="rowsProduced"    type="wcf:String"/>
+        <property name="fromCache"       type="wcf:String"/>
+        <property name="errorMessage"    type="wcf:String"/>
+        <property name="durationMs"      type="wcf:Integer"/>
+    </type>
+    <type name="DatabricksUserActivityRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="userName"      type="wcf:String"/>
+        <property name="queryCount"    type="wcf:String"/>
+        <property name="avgDuration"   type="wcf:String"/>
+        <property name="totalBytes"    type="wcf:String"/>
+        <property name="cacheHits"     type="wcf:String"/>
+        <property name="errorCount"    type="wcf:String"/>
+    </type>
 </types>

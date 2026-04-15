@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="2"
+        last-entity-id="8"
         main-view="1">
 
     <view id="1" display-name="Databricks Job Runs" public="true" component="wcf.table.row-table">
@@ -25,100 +25,298 @@
                     <object>
                         <property name="id"><string xml:space="preserve">jobName</string></property>
                         <property name="header"><string xml:space="preserve">Job Name</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="jobName"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="jobName"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">creator</string></property>
                         <property name="header"><string xml:space="preserve">Creator</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="creator"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="creator"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">runId</string></property>
                         <property name="header"><string xml:space="preserve">Run ID</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="runId"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="runId"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">state</string></property>
                         <property name="header"><string xml:space="preserve">State</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="state"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="state"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">result</string></property>
                         <property name="header"><string xml:space="preserve">Result</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="result"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="result"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">started</string></property>
                         <property name="header"><string xml:space="preserve">Started</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="started"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="started"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">total</string></property>
                         <property name="header"><string xml:space="preserve">Total</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="total"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="total"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">queue</string></property>
                         <property name="header"><string xml:space="preserve">Queue</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="queue"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="queue"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">setup</string></property>
                         <property name="header"><string xml:space="preserve">Setup</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="setup"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="setup"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">execution</string></property>
                         <property name="header"><string xml:space="preserve">Execution</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="execution"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="execution"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">cleanup</string></property>
                         <property name="header"><string xml:space="preserve">Cleanup</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="cleanup"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="cleanup"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">tasks</string></property>
                         <property name="header"><string xml:space="preserve">Tasks</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="tasks"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="tasks"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">retry</string></property>
                         <property name="header"><string xml:space="preserve">Retry</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="retry"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="retry"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">message</string></property>
                         <property name="header"><string xml:space="preserve">Message</string></property>
-                        <property name="value">
-                            <context-rv input-key="currentRow" path="message"/>
-                        </property>
+                        <property name="value"><context-rv input-key="currentRow" path="message"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="3" display-name="Databricks Query History" public="true" component="wcf.table.row-table">
+        <uuid>c3d4e5f6-a7b8-9012-cdef-012345678903</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.4">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">warehouseName</string></property>
+                        <property name="header"><string xml:space="preserve">Warehouse</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="warehouseName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">userName</string></property>
+                        <property name="header"><string xml:space="preserve">User</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="userName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">statementType</string></property>
+                        <property name="header"><string xml:space="preserve">Type</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="statementType"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">status</string></property>
+                        <property name="header"><string xml:space="preserve">Status</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="status"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">startedAt</string></property>
+                        <property name="header"><string xml:space="preserve">Started</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="startedAt"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">duration</string></property>
+                        <property name="header"><string xml:space="preserve">Duration</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="duration"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">compilation</string></property>
+                        <property name="header"><string xml:space="preserve">Compile</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="compilation"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">execution</string></property>
+                        <property name="header"><string xml:space="preserve">Execute</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="execution"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">fetch</string></property>
+                        <property name="header"><string xml:space="preserve">Fetch</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="fetch"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">bytesRead</string></property>
+                        <property name="header"><string xml:space="preserve">Bytes Read</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="bytesRead"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">rowsProduced</string></property>
+                        <property name="header"><string xml:space="preserve">Rows</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="rowsProduced"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">fromCache</string></property>
+                        <property name="header"><string xml:space="preserve">Cached</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="fromCache"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorMessage</string></property>
+                        <property name="header"><string xml:space="preserve">Error</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorMessage"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="5" display-name="Databricks Slow Queries" public="true" component="wcf.table.row-table">
+        <uuid>d4e5f6a7-b8c9-0123-def0-123456789004</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.6">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">warehouseName</string></property>
+                        <property name="header"><string xml:space="preserve">Warehouse</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="warehouseName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">userName</string></property>
+                        <property name="header"><string xml:space="preserve">User</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="userName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">statementType</string></property>
+                        <property name="header"><string xml:space="preserve">Type</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="statementType"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">status</string></property>
+                        <property name="header"><string xml:space="preserve">Status</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="status"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">startedAt</string></property>
+                        <property name="header"><string xml:space="preserve">Started</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="startedAt"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">duration</string></property>
+                        <property name="header"><string xml:space="preserve">Duration</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="duration"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">compilation</string></property>
+                        <property name="header"><string xml:space="preserve">Compile</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="compilation"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">execution</string></property>
+                        <property name="header"><string xml:space="preserve">Execute</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="execution"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">fetch</string></property>
+                        <property name="header"><string xml:space="preserve">Fetch</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="fetch"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">bytesRead</string></property>
+                        <property name="header"><string xml:space="preserve">Bytes Read</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="bytesRead"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">rowsProduced</string></property>
+                        <property name="header"><string xml:space="preserve">Rows</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="rowsProduced"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">fromCache</string></property>
+                        <property name="header"><string xml:space="preserve">Cached</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="fromCache"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorMessage</string></property>
+                        <property name="header"><string xml:space="preserve">Error</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorMessage"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="7" display-name="Databricks User Activity" public="true" component="wcf.table.row-table">
+        <uuid>e5f6a7b8-c9d0-1234-ef01-234567890005</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.8">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">userName</string></property>
+                        <property name="header"><string xml:space="preserve">User</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="userName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">queryCount</string></property>
+                        <property name="header"><string xml:space="preserve">Queries</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="queryCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">avgDuration</string></property>
+                        <property name="header"><string xml:space="preserve">Avg Duration</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="avgDuration"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">totalBytes</string></property>
+                        <property name="header"><string xml:space="preserve">Total Bytes Read</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="totalBytes"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cacheHits</string></property>
+                        <property name="header"><string xml:space="preserve">Cache Hits</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cacheHits"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorCount</string></property>
+                        <property name="header"><string xml:space="preserve">Errors</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorCount"/></property>
                     </object>
                 </list-value>
             </property>
@@ -129,6 +327,33 @@
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
         <uuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="4" display-name="Get Query History"
+                     output-type="databricks:DatabricksQueryRow" output-list="true"
+                     cache-results="false">
+        <uuid>c4d5e6f7-a8b9-0123-cdef-012345678904</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="6" display-name="Get Slow Queries"
+                     output-type="databricks:DatabricksQueryRow" output-list="true"
+                     cache-results="false">
+        <uuid>d5e6f7a8-b9c0-1234-def0-123456789005</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="8" display-name="Get User Activity"
+                     output-type="databricks:DatabricksUserActivityRow" output-list="true"
+                     cache-results="false">
+        <uuid>e6f7a8b9-c0d1-2345-ef01-234567890006</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>
