@@ -106,6 +106,4 @@
 | 1.0.28 | Timestamp formatting (epoch → readable date) |
 | 1.0.29 | Job run stats (success rate, avg/min/max duration); runs limit 5→10 |
 | 1.0.30 | Job trigger type; job tags; cluster custom tags |
-| 1.0.31 | WCF Dashboard component added to cartridge build |
-| 1.0.32 | Fixed WCF script filename (must match function id) |
-| 1.0.33 | Fixed WCF module element order (views before script-functions per JiBX schema) |
+| 1.0.37 | WCF portlet (`databricks_jobruns`) — flat cross-job runs table; page + portlet purposes; wcf_support parent |
