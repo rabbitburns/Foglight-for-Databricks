@@ -2,7 +2,8 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks Job Runs"
-        last-entity-id="2">
+        last-entity-id="2"
+        parent="system:wcf_foglight">
 
     <view id="2" display-name="Databricks Job Runs" public="true" component="wcf.table.row-table">
         <uuid>b2c3d4e5-f6a7-8901-bcde-f01234567891</uuid>
