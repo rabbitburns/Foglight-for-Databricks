@@ -108,3 +108,4 @@
 | 1.0.30 | Job trigger type; job tags; cluster custom tags |
 | 1.0.37 | WCF portlet (`databricks_jobruns`) — flat cross-job runs table; page + portlet purposes; wcf_support parent |
 | 1.0.38 | Renamed WCF module to `databricks`; top-level nav entry with main-view; Job Runs table as landing page |
+| 1.0.39 | Fixed WCF module load failure (composite-view not valid in module); Job Runs table is now the main-view directly |
