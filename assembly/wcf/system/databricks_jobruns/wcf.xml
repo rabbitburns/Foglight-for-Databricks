@@ -9,6 +9,7 @@
         <uuid>b2c3d4e5-f6a7-8901-bcde-f01234567891</uuid>
         <purpose name="page"/>
         <purpose name="pagelet"/>
+        <purpose name="portlet"/>
         <inputs>
             <entry key="timeRange" data-type="wcf:TimeRange"/>
         </inputs>
