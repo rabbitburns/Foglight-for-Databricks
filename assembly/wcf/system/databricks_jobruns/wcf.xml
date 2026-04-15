@@ -2,9 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks Job Runs"
-        last-entity-id="2"
-        parent="system:wcf_foglight"
-        xsi:noNamespaceSchemaLocation="../../../wcf/module-3-027.xsd">
+        last-entity-id="2">
 
     <script-function type="groovy" id="1" display-name="Get Job Runs"
                      output-type="databricks_jobruns:DatabricksRunRow" output-list="true"
