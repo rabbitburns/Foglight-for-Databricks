@@ -30,17 +30,17 @@
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Job run task-level detail | `tasks[]` array in run response (`expand_tasks=true`) | Low | Deferred until drill-downs are built (Tier 7). `DatabricksJobTask` type ready to add. |
-| Multi-workspace support | Config change + agent instance per workspace | Medium | Currently one workspace per agent instance. Config could support a list of workspace URLs. |
+| Job run task-level detail | `tasks[]` array in run response (`expand_tasks=true`) | Low | **Deferred** — waiting on drill-down dashboards (Tier 2). `DatabricksJobTask` type ready to add. |
+| Multi-workspace support | Config change + agent instance per workspace | Medium | **Deferred** — low priority for now; single workspace covers most use cases. Numbered config pairs (`workspace.1.url`, etc.) is the planned approach. |
 
 ### Tier 2 — Dashboards & Packaging
 
 | Gap | Effort | Notes |
 |---|---|---|
-| Package "Databricks" nav module in cartridge | Medium | Replicate the manually-created Databricks module so it ships pre-configured with the cartridge install. |
-| Drill-down dashboards (cluster, job, warehouse detail) | Medium | Click a row → full detail view with sparklines and recent history. Enables job run task detail from Tier 1. |
-| Packaged dashboard in cartridge | Medium | Export from Foglight UI, embed XML in .car. Hold until dashboard design is stable. |
-| Pre-built alert rules | Medium | Failed job alert, cluster stuck in PENDING, warehouse auto-stopped, long queue duration. Best practices research needed before implementation. |
+| Package "Databricks" nav module in cartridge | Medium | ✓ Done in 1.0.39 — top-level nav entry with Job Runs table as landing page. |
+| Drill-down dashboards (cluster, job, warehouse detail) | Medium | **Deferred** — hold until more data sources (Tier 3+) are collected. Enables job run task detail from Tier 1. |
+| Packaged dashboard in cartridge | Medium | **Deferred** — hold until dashboard design is stable. |
+| Pre-built alert rules | Medium | **Deferred** — best practices research needed before implementation. |
 
 ### Tier 3 — SQL Warehouse Query Metrics
 
