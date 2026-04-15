@@ -4,15 +4,6 @@
         display-name="Databricks Job Runs"
         last-entity-id="2">
 
-    <script-function type="groovy" id="1" display-name="Get Job Runs"
-                     output-type="databricks_jobruns:DatabricksRunRow" output-list="true"
-                     cache-results="false">
-        <uuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</uuid>
-        <inputs>
-            <input name="timeRange" type-name="wcf:TimeRange"/>
-        </inputs>
-    </script-function>
-
     <view id="2" display-name="Databricks Job Runs" public="true" component="wcf.table.row-table">
         <uuid>b2c3d4e5-f6a7-8901-bcde-f01234567891</uuid>
         <purpose name="pagelet"/>
@@ -130,5 +121,14 @@
             </property>
         </config>
     </view>
+
+    <script-function type="groovy" id="1" display-name="Get Job Runs"
+                     output-type="databricks_jobruns:DatabricksRunRow" output-list="true"
+                     cache-results="false">
+        <uuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
 
 </module>
