@@ -373,6 +373,9 @@ public class ClusterCollector {
                                 setValue(qNode, "statementType", q.path("statement_type").asText(""), false);
                                 setValue(qNode, "startedAtStr",  fmtTs(q.path("query_start_time_ms").asLong(0)), false);
                                 setValue(qNode, "errorMessage",  q.path("error_message").asText(""), false);
+                                String queryText = q.path("query_text").asText("");
+                                if (queryText.length() > 500) queryText = queryText.substring(0, 500) + "...";
+                                setValue(qNode, "queryText", queryText, false);
 
                                 long dur = q.path("duration").asLong(0);
                                 qNode.createValue("duration").setSampleValue(dur);

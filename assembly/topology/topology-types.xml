@@ -58,6 +58,7 @@
         <property name="fetchTimeStr"     type="String"/>
         <property name="fromResultCache"  type="String"/>
         <property name="errorMessage"     type="String"/>
+        <property name="queryText"        type="String"/>
     </type>
 
     <type name="DatabricksPipeline" extends="TopologyObject">

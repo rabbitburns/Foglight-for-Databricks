@@ -32,6 +32,7 @@
         <property name="rowsProduced"    type="wcf:String"/>
         <property name="fromCache"       type="wcf:String"/>
         <property name="errorMessage"    type="wcf:String"/>
+        <property name="queryText"       type="wcf:String"/>
         <property name="durationMs"      type="wcf:Integer"/>
     </type>
     <type name="DatabricksUserActivityRow" extends="wcf:DataObject">

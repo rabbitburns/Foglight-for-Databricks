@@ -25,6 +25,7 @@ workspaces?.each { ws ->
                 rowsProduced  : q.get("rowsProducedStr") ?: "",
                 fromCache     : q.get("fromResultCache") ?: "",
                 errorMessage  : q.get("errorMessage")   ?: "",
+                queryText     : q.get("queryText")      ?: "",
                 durationMs    : (q.get("duration") ?: 0L) as long
             ]
         }
@@ -50,6 +51,7 @@ rawRows.each { r ->
     row.store('rowsProduced',  r.rowsProduced,  specificTimeRange)
     row.store('fromCache',     r.fromCache == "true" ? "Yes" : "", specificTimeRange)
     row.store('errorMessage',  r.errorMessage,  specificTimeRange)
+    row.store('queryText',     r.queryText,     specificTimeRange)
     row.store('durationMs',    r.durationMs,    specificTimeRange)
     rows.add(row)
 }

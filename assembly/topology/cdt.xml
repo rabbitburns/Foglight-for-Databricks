@@ -226,6 +226,9 @@
                     <node pattern="errorMessage">
                       <value var="$v"><attr name="errorMessage" target="{{$qVar}}" val="{$v}"/></value>
                     </node>
+                    <node pattern="queryText">
+                      <value var="$v"><attr name="queryText" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
                   </node>
                 </node>
 
