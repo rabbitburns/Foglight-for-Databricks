@@ -1,4 +1,4 @@
-package system._databricks_jobruns.scripts;
+package system._databricks.scripts;
 
 def ts = server.get("TopologyService")
 
@@ -50,7 +50,7 @@ rawRows.sort { a, b -> (b.started ?: "").compareTo(a.started ?: "") }
 
 def rows = new java.util.ArrayList()
 rawRows.each { r ->
-    def row = functionHelper.createDataObject('databricks_jobruns:DatabricksRunRow', 'none', null)
+    def row = functionHelper.createDataObject('databricks:DatabricksRunRow', 'none', null)
     row.store('jobName',   r.jobName,   specificTimeRange)
     row.store('creator',   r.creator,   specificTimeRange)
     row.store('runId',     r.runId,     specificTimeRange)
