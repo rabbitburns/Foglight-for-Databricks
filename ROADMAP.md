@@ -107,3 +107,4 @@
 | 1.0.29 | Job run stats (success rate, avg/min/max duration); runs limit 5→10 |
 | 1.0.30 | Job trigger type; job tags; cluster custom tags |
 | 1.0.37 | WCF portlet (`databricks_jobruns`) — flat cross-job runs table; page + portlet purposes; wcf_support parent |
+| 1.0.38 | Renamed WCF module to `databricks`; top-level nav entry with main-view; Job Runs table as landing page |
