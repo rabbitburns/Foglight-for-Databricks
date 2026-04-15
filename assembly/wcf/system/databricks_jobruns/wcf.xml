@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        version="3-027"
+        display-name="Databricks Job Runs"
+        last-entity-id="2"
+        parent="system:wcf_foglight"
+        xsi:noNamespaceSchemaLocation="../../../wcf/module-3-027.xsd">
+
+    <script-function type="groovy" id="1" display-name="Get Job Runs"
+                     output-type="databricks_jobruns:DatabricksRunRow" output-list="true"
+                     cache-results="false">
+        <uuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <view id="2" display-name="Databricks Job Runs" public="true" component="wcf.table.row-table">
+        <uuid>b2c3d4e5-f6a7-8901-bcde-f01234567891</uuid>
+        <purpose name="pagelet"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks_jobruns.1">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">jobName</string></property>
+                        <property name="header"><string xml:space="preserve">Job Name</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="jobName"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">creator</string></property>
+                        <property name="header"><string xml:space="preserve">Creator</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="creator"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">runId</string></property>
+                        <property name="header"><string xml:space="preserve">Run ID</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="runId"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">state</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="state"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">result</string></property>
+                        <property name="header"><string xml:space="preserve">Result</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="result"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">started</string></property>
+                        <property name="header"><string xml:space="preserve">Started</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="started"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">total</string></property>
+                        <property name="header"><string xml:space="preserve">Total</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="total"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">queue</string></property>
+                        <property name="header"><string xml:space="preserve">Queue</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="queue"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">setup</string></property>
+                        <property name="header"><string xml:space="preserve">Setup</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="setup"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">execution</string></property>
+                        <property name="header"><string xml:space="preserve">Execution</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="execution"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cleanup</string></property>
+                        <property name="header"><string xml:space="preserve">Cleanup</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="cleanup"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">tasks</string></property>
+                        <property name="header"><string xml:space="preserve">Tasks</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="tasks"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">retry</string></property>
+                        <property name="header"><string xml:space="preserve">Retry</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="retry"/>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">message</string></property>
+                        <property name="header"><string xml:space="preserve">Message</string></property>
+                        <property name="value">
+                            <context-rv input-key="currentRow" path="message"/>
+                        </property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+</module>

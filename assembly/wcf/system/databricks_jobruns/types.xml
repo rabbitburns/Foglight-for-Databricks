@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types xmlns="urn:quest-com:wcf-types-3-0">
+    <type name="DatabricksRunRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="jobName"   type="wcf:String"/>
+        <property name="creator"   type="wcf:String"/>
+        <property name="runId"     type="wcf:String"/>
+        <property name="state"     type="wcf:String"/>
+        <property name="result"    type="wcf:String"/>
+        <property name="started"   type="wcf:String"/>
+        <property name="total"     type="wcf:String"/>
+        <property name="queue"     type="wcf:String"/>
+        <property name="setup"     type="wcf:String"/>
+        <property name="execution" type="wcf:String"/>
+        <property name="cleanup"   type="wcf:String"/>
+        <property name="tasks"     type="wcf:String"/>
+        <property name="retry"     type="wcf:String"/>
+        <property name="message"   type="wcf:String"/>
+    </type>
+</types>
