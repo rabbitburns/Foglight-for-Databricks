@@ -51,4 +51,73 @@
         <property name="inactive" type="wcf:String"/>
         <property name="details"  type="wcf:String"/>
     </type>
+    <type name="DatabricksClusterRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="clusterName"  type="wcf:String"/>
+        <property name="state"        type="wcf:String"/>
+        <property name="source"       type="wcf:String"/>
+        <property name="driverNode"   type="wcf:String"/>
+        <property name="workers"      type="wcf:String"/>
+        <property name="minWorkers"   type="wcf:String"/>
+        <property name="maxWorkers"   type="wcf:String"/>
+        <property name="cores"        type="wcf:String"/>
+        <property name="sparkVersion" type="wcf:String"/>
+        <property name="creator"      type="wcf:String"/>
+        <property name="started"      type="wcf:String"/>
+        <property name="lastActivity" type="wcf:String"/>
+        <property name="terminated"   type="wcf:String"/>
+        <property name="pinnedBy"     type="wcf:String"/>
+        <property name="tags"         type="wcf:String"/>
+    </type>
+    <type name="DatabricksWarehouseRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="warehouseName" type="wcf:String"/>
+        <property name="type"          type="wcf:String"/>
+        <property name="state"         type="wcf:String"/>
+        <property name="size"          type="wcf:String"/>
+        <property name="numClusters"   type="wcf:String"/>
+        <property name="minClusters"   type="wcf:String"/>
+        <property name="maxClusters"   type="wcf:String"/>
+        <property name="photon"        type="wcf:String"/>
+        <property name="autoStop"      type="wcf:String"/>
+        <property name="autoResume"    type="wcf:String"/>
+        <property name="creator"       type="wcf:String"/>
+        <property name="queryCount"    type="wcf:String"/>
+    </type>
+    <type name="DatabricksJobRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="jobName"      type="wcf:String"/>
+        <property name="creator"      type="wcf:String"/>
+        <property name="triggerType"  type="wcf:String"/>
+        <property name="schedule"     type="wcf:String"/>
+        <property name="lastState"    type="wcf:String"/>
+        <property name="lastResult"   type="wcf:String"/>
+        <property name="lastStart"    type="wcf:String"/>
+        <property name="lastDuration" type="wcf:String"/>
+        <property name="successRate"  type="wcf:String"/>
+        <property name="avgDuration"  type="wcf:String"/>
+        <property name="minDuration"  type="wcf:String"/>
+        <property name="maxDuration"  type="wcf:String"/>
+        <property name="successes"    type="wcf:String"/>
+        <property name="failures"     type="wcf:String"/>
+        <property name="tags"         type="wcf:String"/>
+    </type>
+    <type name="DatabricksPipelineRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="pipelineName" type="wcf:String"/>
+        <property name="state"        type="wcf:String"/>
+        <property name="creator"      type="wcf:String"/>
+        <property name="runAs"        type="wcf:String"/>
+        <property name="pipelineId"   type="wcf:String"/>
+    </type>
+    <type name="DatabricksInstancePoolRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="poolName"    type="wcf:String"/>
+        <property name="state"       type="wcf:String"/>
+        <property name="nodeType"    type="wcf:String"/>
+        <property name="minIdle"     type="wcf:String"/>
+        <property name="maxCapacity" type="wcf:String"/>
+        <property name="idle"        type="wcf:String"/>
+        <property name="used"        type="wcf:String"/>
+    </type>
 </types>
