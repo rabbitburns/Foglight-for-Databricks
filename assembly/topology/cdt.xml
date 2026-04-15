@@ -169,6 +169,65 @@
                 <node pattern="minClusters"><value><metric type="minClusters"/></value></node>
                 <node pattern="maxClusters"><value><metric type="maxClusters"/></value></node>
                 <node pattern="autoStopMins"><value><metric type="autoStopMins"/></value></node>
+                <node pattern="queryCount"><value><metric type="queryCount"/></value></node>
+                <node pattern="queryCountStr">
+                  <value var="$v"><attr name="queryCountStr" target="{{$whVar}}" val="{$v}"/></value>
+                </node>
+
+                <node pattern="queries">
+                  <node>
+                    <node_name var="$qVar"/>
+                    <obj type="DatabricksQuery" var="{$qVar}"/>
+                    <metrics_group object="{{$qVar}}"/>
+                    <attr name="queries" target="{{$whVar}}" val="{{$qVar}}" replace="false"/>
+
+                    <node pattern="queryId">
+                      <value var="$v"><attr name="queryId" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="status">
+                      <value var="$v"><attr name="status" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="userName">
+                      <value var="$v"><attr name="userName" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="statementType">
+                      <value var="$v"><attr name="statementType" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="startedAtStr">
+                      <value var="$v"><attr name="startedAtStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="durationStr">
+                      <value var="$v"><attr name="durationStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="duration"><value><metric type="duration"/></value></node>
+                    <node pattern="bytesRead"><value><metric type="bytesRead"/></value></node>
+                    <node pattern="bytesReadStr">
+                      <value var="$v"><attr name="bytesReadStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="rowsProduced"><value><metric type="rowsProduced"/></value></node>
+                    <node pattern="rowsProducedStr">
+                      <value var="$v"><attr name="rowsProducedStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="compilationTime"><value><metric type="compilationTime"/></value></node>
+                    <node pattern="compilationTimeStr">
+                      <value var="$v"><attr name="compilationTimeStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="executionTime"><value><metric type="executionTime"/></value></node>
+                    <node pattern="executionTimeStr">
+                      <value var="$v"><attr name="executionTimeStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="fetchTime"><value><metric type="fetchTime"/></value></node>
+                    <node pattern="fetchTimeStr">
+                      <value var="$v"><attr name="fetchTimeStr" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="fromResultCache">
+                      <value var="$v"><attr name="fromResultCache" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="errorMessage">
+                      <value var="$v"><attr name="errorMessage" target="{{$qVar}}" val="{$v}"/></value>
+                    </node>
+                  </node>
+                </node>
 
               </node>
             </node>

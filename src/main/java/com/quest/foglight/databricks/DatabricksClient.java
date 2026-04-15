@@ -49,6 +49,10 @@ public class DatabricksClient {
         return get("/api/2.0/instance-pools/list");
     }
 
+    public JsonNode listQueriesForWarehouse(String warehouseId) throws Exception {
+        return get("/api/2.0/sql/history/queries?max_results=25&filter_by.warehouse_ids=" + warehouseId);
+    }
+
     private JsonNode get(String path) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + path))

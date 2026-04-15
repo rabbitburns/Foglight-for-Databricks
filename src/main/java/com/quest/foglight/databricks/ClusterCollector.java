@@ -353,6 +353,57 @@ public class ClusterCollector {
                     whNode.createValue("minClusters").setSampleValue(wh.path("min_num_clusters").asLong(1));
                     whNode.createValue("maxClusters").setSampleValue(wh.path("max_num_clusters").asLong(1));
                     whNode.createValue("autoStopMins").setSampleValue(wh.path("auto_stop_mins").asLong(0));
+
+                    // queries
+                    try {
+                        JsonNode queriesResponse = client.listQueriesForWarehouse(whId);
+                        JsonNode queryList = queriesResponse != null ? queriesResponse.path("res") : null;
+                        int queryCount = 0;
+                        if (queryList != null && queryList.isArray() && queryList.size() > 0) {
+                            TopologyNode queriesNode = whNode.createNode("queries");
+                            for (JsonNode q : queryList) {
+                                String queryId = q.path("query_id").asText("");
+                                if (queryId.isBlank()) continue;
+                                queryCount++;
+                                TopologyNode qNode = queriesNode.createNode(queryId);
+                                qNode.setId(queryId);
+                                setValue(qNode, "queryId",       queryId, true);
+                                setValue(qNode, "status",        q.path("status").asText(""), false);
+                                setValue(qNode, "userName",      q.path("user_name").asText(""), false);
+                                setValue(qNode, "statementType", q.path("statement_type").asText(""), false);
+                                setValue(qNode, "startedAtStr",  fmtTs(q.path("query_start_time_ms").asLong(0)), false);
+                                setValue(qNode, "errorMessage",  q.path("error_message").asText(""), false);
+
+                                long dur = q.path("duration").asLong(0);
+                                qNode.createValue("duration").setSampleValue(dur);
+                                setValue(qNode, "durationStr", fmtDur(dur), false);
+
+                                JsonNode m = q.path("metrics");
+                                long bytesRead       = m.path("read_bytes").asLong(0);
+                                long rowsProduced    = m.path("rows_produced_count").asLong(0);
+                                long compilationTime = m.path("compilation_time_ms").asLong(0);
+                                long executionTime   = m.path("execution_time_ms").asLong(0);
+                                long fetchTime       = m.path("result_fetch_time_ms").asLong(0);
+                                boolean fromCache    = m.path("result_from_cache").asBoolean(false);
+
+                                qNode.createValue("bytesRead").setSampleValue(bytesRead);
+                                setValue(qNode, "bytesReadStr", bytesRead > 0 ? String.valueOf(bytesRead) : "", false);
+                                qNode.createValue("rowsProduced").setSampleValue(rowsProduced);
+                                setValue(qNode, "rowsProducedStr", rowsProduced > 0 ? String.valueOf(rowsProduced) : "", false);
+                                qNode.createValue("compilationTime").setSampleValue(compilationTime);
+                                setValue(qNode, "compilationTimeStr", fmtDur(compilationTime), false);
+                                qNode.createValue("executionTime").setSampleValue(executionTime);
+                                setValue(qNode, "executionTimeStr", fmtDur(executionTime), false);
+                                qNode.createValue("fetchTime").setSampleValue(fetchTime);
+                                setValue(qNode, "fetchTimeStr", fmtDur(fetchTime), false);
+                                setValue(qNode, "fromResultCache", fromCache ? "true" : "", false);
+                            }
+                        }
+                        whNode.createValue("queryCount").setSampleValue((long) queryCount);
+                        setValue(whNode, "queryCountStr", String.valueOf(queryCount), false);
+                    } catch (Exception e) {
+                        log.log("ClusterCollector: failed to fetch queries for warehouse " + whId + ": " + e.getMessage());
+                    }
                 }
             }
 

@@ -33,6 +33,31 @@
         <property name="minClusters"    type="Metric" is-containment="true"/>
         <property name="maxClusters"    type="Metric" is-containment="true"/>
         <property name="autoStopMins"   type="Metric" is-containment="true"/>
+        <property name="queryCount"     type="Metric" is-containment="true"/>
+        <property name="queryCountStr"  type="String"/>
+        <property name="queries"        type="DatabricksQuery" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksQuery" extends="TopologyObject">
+        <property name="queryId"          type="String" is-identity="true"/>
+        <property name="status"           type="String"/>
+        <property name="userName"         type="String"/>
+        <property name="statementType"    type="String"/>
+        <property name="startedAtStr"     type="String"/>
+        <property name="durationStr"      type="String"/>
+        <property name="duration"         type="Metric" is-containment="true"/>
+        <property name="bytesRead"        type="Metric" is-containment="true"/>
+        <property name="bytesReadStr"     type="String"/>
+        <property name="rowsProduced"     type="Metric" is-containment="true"/>
+        <property name="rowsProducedStr"  type="String"/>
+        <property name="compilationTime"  type="Metric" is-containment="true"/>
+        <property name="compilationTimeStr" type="String"/>
+        <property name="executionTime"    type="Metric" is-containment="true"/>
+        <property name="executionTimeStr" type="String"/>
+        <property name="fetchTime"        type="Metric" is-containment="true"/>
+        <property name="fetchTimeStr"     type="String"/>
+        <property name="fromResultCache"  type="String"/>
+        <property name="errorMessage"     type="String"/>
     </type>
 
     <type name="DatabricksPipeline" extends="TopologyObject">
