@@ -43,4 +43,12 @@
         <property name="cacheHits"     type="wcf:String"/>
         <property name="errorCount"    type="wcf:String"/>
     </type>
+    <type name="DatabricksSummaryRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="category" type="wcf:String"/>
+        <property name="total"    type="wcf:String"/>
+        <property name="active"   type="wcf:String"/>
+        <property name="inactive" type="wcf:String"/>
+        <property name="details"  type="wcf:String"/>
+    </type>
 </types>
