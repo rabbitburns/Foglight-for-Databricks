@@ -10,6 +10,12 @@
         <purpose name="page"/>
         <purpose name="pagelet"/>
         <purpose name="portlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
         <inputs>
             <entry key="timeRange" data-type="wcf:TimeRange"/>
         </inputs>
@@ -102,6 +108,12 @@
         <purpose name="page"/>
         <purpose name="pagelet"/>
         <purpose name="portlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
         <inputs>
             <entry key="timeRange" data-type="wcf:TimeRange"/>
         </inputs>
@@ -189,6 +201,12 @@
         <purpose name="page"/>
         <purpose name="pagelet"/>
         <purpose name="portlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
         <inputs>
             <entry key="timeRange" data-type="wcf:TimeRange"/>
         </inputs>
@@ -276,6 +294,12 @@
         <purpose name="page"/>
         <purpose name="pagelet"/>
         <purpose name="portlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
         <inputs>
             <entry key="timeRange" data-type="wcf:TimeRange"/>
         </inputs>
