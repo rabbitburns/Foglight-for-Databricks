@@ -153,3 +153,7 @@
 | 1.0.40 | SQL Warehouse query history collection — DatabricksQuery type, per-warehouse query fetch |
 | 1.0.41 | Query History, Slow Queries, User Activity WCF portlets |
 | 1.0.42 | Role visibility fix — all portlets now show for Operator/Dashboard roles |
+| 1.0.43 | Databricks Overview landing page (summary by resource category); Job Runs demoted from main-view |
+| 1.0.44 | Five new portlets: Clusters, SQL Warehouses, Jobs, DLT Pipelines, Instance Pools; reportlet purpose on all views |
+| 1.0.45 | Query text collection (Java collector + CDT + topology type); queryText column in Query History and Slow Queries |
+| 1.0.46–1.0.47 | Fix: queryText column missing from Slow Queries view (WCF build timing issue) |

@@ -102,4 +102,6 @@ No new collection is needed to support any of the current views — all fields e
 | 1.0.33–1.0.39 | Job Runs (id=1) — nav entry, landing page |
 | 1.0.41 | Query History (id=3), Slow Queries (id=5), User Activity (id=7) |
 | 1.0.43 | Overview (id=9) — new landing page |
-| 1.0.44 | Clusters (id=11), SQL Warehouses (id=13), Jobs (id=15), DLT Pipelines (id=17), Instance Pools (id=19) |
+| 1.0.44 | Clusters (id=11), SQL Warehouses (id=13), Jobs (id=15), DLT Pipelines (id=17), Instance Pools (id=19); reportlet purpose on all views |
+| 1.0.45 | Query text collection (Java + CDT); queryText column added to Query History and Slow Queries |
+| 1.0.46–1.0.47 | Fix: queryText column missing from Slow Queries view |
