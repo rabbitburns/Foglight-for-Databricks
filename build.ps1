@@ -75,11 +75,13 @@ git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
     git commit -m "v$Version"
     git push
+    git push work main
 } else {
     Write-Host "No source changes to commit."
+    git push work main 2>$null
 }
 
-# --- GitHub release ---
+# --- GitHub release (personal) ---
 Write-Host "Creating GitHub release v$Version..."
 & $GH release delete "v$Version" --repo rabbitburns/Foglight-for-Databricks --yes 2>$null
 & $GH release create "v$Version" $ZIP `
@@ -87,6 +89,14 @@ Write-Host "Creating GitHub release v$Version..."
     --title "v$Version" `
     --notes "Release v$Version"
 if ($LASTEXITCODE -ne 0) { Write-Host "GitHub release failed (non-fatal)" }
+
+# --- GitHub release (work) ---
+& $GH release delete "v$Version" --repo Mark-Gowdy_questsw/Foglight-for-Databricks --yes 2>$null
+& $GH release create "v$Version" $ZIP `
+    --repo Mark-Gowdy_questsw/Foglight-for-Databricks `
+    --title "v$Version" `
+    --notes "Release v$Version"
+if ($LASTEXITCODE -ne 0) { Write-Host "Work GitHub release failed (non-fatal)" }
 
 Write-Host ""
 Write-Host "Next steps:"
