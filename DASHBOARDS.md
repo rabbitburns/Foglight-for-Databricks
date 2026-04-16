@@ -1,5 +1,60 @@
 # Foglight for Databricks — Dashboard & Portlet Reference
 
+## Recommended Dashboard Setup
+
+The cartridge ships portlets but does not automatically create dashboards. After installing, build the following 5 dashboards manually via the Foglight UI.
+
+### How to create a dashboard and add portlets
+
+1. In the left nav under **Dashboards → My Dashboards**, click the **+** icon to create a new dashboard
+2. Give it a name (e.g. "Databricks - Compute")
+3. Click **Actions → Add view...** in the top-right of the dashboard
+4. Search for "Databricks" — all portlets should appear
+5. Select the portlet and click **Add**
+6. Repeat for each portlet on the dashboard
+7. Use the resize/drag handles to arrange the layout
+
+### Dashboard 1 — Databricks (Overview)
+
+The landing page is built into the nav entry automatically — no dashboard to create. Clicking **Databricks** in the left nav goes directly to the Overview summary table.
+
+### Dashboard 2 — Databricks - Compute
+
+| Portlet | Layout suggestion |
+|---|---|
+| Databricks Clusters | Full width, top |
+| Databricks SQL Warehouses | Full width, below |
+
+### Dashboard 3 — Databricks - Jobs
+
+| Portlet | Layout suggestion |
+|---|---|
+| Databricks Jobs | Full width, top — shows per-job stats |
+| Databricks Job Runs | Full width, below — shows individual run history |
+
+### Dashboard 4 — Databricks - Queries
+
+| Portlet | Layout suggestion |
+|---|---|
+| Databricks Query History | Full width, top |
+| Databricks Slow Queries | Full width, middle |
+| Databricks User Activity | Full width, bottom |
+
+### Dashboard 5 — Databricks - Pipelines & Pool
+
+| Portlet | Layout suggestion |
+|---|---|
+| Databricks DLT Pipelines | Full width, top |
+| Databricks Instance Pools | Full width, below |
+
+### Notes
+
+- If a portlet doesn't appear in the Add View picker, check that your role is listed under the portlet's **Relevant Roles** in the Definitions editor
+- After adding a portlet to a dashboard, removing and re-adding it picks up any column changes from a cartridge upgrade
+- The **Databricks** nav entry landing page is managed by the cartridge — do not manually create a module with the same name as it will conflict
+
+---
+
 ## Module
 
 WCF module name: `system:databricks`
