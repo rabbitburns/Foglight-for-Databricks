@@ -57,6 +57,8 @@
 
 ### Tier 4 — DBU Consumption & Cost
 
+> **Competitive note:** Datadog's cost visibility for Databricks is part of their separate Cloud Cost Management product, which pulls from cloud provider billing APIs (AWS Cost Explorer, Azure Cost Management) — it is not included in standard Databricks monitoring and requires an additional paid SKU. Our approach via `system.billing.usage` is Databricks-native, more granular (DBU-denominated rather than dollar-estimated), and included in the base cartridge. New Relic has cost dashboards using the same source but requires a Databricks system table license. This is a meaningful differentiator for the Foglight value proposition — worth developing for the sales narrative.
+
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
 | DBU usage by SKU | `system.billing.usage` table via SQL warehouse query | Medium | Requires an active SQL warehouse to execute the query. Returns SKU, quantity, cloud, region, custom tags. New Relic uses this for cost dashboards. Strong differentiator. |
