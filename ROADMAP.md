@@ -93,11 +93,45 @@
 ## Priority Order (agreed)
 
 1. **Tier 1** — Job & cluster depth ✓ (mostly complete — multi-workspace deferred)
-2. **Tier 2** — Dashboards & packaging (nav module ✓, landing page next)
+2. **Tier 2** — Dashboards & packaging (nav module ✓, landing page ✓, portlets ✓)
 3. **Tier 3** — SQL Warehouse query metrics ✓
 4. **Tier 4** — DBU consumption & cost
 5. **Tier 5** — DLT Pipeline depth
 6. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
+
+---
+
+## v2 — AUI Dashboard Layer
+
+> WCF portlets are the v1 foundation. v2 replaces or supplements them with Foglight's AUI (Angular UI) framework, which is the current platform standard and offers significantly richer visualization options. All topology data collected by the Java agent carries forward unchanged — AUI is purely a UI layer change.
+
+### Why AUI
+
+| Capability | WCF (current) | AUI (v2) |
+|---|---|---|
+| Tables | ✓ row-table only | ✓ sortable, filterable, paginated |
+| Charts | ✗ | ✓ line, bar, heatmap, sparklines |
+| Timeline / Gantt | ✗ | ✓ job run timeline visualization |
+| Drill-down navigation | ✗ manual dashboard links | ✓ native context passing |
+| Layout | fixed portlet grid | flexible, responsive |
+| Competitive parity | Datadog-style tables | Datadog/NR-style rich dashboards |
+
+### v2 Target Pages
+
+| Page | Key additions over WCF |
+|---|---|
+| Overview | Sparklines for query volume, job success rate trend |
+| Clusters | State history timeline, memory/core utilization charts |
+| Jobs | Job run Gantt timeline, success rate trend chart |
+| SQL Warehouses | Query volume over time, warehouse utilization heatmap |
+| Queries | Query duration distribution, per-user trend charts |
+| DBU / Cost | Spend trend charts, cost-by-job bar chart (requires Tier 4) |
+
+### Dependencies
+
+- Requires familiarity with Foglight AUI component library (internal platform team resource recommended)
+- Packaged dashboard export/import mechanism (currently deferred in Tier 2) becomes the right delivery vehicle for AUI dashboards in the cartridge
+- Multi-workspace support (Tier 1 deferred) becomes more important at v2 — AUI org-level views would span workspaces
 
 ---
 
