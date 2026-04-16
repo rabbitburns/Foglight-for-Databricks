@@ -346,6 +346,11 @@
                         <property name="header"><string xml:space="preserve">Error</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="errorMessage"/></property>
                     </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">queryText</string></property>
+                        <property name="header"><string xml:space="preserve">Query</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="queryText"/></property>
+                    </object>
                 </list-value>
             </property>
         </config>
