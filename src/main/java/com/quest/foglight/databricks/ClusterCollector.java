@@ -88,7 +88,7 @@ public class ClusterCollector {
             int pipelineCount = 0;
             int poolCount = 0;
             int usageCount = 0;
-            String runningWarehouseId = null;
+            String billingWarehouseId = null;
 
             // ---------------------------------------------------------------------
             // clusters -> DatabricksCluster
@@ -349,8 +349,8 @@ public class ClusterCollector {
                     setValue(whNode, "creatorName", wh.path("creator_name").asText(""), false);
                     setValue(whNode, "enablePhoton", String.valueOf(wh.path("enable_photon").asBoolean(false)), false);
                     setValue(whNode, "autoResume", String.valueOf(wh.path("auto_resume").asBoolean(false)), false);
-                    if (runningWarehouseId == null && "RUNNING".equals(wh.path("state").asText(""))) {
-                        runningWarehouseId = whId;
+                    if (billingWarehouseId == null) {
+                        billingWarehouseId = whId;
                     }
 
                     long numClusters = wh.path("num_clusters").asLong(0);
@@ -478,7 +478,7 @@ public class ClusterCollector {
             // ---------------------------------------------------------------------
             TopologyNode usagesNode = workspaceNode.createNode("usages");
 
-            if (runningWarehouseId != null) {
+            if (billingWarehouseId != null) {
                 try {
                     String sql = "SELECT usage_date, sku_name, cloud, region, billing_origin_product, "
                             + "CAST(SUM(usage_quantity) AS DOUBLE) AS dbu_total "
@@ -488,7 +488,7 @@ public class ClusterCollector {
                             + "ORDER BY usage_date DESC, dbu_total DESC "
                             + "LIMIT 500";
 
-                    JsonNode stmtResult = client.executeSqlStatement(runningWarehouseId, sql);
+                    JsonNode stmtResult = client.executeSqlStatement(billingWarehouseId, sql);
                     String stmtState = stmtResult.path("status").path("state").asText("");
 
                     if ("SUCCEEDED".equals(stmtState)) {
