@@ -9,7 +9,7 @@ def workspaces = ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))
 workspaces?.each { ws ->
     ws.get("usages")?.each { u ->
         double dbu = 0.0
-        try { dbu = (u.get("dbuConsumed") ?: 0L) as long / 1000.0 } catch (Exception ignore) {}
+        try { dbu = Double.parseDouble(u.get("dbuConsumedStr") ?: "0") } catch (Exception ignore) {}
         rawRows << [
             usageDate            : u.get("usageDate")            ?: "",
             sku                  : u.get("sku")                  ?: "",
