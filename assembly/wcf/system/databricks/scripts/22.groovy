@@ -15,7 +15,6 @@ workspaces?.each { ws ->
             sku                  : u.get("sku")                  ?: "",
             billingOriginProduct : u.get("billingOriginProduct") ?: "",
             cloud                : u.get("cloud")                ?: "",
-            region               : u.get("region")               ?: "",
             dbuConsumed          : u.get("dbuConsumedStr")        ?: "",
             dbuRaw               : dbu
         ]
@@ -34,7 +33,6 @@ rawRows.each { r ->
     row.store('sku',                  r.sku,                  specificTimeRange)
     row.store('billingOriginProduct', r.billingOriginProduct, specificTimeRange)
     row.store('cloud',                r.cloud,                specificTimeRange)
-    row.store('region',               r.region,               specificTimeRange)
     row.store('dbuConsumed',          r.dbuConsumed,          specificTimeRange)
     rows.add(row)
 }

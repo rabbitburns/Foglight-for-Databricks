@@ -483,11 +483,11 @@ public class ClusterCollector {
 
             if (billingWarehouseId != null) {
                 try {
-                    String sql = "SELECT usage_date, sku_name, cloud, region, billing_origin_product, "
+                    String sql = "SELECT usage_date, sku_name, cloud, billing_origin_product, "
                             + "CAST(SUM(usage_quantity) AS DOUBLE) AS dbu_total "
                             + "FROM system.billing.usage "
                             + "WHERE usage_date >= DATE_ADD(CURRENT_DATE, -30) "
-                            + "GROUP BY usage_date, sku_name, cloud, region, billing_origin_product "
+                            + "GROUP BY usage_date, sku_name, cloud, billing_origin_product "
                             + "ORDER BY usage_date DESC, dbu_total DESC "
                             + "LIMIT 500";
 
@@ -501,11 +501,10 @@ public class ClusterCollector {
                                 String usageDate          = row.path(0).asText("");
                                 String sku                = row.path(1).asText("");
                                 String cloud              = row.path(2).asText("");
-                                String region             = row.path(3).asText("");
-                                String billingProduct     = row.path(4).asText("");
-                                double dbu                = row.path(5).asDouble(0.0);
+                                String billingProduct     = row.path(3).asText("");
+                                double dbu                = row.path(4).asDouble(0.0);
 
-                                String usageKey = usageDate + "|" + sku + "|" + billingProduct + "|" + cloud + "|" + region;
+                                String usageKey = usageDate + "|" + sku + "|" + billingProduct + "|" + cloud;
 
                                 usageCount++;
 
@@ -517,7 +516,6 @@ public class ClusterCollector {
                                 setValue(usageNode, "sku",                  sku,             false);
                                 setValue(usageNode, "billingOriginProduct", billingProduct,  false);
                                 setValue(usageNode, "cloud",                cloud,           false);
-                                setValue(usageNode, "region",               region,          false);
                                 usageNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
                                 setValue(usageNode, "dbuConsumedStr", String.format("%.2f", dbu), false);
                             }
