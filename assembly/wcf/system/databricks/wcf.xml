@@ -890,8 +890,27 @@
     </view>
 
     <view id="23" display-name="Databricks DBU by Product" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000023</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
         <config>
-            <property name="data-function-id"><number>24</number></property>
+            <property name="rows">
+                <function-rv id="system:databricks.24">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
             <property name="columns">
                 <list-value>
                     <object>
@@ -910,8 +929,27 @@
     </view>
 
     <view id="25" display-name="Databricks Daily DBU Trend" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000025</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
         <config>
-            <property name="data-function-id"><number>26</number></property>
+            <property name="rows">
+                <function-rv id="system:databricks.26">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
             <property name="columns">
                 <list-value>
                     <object>
@@ -930,8 +968,27 @@
     </view>
 
     <view id="27" display-name="Databricks MoM DBU Growth" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000027</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
         <config>
-            <property name="data-function-id"><number>28</number></property>
+            <property name="rows">
+                <function-rv id="system:databricks.28">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
             <property name="columns">
                 <list-value>
                     <object>
@@ -960,8 +1017,27 @@
     </view>
 
     <view id="29" display-name="Databricks Top Jobs by DBU" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000029</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
         <config>
-            <property name="data-function-id"><number>30</number></property>
+            <property name="rows">
+                <function-rv id="system:databricks.30">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
             <property name="columns">
                 <list-value>
                     <object>
@@ -985,8 +1061,27 @@
     </view>
 
     <view id="31" display-name="Databricks Cost by SKU" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000031</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
         <config>
-            <property name="data-function-id"><number>32</number></property>
+            <property name="rows">
+                <function-rv id="system:databricks.32">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
             <property name="columns">
                 <list-value>
                     <object>
