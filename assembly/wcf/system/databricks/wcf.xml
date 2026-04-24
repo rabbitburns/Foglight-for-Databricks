@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="22"
+        last-entity-id="32"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -970,6 +970,171 @@
         </inputs>
     </script-function>
 
+    <view id="23" display-name="Databricks DBU by Product (Current Month)" public="true" component="wcf.table.row-table">
+        <uuid>b5c6d7e8-f9a0-1234-b012-012100000023</uuid>
+        <purpose name="page"/><purpose name="pagelet"/><purpose name="portlet"/><purpose name="reportlet"/>
+        <relevant-role name="Administrator"/><relevant-role name="Operator"/><relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/><relevant-role name="Dashboard User"/><relevant-role name="General Access"/>
+        <inputs><entry key="timeRange" data-type="wcf:TimeRange"/></inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.24"><context-rv input-key="timeRange"/></function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">product</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="product"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dbu</string></property>
+                        <property name="header"><string xml:space="preserve">DBUs Consumed</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dbu"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="25" display-name="Databricks Daily DBU Trend" public="true" component="wcf.table.row-table">
+        <uuid>c6d7e8f9-a0b1-2345-c012-012200000025</uuid>
+        <purpose name="page"/><purpose name="pagelet"/><purpose name="portlet"/><purpose name="reportlet"/>
+        <relevant-role name="Administrator"/><relevant-role name="Operator"/><relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/><relevant-role name="Dashboard User"/><relevant-role name="General Access"/>
+        <inputs><entry key="timeRange" data-type="wcf:TimeRange"/></inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.26"><context-rv input-key="timeRange"/></function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">usageDate</string></property>
+                        <property name="header"><string xml:space="preserve">Date</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="usageDate"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">totalDbu</string></property>
+                        <property name="header"><string xml:space="preserve">Total DBUs</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="totalDbu"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="27" display-name="Databricks MoM DBU Growth by Product" public="true" component="wcf.table.row-table">
+        <uuid>d7e8f9a0-b1c2-3456-d012-012300000027</uuid>
+        <purpose name="page"/><purpose name="pagelet"/><purpose name="portlet"/><purpose name="reportlet"/>
+        <relevant-role name="Administrator"/><relevant-role name="Operator"/><relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/><relevant-role name="Dashboard User"/><relevant-role name="General Access"/>
+        <inputs><entry key="timeRange" data-type="wcf:TimeRange"/></inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.28"><context-rv input-key="timeRange"/></function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">product</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="product"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">currentMonthDbu</string></property>
+                        <property name="header"><string xml:space="preserve">Current Month DBUs</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="currentMonthDbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">previousMonthDbu</string></property>
+                        <property name="header"><string xml:space="preserve">Previous Month DBUs</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="previousMonthDbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">growthRate</string></property>
+                        <property name="header"><string xml:space="preserve">Growth</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="growthRate"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="29" display-name="Databricks Top Jobs by DBU" public="true" component="wcf.table.row-table">
+        <uuid>e8f9a0b1-c2d3-4567-e012-012400000029</uuid>
+        <purpose name="page"/><purpose name="pagelet"/><purpose name="portlet"/><purpose name="reportlet"/>
+        <relevant-role name="Administrator"/><relevant-role name="Operator"/><relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/><relevant-role name="Dashboard User"/><relevant-role name="General Access"/>
+        <inputs><entry key="timeRange" data-type="wcf:TimeRange"/></inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.30"><context-rv input-key="timeRange"/></function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">jobName</string></property>
+                        <property name="header"><string xml:space="preserve">Job Name</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="jobName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">jobId</string></property>
+                        <property name="header"><string xml:space="preserve">Job ID</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="jobId"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dbu</string></property>
+                        <property name="header"><string xml:space="preserve">DBUs Consumed</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dbu"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="31" display-name="Databricks Cost by SKU" public="true" component="wcf.table.row-table">
+        <uuid>f9a0b1c2-d3e4-5678-f012-012500000031</uuid>
+        <purpose name="page"/><purpose name="pagelet"/><purpose name="portlet"/><purpose name="reportlet"/>
+        <relevant-role name="Administrator"/><relevant-role name="Operator"/><relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/><relevant-role name="Dashboard User"/><relevant-role name="General Access"/>
+        <inputs><entry key="timeRange" data-type="wcf:TimeRange"/></inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.32"><context-rv input-key="timeRange"/></function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">sku</string></property>
+                        <property name="header"><string xml:space="preserve">SKU</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="sku"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">product</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="product"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">totalDbu</string></property>
+                        <property name="header"><string xml:space="preserve">DBUs (60d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="totalDbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dollarCost</string></property>
+                        <property name="header"><string xml:space="preserve">Est. Cost (USD)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="22" display-name="Get DBU Usage"
                      output-type="databricks:DatabricksUsageRow" output-list="true"
                      cache-results="false">
@@ -977,6 +1142,36 @@
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="24" display-name="Get DBU by Product Current Month"
+                     output-type="databricks:DatabricksProductDbuRow" output-list="true" cache-results="false">
+        <uuid>c5d6e7f8-a9b0-1234-c012-012100000024</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="26" display-name="Get Daily DBU Trend"
+                     output-type="databricks:DatabricksDailyDbuRow" output-list="true" cache-results="false">
+        <uuid>d6e7f8a9-b0c1-2345-d012-012200000026</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="28" display-name="Get MoM DBU Growth"
+                     output-type="databricks:DatabricksMomGrowthRow" output-list="true" cache-results="false">
+        <uuid>e7f8a9b0-c1d2-3456-e012-012300000028</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="30" display-name="Get Top Jobs by DBU"
+                     output-type="databricks:DatabricksJobDbuRow" output-list="true" cache-results="false">
+        <uuid>f8a9b0c1-d2e3-4567-f012-012400000030</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="32" display-name="Get Cost by SKU"
+                     output-type="databricks:DatabricksSkuCostRow" output-list="true" cache-results="false">
+        <uuid>a9b0c1d2-e3f4-5678-a012-012500000032</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
     </script-function>
 
     <script-function type="groovy" id="10" display-name="Get Overview Summary"

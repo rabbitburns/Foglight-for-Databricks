@@ -323,6 +323,27 @@
                 <node pattern="dbuConsumedStr">
                   <value var="$v"><attr name="dbuConsumedStr" target="{{$usageVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="dollarCostStr">
+                  <value var="$v"><attr name="dollarCostStr" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+
+              </node>
+            </node>
+
+            <node pattern="jobDbus">
+              <node>
+                <node_name var="$jdVar"/>
+                <obj type="DatabricksJobDbu" var="{$jdVar}"/>
+                <metrics_group object="{{$jdVar}}"/>
+                <attr name="jobDbus" target="{{$wsVar}}" val="{{$jdVar}}" replace="false"/>
+
+                <node pattern="jobId">
+                  <value var="$v"><attr name="jobId" target="{{$jdVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="dbuConsumed"><value><metric type="dbuConsumed"/></value></node>
+                <node pattern="dbuConsumedStr">
+                  <value var="$v"><attr name="dbuConsumedStr" target="{{$jdVar}}" val="{$v}"/></value>
+                </node>
 
               </node>
             </node>

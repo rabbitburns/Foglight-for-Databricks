@@ -121,6 +121,36 @@
         <property name="idle"        type="wcf:String"/>
         <property name="used"        type="wcf:String"/>
     </type>
+    <type name="DatabricksProductDbuRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="product" type="wcf:String"/>
+        <property name="dbu"     type="wcf:String"/>
+    </type>
+    <type name="DatabricksDailyDbuRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="usageDate" type="wcf:String"/>
+        <property name="totalDbu"  type="wcf:String"/>
+    </type>
+    <type name="DatabricksMomGrowthRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="product"          type="wcf:String"/>
+        <property name="currentMonthDbu"  type="wcf:String"/>
+        <property name="previousMonthDbu" type="wcf:String"/>
+        <property name="growthRate"       type="wcf:String"/>
+    </type>
+    <type name="DatabricksJobDbuRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="jobName" type="wcf:String"/>
+        <property name="jobId"   type="wcf:String"/>
+        <property name="dbu"     type="wcf:String"/>
+    </type>
+    <type name="DatabricksSkuCostRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="sku"        type="wcf:String"/>
+        <property name="product"    type="wcf:String"/>
+        <property name="totalDbu"   type="wcf:String"/>
+        <property name="dollarCost" type="wcf:String"/>
+    </type>
     <type name="DatabricksUsageRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
         <property name="usageDate"            type="wcf:String"/>

@@ -17,6 +17,7 @@
         <property name="pipelines"      type="DatabricksPipeline"    is-many="true" is-containment="true"/>
         <property name="instancePools"  type="DatabricksInstancePool" is-many="true" is-containment="true"/>
         <property name="usages"          type="DatabricksUsage"        is-many="true" is-containment="true"/>
+        <property name="jobDbus"         type="DatabricksJobDbu"       is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -170,6 +171,13 @@
         <property name="region"                type="String"/>
         <property name="dbuConsumed"           type="Metric" is-containment="true"/>
         <property name="dbuConsumedStr"        type="String"/>
+        <property name="dollarCostStr"         type="String"/>
+    </type>
+
+    <type name="DatabricksJobDbu" extends="TopologyObject">
+        <property name="jobId"         type="String" is-identity="true"/>
+        <property name="dbuConsumed"   type="Metric" is-containment="true"/>
+        <property name="dbuConsumedStr" type="String"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

@@ -94,6 +94,7 @@ public class ClusterCollector {
             int pipelineCount = 0;
             int poolCount = 0;
             int usageCount = 0;
+            int jobDbuCount = 0;
             String billingWarehouseId = configuredBillingWarehouseId;
 
             // ---------------------------------------------------------------------
@@ -484,15 +485,20 @@ public class ClusterCollector {
             // ---------------------------------------------------------------------
             TopologyNode usagesNode = workspaceNode.createNode("usages");
 
-            if (billingWarehouseId != null) {
+            if (billingWarehouseId != null && !billingWarehouseId.isBlank()) {
                 try {
-                    String sql = "SELECT usage_date, sku_name, cloud, billing_origin_product, "
-                            + "CAST(SUM(usage_quantity) AS DOUBLE) AS dbu_total "
-                            + "FROM system.billing.usage "
-                            + "WHERE usage_date >= DATE_ADD(CURRENT_DATE, -30) "
-                            + "GROUP BY usage_date, sku_name, cloud, billing_origin_product "
-                            + "ORDER BY usage_date DESC, dbu_total DESC "
-                            + "LIMIT 500";
+                    String sql = "SELECT u.usage_date, u.sku_name, u.cloud, u.billing_origin_product, "
+                            + "CAST(SUM(u.usage_quantity) AS DOUBLE) AS dbu_total, "
+                            + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
+                            + "FROM system.billing.usage u "
+                            + "LEFT JOIN system.billing.list_prices lp "
+                            + "  ON lp.sku_name = u.sku_name "
+                            + "  AND u.usage_end_time >= lp.price_start_time "
+                            + "  AND (lp.price_end_time IS NULL OR u.usage_end_time < lp.price_end_time) "
+                            + "WHERE u.usage_date >= DATE_ADD(CURRENT_DATE, -60) "
+                            + "GROUP BY u.usage_date, u.sku_name, u.cloud, u.billing_origin_product "
+                            + "ORDER BY u.usage_date DESC, dbu_total DESC "
+                            + "LIMIT 1000";
 
                     JsonNode stmtResult = client.executeSqlStatement(billingWarehouseId, sql);
                     String stmtState = stmtResult.path("status").path("state").asText("");
@@ -501,27 +507,28 @@ public class ClusterCollector {
                         JsonNode dataArray = stmtResult.path("result").path("data_array");
                         if (dataArray.isArray()) {
                             for (JsonNode row : dataArray) {
-                                String usageDate          = row.path(0).asText("");
-                                String sku                = row.path(1).asText("");
-                                String cloud              = row.path(2).asText("");
-                                String billingProduct     = row.path(3).asText("");
-                                double dbu                = row.path(4).asDouble(0.0);
+                                String usageDate      = row.path(0).asText("");
+                                String sku            = row.path(1).asText("");
+                                String cloud          = row.path(2).asText("");
+                                String billingProduct = row.path(3).asText("");
+                                double dbu            = row.path(4).asDouble(0.0);
+                                double cost           = row.path(5).asDouble(0.0);
 
                                 String usageKey = usageDate + "|" + sku + "|" + billingProduct + "|" + cloud;
-
                                 usageCount++;
 
                                 TopologyNode usageNode = usagesNode.createNode(usageKey);
                                 usageNode.setId(usageKey);
 
-                                setValue(usageNode, "usageKey",             usageKey,       true);
+                                setValue(usageNode, "usageKey",             usageKey,        true);
                                 setValue(usageNode, "usageDate",            usageDate,       false);
                                 setValue(usageNode, "sku",                  sku,             false);
                                 setValue(usageNode, "billingOriginProduct", billingProduct,  false);
                                 setValue(usageNode, "cloud",                cloud,           false);
-                                setValue(usageNode, "region",              workspaceRegion, false);
+                                setValue(usageNode, "region",               workspaceRegion, false);
                                 usageNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
-                                setValue(usageNode, "dbuConsumedStr", String.format("%.2f", dbu), false);
+                                setValue(usageNode, "dbuConsumedStr",  String.format("%.2f", dbu),  false);
+                                setValue(usageNode, "dollarCostStr",   String.format("%.4f", cost), false);
                             }
                         }
                     } else {
@@ -532,8 +539,49 @@ public class ClusterCollector {
                     log.log("ClusterCollector: billing collection failed: " + e.getMessage());
                     System.out.println("=== billing collection FAILED: " + e.getMessage());
                 }
+
+                // -----------------------------------------------------------------
+                // jobDbus -> DatabricksJobDbu (usage_metadata.job_id)
+                // -----------------------------------------------------------------
+                TopologyNode jobDbusNode = workspaceNode.createNode("jobDbus");
+                try {
+                    String jobSql = "SELECT usage_metadata.job_id, "
+                            + "CAST(SUM(usage_quantity) AS DOUBLE) AS dbu_total "
+                            + "FROM system.billing.usage "
+                            + "WHERE usage_metadata.job_id IS NOT NULL "
+                            + "AND usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                            + "GROUP BY usage_metadata.job_id "
+                            + "ORDER BY dbu_total DESC "
+                            + "LIMIT 100";
+
+                    JsonNode jobResult = client.executeSqlStatement(billingWarehouseId, jobSql);
+                    String jobState = jobResult.path("status").path("state").asText("");
+
+                    if ("SUCCEEDED".equals(jobState)) {
+                        JsonNode jobData = jobResult.path("result").path("data_array");
+                        if (jobData.isArray()) {
+                            for (JsonNode row : jobData) {
+                                String jobId = row.path(0).asText("");
+                                if (jobId.isBlank()) continue;
+                                double dbu = row.path(1).asDouble(0.0);
+
+                                jobDbuCount++;
+                                TopologyNode jobDbuNode = jobDbusNode.createNode(jobId);
+                                jobDbuNode.setId(jobId);
+                                setValue(jobDbuNode, "jobId", jobId, true);
+                                jobDbuNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
+                                setValue(jobDbuNode, "dbuConsumedStr", String.format("%.2f", dbu), false);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: job DBU query did not succeed, state=" + jobState
+                                + ", error=" + jobResult.path("status").path("error").path("message").asText(""));
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: job DBU collection failed: " + e.getMessage());
+                }
             } else {
-                log.log("ClusterCollector: no running warehouse found, skipping billing collection");
+                log.log("ClusterCollector: no billing warehouse configured, skipping billing collection");
             }
 
             log.log("ClusterCollector: topology summary rootType=DatabricksModelRoot"
@@ -546,7 +594,8 @@ public class ClusterCollector {
                     + ", warehouseCount=" + warehouseCount
                     + ", pipelineCount=" + pipelineCount
                     + ", poolCount=" + poolCount
-                    + ", usageCount=" + usageCount);
+                    + ", usageCount=" + usageCount
+                    + ", jobDbuCount=" + jobDbuCount);
 
             System.out.println("=== ClusterCollector summary === "
                     + "accountId=" + accountId
@@ -557,7 +606,8 @@ public class ClusterCollector {
                     + ", pipelineCount=" + pipelineCount
                     + ", poolCount=" + poolCount
                     + ", runCount=" + runCount
-                    + ", usageCount=" + usageCount);
+                    + ", usageCount=" + usageCount
+                    + ", jobDbuCount=" + jobDbuCount);
 
             submitter.submit(now);
 
