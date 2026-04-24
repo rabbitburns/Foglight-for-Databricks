@@ -875,6 +875,11 @@
                         <property name="value"><context-rv input-key="currentRow" path="cloud"/></property>
                     </object>
                     <object>
+                        <property name="id"><string xml:space="preserve">region</string></property>
+                        <property name="header"><string xml:space="preserve">Region</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="region"/></property>
+                    </object>
+                    <object>
                         <property name="id"><string xml:space="preserve">dbuConsumed</string></property>
                         <property name="header"><string xml:space="preserve">DBUs Consumed</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="dbuConsumed"/></property>

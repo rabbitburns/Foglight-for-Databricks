@@ -167,6 +167,7 @@
         <property name="sku"                   type="String"/>
         <property name="billingOriginProduct"  type="String"/>
         <property name="cloud"                 type="String"/>
+        <property name="region"                type="String"/>
         <property name="dbuConsumed"           type="Metric" is-containment="true"/>
         <property name="dbuConsumedStr"        type="String"/>
     </type>

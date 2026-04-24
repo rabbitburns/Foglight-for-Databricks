@@ -68,6 +68,11 @@ public class DatabricksAgent implements Agent {
                 fileProps.getProperty("billing.warehouse.id"),
                 aspToString(aspService.getPrimaryASP("billing.warehouse.id"))
             );
+            String workspaceRegion = firstNonBlank(
+                fileProps.getProperty("workspace.region"),
+                aspToString(aspService.getPrimaryASP("workspace.region"))
+            );
+            if (workspaceRegion == null) workspaceRegion = "";
 
             DatabricksClient client = new DatabricksClient(workspaceUrl, accessToken);
             TopologyDataSubmissionService3 topologyService =
@@ -80,7 +85,8 @@ public class DatabricksAgent implements Agent {
                 workspaceUrl,
                 accountId,
                 accountName,
-                billingWarehouseId
+                billingWarehouseId,
+                workspaceRegion
             );
 
             log.log("DatabricksAgent: running initial collection");

@@ -127,6 +127,7 @@
         <property name="sku"                  type="wcf:String"/>
         <property name="billingOriginProduct" type="wcf:String"/>
         <property name="cloud"                type="wcf:String"/>
+        <property name="region"               type="wcf:String"/>
         <property name="dbuConsumed"          type="wcf:String"/>
     </type>
 </types>

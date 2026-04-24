@@ -22,6 +22,7 @@ public class ClusterCollector {
     private final String accountId;
     private final String accountName;
     private final String configuredBillingWarehouseId;
+    private final String workspaceRegion;
 
     public ClusterCollector(DatabricksClient client,
                             TopologyDataSubmissionService3 topologyService,
@@ -29,7 +30,8 @@ public class ClusterCollector {
                             String workspaceUrl,
                             String accountId,
                             String accountName,
-                            String configuredBillingWarehouseId) {
+                            String configuredBillingWarehouseId,
+                            String workspaceRegion) {
         this.client = client;
         this.topologyService = topologyService;
         this.log = log;
@@ -37,6 +39,7 @@ public class ClusterCollector {
         this.accountId = accountId;
         this.accountName = accountName;
         this.configuredBillingWarehouseId = configuredBillingWarehouseId;
+        this.workspaceRegion = workspaceRegion;
     }
 
     public void collect() {
@@ -516,6 +519,7 @@ public class ClusterCollector {
                                 setValue(usageNode, "sku",                  sku,             false);
                                 setValue(usageNode, "billingOriginProduct", billingProduct,  false);
                                 setValue(usageNode, "cloud",                cloud,           false);
+                                setValue(usageNode, "region",              workspaceRegion, false);
                                 usageNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
                                 setValue(usageNode, "dbuConsumedStr", String.format("%.2f", dbu), false);
                             }

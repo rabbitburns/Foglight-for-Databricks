@@ -316,6 +316,9 @@
                 <node pattern="cloud">
                   <value var="$v"><attr name="cloud" target="{{$usageVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="region">
+                  <value var="$v"><attr name="region" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
                 <node pattern="dbuConsumed"><value><metric type="dbuConsumed"/></value></node>
                 <node pattern="dbuConsumedStr">
                   <value var="$v"><attr name="dbuConsumedStr" target="{{$usageVar}}" val="{$v}"/></value>
