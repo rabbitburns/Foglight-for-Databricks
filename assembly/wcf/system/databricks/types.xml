@@ -160,4 +160,11 @@
         <property name="region"               type="wcf:String"/>
         <property name="dbuConsumed"          type="wcf:String"/>
     </type>
+    <type name="DatabricksTreeMapNode" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="id"        type="wcf:String"/>
+        <property name="name"      type="wcf:String"/>
+        <property name="count"     type="wcf:String"/>
+        <property name="fillColor" type="wcf:String"/>
+    </type>
 </types>

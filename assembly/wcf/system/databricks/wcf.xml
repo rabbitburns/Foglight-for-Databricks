@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="32"
+        last-entity-id="34"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1109,6 +1109,55 @@
         </config>
     </view>
 
+    <view id="33" display-name="Databricks DBU by Product (Treemap)" public="true" component="wcf.treemap">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000033</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <context>
+            <entry key="treeNodes">
+                <function-rv id="system:databricks.34">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </entry>
+        </context>
+        <flow/>
+        <config>
+            <property name="objectRoot">
+                <context-rv input-key="treeNodes"/>
+            </property>
+            <property name="dataTypeParent">
+                <object>
+                    <property name="type">
+                        <data-object-type datasource-type="databricks" data-type="DatabricksTreeMapNode"/>
+                    </property>
+                    <property name="ID">
+                        <context-rv input-key="currentNode" path="id"/>
+                    </property>
+                    <property name="displayName">
+                        <context-rv input-key="currentNode" path="name"/>
+                    </property>
+                    <property name="displayNumber">
+                        <context-rv input-key="currentNode" path="count"/>
+                    </property>
+                    <property name="fillColor">
+                        <context-rv input-key="currentNode" path="fillColor"/>
+                    </property>
+                </object>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -1226,6 +1275,12 @@
     <script-function type="groovy" id="32" display-name="Get Cost by SKU"
                      output-type="databricks:DatabricksSkuCostRow" output-list="true" cache-results="false">
         <uuid>a9b0c1d2-e3f4-5678-a012-012500000032</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="34" display-name="Get DBU Treemap Nodes"
+                     output-type="databricks:DatabricksTreeMapNode" output-list="true" cache-results="false">
+        <uuid>b0c1d2e3-f4a5-6789-b012-012600000034</uuid>
         <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
     </script-function>
 
