@@ -919,9 +919,9 @@
                         <property name="value"><context-rv input-key="currentRow" path="product"/></property>
                     </object>
                     <object>
-                        <property name="id"><string xml:space="preserve">totalDbu</string></property>
+                        <property name="id"><string xml:space="preserve">dbu</string></property>
                         <property name="header"><string xml:space="preserve">Total DBUs (Current Month)</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="totalDbu"/></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dbu"/></property>
                     </object>
                 </list-value>
             </property>
