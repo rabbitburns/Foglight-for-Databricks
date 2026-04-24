@@ -64,6 +64,10 @@ public class DatabricksAgent implements Agent {
 
             String accountId = firstNonBlank(fileProps.getProperty("accountId"), "default");
             String accountName = firstNonBlank(fileProps.getProperty("accountName"), "Databricks");
+            String billingWarehouseId = firstNonBlank(
+                fileProps.getProperty("billing.warehouse.id"),
+                aspToString(aspService.getPrimaryASP("billing.warehouse.id"))
+            );
 
             DatabricksClient client = new DatabricksClient(workspaceUrl, accessToken);
             TopologyDataSubmissionService3 topologyService =
@@ -75,7 +79,8 @@ public class DatabricksAgent implements Agent {
                 log,
                 workspaceUrl,
                 accountId,
-                accountName
+                accountName,
+                billingWarehouseId
             );
 
             log.log("DatabricksAgent: running initial collection");

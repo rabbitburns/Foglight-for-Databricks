@@ -21,19 +21,22 @@ public class ClusterCollector {
     private final String workspaceUrl;
     private final String accountId;
     private final String accountName;
+    private final String configuredBillingWarehouseId;
 
     public ClusterCollector(DatabricksClient client,
                             TopologyDataSubmissionService3 topologyService,
                             LogService.Logger log,
                             String workspaceUrl,
                             String accountId,
-                            String accountName) {
+                            String accountName,
+                            String configuredBillingWarehouseId) {
         this.client = client;
         this.topologyService = topologyService;
         this.log = log;
         this.workspaceUrl = workspaceUrl;
         this.accountId = accountId;
         this.accountName = accountName;
+        this.configuredBillingWarehouseId = configuredBillingWarehouseId;
     }
 
     public void collect() {
@@ -88,7 +91,7 @@ public class ClusterCollector {
             int pipelineCount = 0;
             int poolCount = 0;
             int usageCount = 0;
-            String billingWarehouseId = null;
+            String billingWarehouseId = configuredBillingWarehouseId;
 
             // ---------------------------------------------------------------------
             // clusters -> DatabricksCluster
@@ -349,7 +352,7 @@ public class ClusterCollector {
                     setValue(whNode, "creatorName", wh.path("creator_name").asText(""), false);
                     setValue(whNode, "enablePhoton", String.valueOf(wh.path("enable_photon").asBoolean(false)), false);
                     setValue(whNode, "autoResume", String.valueOf(wh.path("auto_resume").asBoolean(false)), false);
-                    if (billingWarehouseId == null) {
+                    if (billingWarehouseId == null || billingWarehouseId.isBlank()) {
                         billingWarehouseId = whId;
                     }
 
