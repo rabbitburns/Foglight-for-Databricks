@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="36"
+        last-entity-id="40"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1109,6 +1109,121 @@
         </config>
     </view>
 
+    <view id="37" display-name="Databricks User Activity (Treemap)" public="true" component="wcf.treemap">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000037</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <context>
+            <entry key="treeNodes">
+                <function-rv id="system:databricks.38">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </entry>
+        </context>
+        <flow/>
+        <config>
+            <property name="objectRoot">
+                <context-rv input-key="treeNodes"/>
+            </property>
+            <property name="dataTypeParent">
+                <object>
+                    <property name="type">
+                        <data-object-type datasource-type="databricks" data-type="DatabricksTreeMapNode"/>
+                    </property>
+                    <property name="ID">
+                        <context-rv input-key="currentNode" path="id"/>
+                    </property>
+                    <property name="displayName">
+                        <context-rv input-key="currentNode" path="name"/>
+                    </property>
+                    <property name="displayNumber">
+                        <context-rv input-key="currentNode" path="count"/>
+                    </property>
+                    <property name="fillColor">
+                        <context-rv input-key="currentNode" path="fillColor"/>
+                    </property>
+                </object>
+            </property>
+        </config>
+    </view>
+
+    <view id="39" display-name="Databricks User Activity (Bubble)" public="true" component="wcf.html-chart.scatter.bubble">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000039</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <context>
+            <entry key="bubbleNodes">
+                <function-rv id="system:databricks.40">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </entry>
+        </context>
+        <flow/>
+        <config>
+            <property name="nodes">
+                <context-rv input-key="bubbleNodes"/>
+            </property>
+            <property name="perNode">
+                <object>
+                    <property name="xValue">
+                        <context-rv input-key="currentNode" path="xValue"/>
+                    </property>
+                    <property name="yValue">
+                        <context-rv input-key="currentNode" path="yValue"/>
+                    </property>
+                    <property name="size">
+                        <context-rv input-key="currentNode" path="size"/>
+                    </property>
+                    <property name="color">
+                        <context-rv input-key="currentNode" path="color"/>
+                    </property>
+                    <property name="label">
+                        <context-rv input-key="currentNode" path="label"/>
+                    </property>
+                </object>
+            </property>
+            <property name="xAxis">
+                <object>
+                    <property name="label">
+                        <string xml:space="preserve">Query Count</string>
+                    </property>
+                </object>
+            </property>
+            <property name="yAxis">
+                <object>
+                    <property name="label">
+                        <string xml:space="preserve">Avg Duration (seconds)</string>
+                    </property>
+                </object>
+            </property>
+            <property name="enableZoom">
+                <boolean value="false"/>
+            </property>
+        </config>
+    </view>
+
     <view id="35" display-name="Databricks Cost vs DBU by SKU (Bubble)" public="true" component="wcf.html-chart.scatter.bubble">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000035</uuid>
         <purpose name="page"/>
@@ -1341,6 +1456,18 @@
     <script-function type="groovy" id="32" display-name="Get Cost by SKU"
                      output-type="databricks:DatabricksSkuCostRow" output-list="true" cache-results="false">
         <uuid>a9b0c1d2-e3f4-5678-a012-012500000032</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="38" display-name="Get User Activity Treemap Nodes"
+                     output-type="databricks:DatabricksTreeMapNode" output-list="true" cache-results="false">
+        <uuid>d2e3f4a5-b6c7-8901-d012-012800000038</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="40" display-name="Get User Activity Bubble Nodes"
+                     output-type="databricks:DatabricksBubbleNode" output-list="true" cache-results="false">
+        <uuid>e3f4a5b6-c7d8-9012-e012-012900000040</uuid>
         <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
     </script-function>
 
