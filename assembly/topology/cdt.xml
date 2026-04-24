@@ -294,6 +294,39 @@
               </node>
             </node>
 
+            <node pattern="usages">
+              <node>
+                <node_name var="$usageVar"/>
+                <obj type="DatabricksUsage" var="{$usageVar}"/>
+                <metrics_group object="{{$usageVar}}"/>
+                <attr name="usages" target="{{$wsVar}}" val="{{$usageVar}}" replace="false"/>
+
+                <node pattern="usageKey">
+                  <value var="$v"><attr name="usageKey" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="usageDate">
+                  <value var="$v"><attr name="usageDate" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="sku">
+                  <value var="$v"><attr name="sku" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="billingOriginProduct">
+                  <value var="$v"><attr name="billingOriginProduct" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="cloud">
+                  <value var="$v"><attr name="cloud" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="region">
+                  <value var="$v"><attr name="region" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="dbuConsumed"><value><metric type="dbuConsumed"/></value></node>
+                <node pattern="dbuConsumedStr">
+                  <value var="$v"><attr name="dbuConsumedStr" target="{{$usageVar}}" val="{$v}"/></value>
+                </node>
+
+              </node>
+            </node>
+
             <node pattern="jobs">
               <node>
                 <node_name var="$jobVar"/>

@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="20"
+        last-entity-id="22"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -830,6 +830,65 @@
         </config>
     </view>
 
+    <view id="21" display-name="Databricks DBU Usage" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-901000000021</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.22">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">usageDate</string></property>
+                        <property name="header"><string xml:space="preserve">Date</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="usageDate"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">sku</string></property>
+                        <property name="header"><string xml:space="preserve">SKU</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="sku"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">billingOriginProduct</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="billingOriginProduct"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cloud</string></property>
+                        <property name="header"><string xml:space="preserve">Cloud</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cloud"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">region</string></property>
+                        <property name="header"><string xml:space="preserve">Region</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="region"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dbuConsumed</string></property>
+                        <property name="header"><string xml:space="preserve">DBUs Consumed</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dbuConsumed"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -906,6 +965,15 @@
                      output-type="databricks:DatabricksInstancePoolRow" output-list="true"
                      cache-results="false">
         <uuid>a4b5c6d7-e8f9-0123-a012-901000000020</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="22" display-name="Get DBU Usage"
+                     output-type="databricks:DatabricksUsageRow" output-list="true"
+                     cache-results="false">
+        <uuid>b4c5d6e7-f8a9-0123-b012-012000000022</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>

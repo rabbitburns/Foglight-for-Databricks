@@ -3,6 +3,8 @@ package com.quest.foglight.databricks;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -51,6 +53,56 @@ public class DatabricksClient {
 
     public JsonNode listQueriesForWarehouse(String warehouseId) throws Exception {
         return get("/api/2.0/sql/history/queries?max_results=25&filter_by.warehouse_ids=" + warehouseId);
+    }
+
+    public JsonNode executeSqlStatement(String warehouseId, String sql) throws Exception {
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("warehouse_id", warehouseId);
+        body.put("statement", sql);
+        body.put("wait_timeout", "20s");
+        body.put("on_wait_timeout", "CONTINUE");
+
+        JsonNode result = post("/api/2.0/sql/statements", MAPPER.writeValueAsString(body));
+
+        String state = result.path("status").path("state").asText("");
+        String statementId = result.path("statement_id").asText("");
+        int attempts = 0;
+        while (!state.equals("SUCCEEDED") && !state.equals("FAILED") && !state.equals("CANCELED") && attempts < 15) {
+            Thread.sleep(2000);
+            result = get("/api/2.0/sql/statements/" + statementId);
+            state = result.path("status").path("state").asText("");
+            attempts++;
+        }
+        return result;
+    }
+
+    private JsonNode post(String path, String body) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + path))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .timeout(Duration.ofSeconds(30))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("=== Databricks API call ===");
+        System.out.println("POST " + baseUrl + path);
+        System.out.println("Status: " + response.statusCode());
+
+        if (response.statusCode() != 200) {
+            System.out.println("Response body:");
+            System.out.println(response.body());
+            throw new RuntimeException("Databricks API " + response.statusCode()
+                    + " for " + path + ": " + response.body());
+        }
+
+        JsonNode json = MAPPER.readTree(response.body());
+        System.out.println("Response body:");
+        System.out.println(json.toPrettyString());
+        return json;
     }
 
     private JsonNode get(String path) throws Exception {

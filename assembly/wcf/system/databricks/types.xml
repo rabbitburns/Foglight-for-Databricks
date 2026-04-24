@@ -121,4 +121,13 @@
         <property name="idle"        type="wcf:String"/>
         <property name="used"        type="wcf:String"/>
     </type>
+    <type name="DatabricksUsageRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="usageDate"            type="wcf:String"/>
+        <property name="sku"                  type="wcf:String"/>
+        <property name="billingOriginProduct" type="wcf:String"/>
+        <property name="cloud"                type="wcf:String"/>
+        <property name="region"               type="wcf:String"/>
+        <property name="dbuConsumed"          type="wcf:String"/>
+    </type>
 </types>

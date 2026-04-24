@@ -87,6 +87,8 @@ public class ClusterCollector {
             int warehouseCount = 0;
             int pipelineCount = 0;
             int poolCount = 0;
+            int usageCount = 0;
+            String runningWarehouseId = null;
 
             // ---------------------------------------------------------------------
             // clusters -> DatabricksCluster
@@ -347,6 +349,10 @@ public class ClusterCollector {
                     setValue(whNode, "creatorName", wh.path("creator_name").asText(""), false);
                     setValue(whNode, "enablePhoton", String.valueOf(wh.path("enable_photon").asBoolean(false)), false);
                     setValue(whNode, "autoResume", String.valueOf(wh.path("auto_resume").asBoolean(false)), false);
+                    if (runningWarehouseId == null && "RUNNING".equals(wh.path("state").asText(""))) {
+                        runningWarehouseId = whId;
+                    }
+
                     long numClusters = wh.path("num_clusters").asLong(0);
                     whNode.createValue("numClusters").setSampleValue(numClusters);
                     setValue(whNode, "numClustersStr", String.valueOf(numClusters), false);
@@ -467,6 +473,64 @@ public class ClusterCollector {
                 }
             }
 
+            // ---------------------------------------------------------------------
+            // usages -> DatabricksUsage (system.billing.usage via SQL warehouse)
+            // ---------------------------------------------------------------------
+            TopologyNode usagesNode = workspaceNode.createNode("usages");
+
+            if (runningWarehouseId != null) {
+                try {
+                    String sql = "SELECT usage_date, sku_name, cloud, region, billing_origin_product, "
+                            + "CAST(SUM(usage_quantity) AS DOUBLE) AS dbu_total "
+                            + "FROM system.billing.usage "
+                            + "WHERE usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                            + "GROUP BY usage_date, sku_name, cloud, region, billing_origin_product "
+                            + "ORDER BY usage_date DESC, dbu_total DESC "
+                            + "LIMIT 500";
+
+                    JsonNode stmtResult = client.executeSqlStatement(runningWarehouseId, sql);
+                    String stmtState = stmtResult.path("status").path("state").asText("");
+
+                    if ("SUCCEEDED".equals(stmtState)) {
+                        JsonNode dataArray = stmtResult.path("result").path("data_array");
+                        if (dataArray.isArray()) {
+                            for (JsonNode row : dataArray) {
+                                String usageDate          = row.path(0).asText("");
+                                String sku                = row.path(1).asText("");
+                                String cloud              = row.path(2).asText("");
+                                String region             = row.path(3).asText("");
+                                String billingProduct     = row.path(4).asText("");
+                                double dbu                = row.path(5).asDouble(0.0);
+
+                                String usageKey = usageDate + "|" + sku + "|" + billingProduct + "|" + cloud + "|" + region;
+
+                                usageCount++;
+
+                                TopologyNode usageNode = usagesNode.createNode(usageKey);
+                                usageNode.setId(usageKey);
+
+                                setValue(usageNode, "usageKey",             usageKey,       true);
+                                setValue(usageNode, "usageDate",            usageDate,       false);
+                                setValue(usageNode, "sku",                  sku,             false);
+                                setValue(usageNode, "billingOriginProduct", billingProduct,  false);
+                                setValue(usageNode, "cloud",                cloud,           false);
+                                setValue(usageNode, "region",               region,          false);
+                                usageNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
+                                setValue(usageNode, "dbuConsumedStr", String.format("%.2f", dbu), false);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: billing query did not succeed, state=" + stmtState
+                                + ", error=" + stmtResult.path("status").path("error").path("message").asText(""));
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: billing collection failed: " + e.getMessage());
+                    System.out.println("=== billing collection FAILED: " + e.getMessage());
+                }
+            } else {
+                log.log("ClusterCollector: no running warehouse found, skipping billing collection");
+            }
+
             log.log("ClusterCollector: topology summary rootType=DatabricksModelRoot"
                     + ", accountId=" + accountId
                     + ", accountName=" + accountName
@@ -476,7 +540,8 @@ public class ClusterCollector {
                     + ", runCount=" + runCount
                     + ", warehouseCount=" + warehouseCount
                     + ", pipelineCount=" + pipelineCount
-                    + ", poolCount=" + poolCount);
+                    + ", poolCount=" + poolCount
+                    + ", usageCount=" + usageCount);
 
             System.out.println("=== ClusterCollector summary === "
                     + "accountId=" + accountId
@@ -486,7 +551,8 @@ public class ClusterCollector {
                     + ", warehouseCount=" + warehouseCount
                     + ", pipelineCount=" + pipelineCount
                     + ", poolCount=" + poolCount
-                    + ", runCount=" + runCount);
+                    + ", runCount=" + runCount
+                    + ", usageCount=" + usageCount);
 
             submitter.submit(now);
 

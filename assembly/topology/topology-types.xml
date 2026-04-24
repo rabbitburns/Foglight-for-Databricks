@@ -16,6 +16,7 @@
         <property name="warehouses"     type="DatabricksWarehouse"   is-many="true" is-containment="true"/>
         <property name="pipelines"      type="DatabricksPipeline"    is-many="true" is-containment="true"/>
         <property name="instancePools"  type="DatabricksInstancePool" is-many="true" is-containment="true"/>
+        <property name="usages"          type="DatabricksUsage"        is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -158,6 +159,17 @@
         <property name="terminationCode"              type="String"/>
         <property name="terminationType"              type="String"/>
         <property name="terminationInactivityMinutes" type="Metric"  is-containment="true"/>
+    </type>
+
+    <type name="DatabricksUsage" extends="TopologyObject">
+        <property name="usageKey"              type="String" is-identity="true"/>
+        <property name="usageDate"             type="String"/>
+        <property name="sku"                   type="String"/>
+        <property name="billingOriginProduct"  type="String"/>
+        <property name="cloud"                 type="String"/>
+        <property name="region"                type="String"/>
+        <property name="dbuConsumed"           type="Metric" is-containment="true"/>
+        <property name="dbuConsumedStr"        type="String"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

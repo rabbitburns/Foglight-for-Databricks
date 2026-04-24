@@ -61,7 +61,7 @@
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| DBU usage by SKU | `system.billing.usage` table via SQL warehouse query | Medium | Requires an active SQL warehouse to execute the query. Returns SKU, quantity, cloud, region, custom tags. New Relic uses this for cost dashboards. Strong differentiator. |
+| DBU usage by SKU | `system.billing.usage` table via SQL warehouse query | Medium | ✓ Done 1.0.48 — 30-day window, grouped by date/SKU/product/cloud/region. DatabricksUsage topology type. DBU Usage portlet. |
 | Cost per job / per run | Join `system.billing.usage` with job run data | High | Requires matching cluster IDs to billing records. Very high value for FinOps use cases but complex to implement correctly. |
 | SKU pricing table | `system.billing.list_prices` table | Low | Static reference data; needed to convert DBU counts to dollar amounts. |
 
@@ -157,3 +157,4 @@
 | 1.0.44 | Five new portlets: Clusters, SQL Warehouses, Jobs, DLT Pipelines, Instance Pools; reportlet purpose on all views |
 | 1.0.45 | Query text collection (Java collector + CDT + topology type); queryText column in Query History and Slow Queries |
 | 1.0.46–1.0.47 | Fix: queryText column missing from Slow Queries view (WCF build timing issue) |
+| 1.0.48 | Tier 4: DBU usage collection — DatabricksUsage topology type, system.billing.usage SQL query via warehouse, DBU Usage WCF portlet |
