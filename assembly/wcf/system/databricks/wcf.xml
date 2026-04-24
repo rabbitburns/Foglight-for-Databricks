@@ -1155,6 +1155,12 @@
                     </property>
                 </object>
             </property>
+            <property name="sizing">
+                <component-sizing>
+                    <width/>
+                    <height/>
+                </component-sizing>
+            </property>
         </config>
     </view>
 
@@ -1335,6 +1341,12 @@
                         <context-rv input-key="currentNode" path="fillColor"/>
                     </property>
                 </object>
+            </property>
+            <property name="sizing">
+                <component-sizing>
+                    <width/>
+                    <height/>
+                </component-sizing>
             </property>
         </config>
     </view>
