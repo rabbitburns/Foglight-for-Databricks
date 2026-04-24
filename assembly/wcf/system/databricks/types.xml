@@ -167,4 +167,12 @@
         <property name="count"     type="wcf:String"/>
         <property name="fillColor" type="wcf:String"/>
     </type>
+    <type name="DatabricksBubbleNode" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="xValue" type="wcf:Number"/>
+        <property name="yValue" type="wcf:Number"/>
+        <property name="size"   type="wcf:Number"/>
+        <property name="color"  type="wcf:Color"/>
+        <property name="label"  type="wcf:String"/>
+    </type>
 </types>

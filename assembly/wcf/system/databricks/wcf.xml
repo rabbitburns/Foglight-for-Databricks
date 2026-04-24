@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="34"
+        last-entity-id="36"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1109,6 +1109,72 @@
         </config>
     </view>
 
+    <view id="35" display-name="Databricks Cost vs DBU by SKU (Bubble)" public="true" component="wcf.html-chart.scatter.bubble">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000035</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <context>
+            <entry key="bubbleNodes">
+                <function-rv id="system:databricks.36">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </entry>
+        </context>
+        <flow/>
+        <config>
+            <property name="nodes">
+                <context-rv input-key="bubbleNodes"/>
+            </property>
+            <property name="perNode">
+                <object>
+                    <property name="xValue">
+                        <context-rv input-key="currentNode" path="xValue"/>
+                    </property>
+                    <property name="yValue">
+                        <context-rv input-key="currentNode" path="yValue"/>
+                    </property>
+                    <property name="size">
+                        <context-rv input-key="currentNode" path="size"/>
+                    </property>
+                    <property name="color">
+                        <context-rv input-key="currentNode" path="color"/>
+                    </property>
+                    <property name="label">
+                        <context-rv input-key="currentNode" path="label"/>
+                    </property>
+                </object>
+            </property>
+            <property name="xAxis">
+                <object>
+                    <property name="label">
+                        <string xml:space="preserve">DBUs (60 Days)</string>
+                    </property>
+                </object>
+            </property>
+            <property name="yAxis">
+                <object>
+                    <property name="label">
+                        <string xml:space="preserve">Dollar Cost (60 Days)</string>
+                    </property>
+                </object>
+            </property>
+            <property name="enableZoom">
+                <boolean value="false"/>
+            </property>
+        </config>
+    </view>
+
     <view id="33" display-name="Databricks DBU by Product (Treemap)" public="true" component="wcf.treemap">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000033</uuid>
         <purpose name="page"/>
@@ -1275,6 +1341,12 @@
     <script-function type="groovy" id="32" display-name="Get Cost by SKU"
                      output-type="databricks:DatabricksSkuCostRow" output-list="true" cache-results="false">
         <uuid>a9b0c1d2-e3f4-5678-a012-012500000032</uuid>
+        <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
+    </script-function>
+
+    <script-function type="groovy" id="36" display-name="Get Cost vs DBU Bubble Nodes"
+                     output-type="databricks:DatabricksBubbleNode" output-list="true" cache-results="false">
+        <uuid>c1d2e3f4-a5b6-7890-c012-012700000036</uuid>
         <inputs><input name="timeRange" type-name="wcf:TimeRange"/></inputs>
     </script-function>
 
