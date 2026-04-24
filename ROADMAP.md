@@ -62,8 +62,10 @@
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
 | DBU usage by SKU | `system.billing.usage` table via SQL warehouse query | Medium | ✓ Done 1.0.48 — 30-day window, grouped by date/SKU/product/cloud/region. DatabricksUsage topology type. DBU Usage portlet. |
+| DBU by product, daily trend, MoM growth, cost by SKU | Derived from DatabricksUsage topology | Low | ✓ Done 1.0.54 — 5 table portlets; DBU summary row in Overview (1.0.58). |
+| Graphical DBU widgets | WCF treemap + bubble components | Low | ✓ Done 1.0.62 — DBU by Product treemap, Cost vs DBU bubble, User Activity treemap + bubble. |
 | Cost per job / per run | Join `system.billing.usage` with job run data | High | Requires matching cluster IDs to billing records. Very high value for FinOps use cases but complex to implement correctly. |
-| SKU pricing table | `system.billing.list_prices` table | Low | Static reference data; needed to convert DBU counts to dollar amounts. |
+| SKU pricing table | `system.billing.list_prices` table | Low | Static reference data; could enrich Cost by SKU with list price vs actual. |
 
 ### Tier 5 — DLT Pipeline Depth
 
@@ -158,3 +160,10 @@
 | 1.0.45 | Query text collection (Java collector + CDT + topology type); queryText column in Query History and Slow Queries |
 | 1.0.46–1.0.47 | Fix: queryText column missing from Slow Queries view (WCF build timing issue) |
 | 1.0.48 | Tier 4: DBU usage collection — DatabricksUsage topology type, system.billing.usage SQL query via warehouse, DBU Usage WCF portlet |
+| 1.0.49–1.0.54 | Tier 4 WCF portlets: DBU by Product, Daily DBU Trend, MoM DBU Growth, Top Jobs by DBU, Cost by SKU |
+| 1.0.55–1.0.57 | Fix: WCF structure and column path errors in Tier 4 portlets |
+| 1.0.58 | Overview: DBU (This Month) summary row added — total DBU, top product, and estimated cost |
+| 1.0.59 | Graphical: DBU by Product treemap (wcf.treemap) — DatabricksTreeMapNode type |
+| 1.0.60 | Graphical: Cost vs DBU by SKU bubble chart (wcf.html-chart.scatter.bubble) — DatabricksBubbleNode type |
+| 1.0.61 | Graphical: User Activity treemap and bubble chart |
+| 1.0.62 | Fix: treemap layout bug — added component-sizing to treemap views |

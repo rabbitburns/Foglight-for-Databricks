@@ -34,7 +34,7 @@ Download the latest release zip from the [Releases](../../releases) page and fol
 
 ## Dashboards & Portlets
 
-The cartridge includes a **Databricks** top-level nav entry with a landing page and 9 portlets, all available in the Add View picker:
+The cartridge includes a **Databricks** top-level nav entry with a landing page and 20 portlets, all available in the Add View picker:
 
 | Portlet | Description |
 |---|---|
@@ -45,9 +45,19 @@ The cartridge includes a **Databricks** top-level nav entry with a landing page 
 | Databricks Job Runs | Flat cross-job run list sorted by start time |
 | Databricks Query History | Cross-warehouse query list with text and timing |
 | Databricks Slow Queries | Top 25 queries by duration |
-| Databricks User Activity | Per-user query aggregates |
+| Databricks User Activity | Per-user query aggregates (table) |
+| Databricks User Activity (Treemap) | Per-user query count as interactive treemap |
 | Databricks DLT Pipelines | One row per pipeline with state and ownership |
 | Databricks Instance Pools | One row per pool with capacity and usage |
+| Databricks DBU Usage | Raw DBU usage rows by date, SKU, product, cloud, region |
+| Databricks DBU by Product | Current-month DBU grouped by billing product (table) |
+| Databricks DBU by Product (Treemap) | Current-month DBU by product as interactive treemap |
+| Databricks Daily DBU Trend | Day-by-day total DBU for the current month |
+| Databricks MoM DBU Growth | Month-over-month DBU growth rate by product |
+| Databricks Top Jobs by DBU | Top jobs by DBU consumed (current month) |
+| Databricks Cost by SKU | Total DBU and estimated dollar cost grouped by SKU |
+| Databricks Cost vs DBU by SKU (Bubble) | Cost vs DBU scatter bubble chart by SKU |
+| Databricks User Activity (Bubble) | Query count vs avg duration scatter bubble by user |
 
 See [DASHBOARDS.md](DASHBOARDS.md) for full portlet and script reference.
 
