@@ -580,6 +580,48 @@ public class ClusterCollector {
                 } catch (Exception e) {
                     log.log("ClusterCollector: job DBU collection failed: " + e.getMessage());
                 }
+                // skuPrices -> DatabricksSkuPrice (system.billing.list_prices, current only)
+                // -----------------------------------------------------------------
+                TopologyNode skuPricesNode = workspaceNode.createNode("skuPrices");
+                try {
+                    String priceSql = "SELECT sku_name, cloud, currency_code, "
+                            + "pricing.effective_list.default AS list_price_per_dbu, "
+                            + "CAST(price_start_time AS STRING) AS price_start_time "
+                            + "FROM system.billing.list_prices "
+                            + "WHERE price_end_time IS NULL "
+                            + "ORDER BY sku_name, cloud";
+
+                    JsonNode priceResult = client.executeSqlStatement(billingWarehouseId, priceSql);
+                    String priceState = priceResult.path("status").path("state").asText("");
+
+                    if ("SUCCEEDED".equals(priceState)) {
+                        JsonNode priceData = priceResult.path("result").path("data_array");
+                        if (priceData.isArray()) {
+                            for (JsonNode row : priceData) {
+                                String skuName       = row.path(0).asText("");
+                                String cloud         = row.path(1).asText("");
+                                String currencyCode  = row.path(2).asText("USD");
+                                double listPrice     = row.path(3).asDouble(0.0);
+                                String startTime     = row.path(4).asText("");
+
+                                String priceKey = skuName + "|" + cloud;
+                                TopologyNode priceNode = skuPricesNode.createNode(priceKey);
+                                priceNode.setId(priceKey);
+                                setValue(priceNode, "skuName",         skuName,                          true);
+                                setValue(priceNode, "cloud",           cloud,                            false);
+                                setValue(priceNode, "currencyCode",    currencyCode,                     false);
+                                setValue(priceNode, "listPricePerDbu", String.format("%.4f", listPrice), false);
+                                setValue(priceNode, "priceStartTime",  startTime,                        false);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: SKU price query did not succeed, state=" + priceState
+                                + ", error=" + priceResult.path("status").path("error").path("message").asText(""));
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: SKU price collection failed: " + e.getMessage());
+                }
+
             } else {
                 log.log("ClusterCollector: no billing warehouse configured, skipping billing collection");
             }

@@ -18,6 +18,7 @@
         <property name="instancePools"  type="DatabricksInstancePool" is-many="true" is-containment="true"/>
         <property name="usages"          type="DatabricksUsage"        is-many="true" is-containment="true"/>
         <property name="jobDbus"         type="DatabricksJobDbu"       is-many="true" is-containment="true"/>
+        <property name="skuPrices"       type="DatabricksSkuPrice"     is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -178,6 +179,14 @@
         <property name="jobId"         type="String" is-identity="true"/>
         <property name="dbuConsumed"   type="Metric" is-containment="true"/>
         <property name="dbuConsumedStr" type="String"/>
+    </type>
+
+    <type name="DatabricksSkuPrice" extends="TopologyObject">
+        <property name="skuName"         type="String" is-identity="true"/>
+        <property name="cloud"           type="String"/>
+        <property name="currencyCode"    type="String"/>
+        <property name="listPricePerDbu" type="String"/>
+        <property name="priceStartTime"  type="String"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

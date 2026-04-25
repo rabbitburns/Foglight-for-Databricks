@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="40"
+        last-entity-id="42"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1351,6 +1351,60 @@
         </config>
     </view>
 
+    <view id="41" display-name="Databricks SKU List Prices" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000041</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.42">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">skuName</string></property>
+                        <property name="header"><string xml:space="preserve">SKU</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="skuName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cloud</string></property>
+                        <property name="header"><string xml:space="preserve">Cloud</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cloud"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">listPricePerDbu</string></property>
+                        <property name="header"><string xml:space="preserve">List Price / DBU</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="listPricePerDbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">currencyCode</string></property>
+                        <property name="header"><string xml:space="preserve">Currency</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="currencyCode"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">priceStartTime</string></property>
+                        <property name="header"><string xml:space="preserve">Effective From</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="priceStartTime"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -1499,6 +1553,15 @@
                      output-type="databricks:DatabricksSummaryRow" output-list="true"
                      cache-results="false">
         <uuid>a9b0c1d2-e3f4-5678-a901-234567890010</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="42" display-name="Get SKU List Prices"
+                     output-type="databricks:DatabricksSkuPriceRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000042</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>
