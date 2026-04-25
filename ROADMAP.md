@@ -65,7 +65,7 @@
 | DBU by product, daily trend, MoM growth, cost by SKU | Derived from DatabricksUsage topology | Low | ✓ Done 1.0.54 — 5 table portlets; DBU summary row in Overview (1.0.58). |
 | Graphical DBU widgets | WCF treemap + bubble components | Low | ✓ Done 1.0.62 — DBU by Product treemap, Cost vs DBU bubble, User Activity treemap + bubble. |
 | Cost per job / per run | Join `system.billing.usage` with job run data | High | Requires matching cluster IDs to billing records. Very high value for FinOps use cases but complex to implement correctly. |
-| SKU pricing table | `system.billing.list_prices` table | Low | Static reference data; could enrich Cost by SKU with list price vs actual. |
+| SKU pricing table | `system.billing.list_prices` table | Low | ✓ Done 1.0.63 — DatabricksSkuPrice topology type, SKU List Prices WCF portlet (view 41/script 42). |
 
 ### Tier 5 — DLT Pipeline Depth
 
@@ -90,6 +90,31 @@
 | Model serving endpoints | `GET /api/2.0/serving-endpoints` | Low | List of endpoints with state, creator, config. |
 | Model serving metrics | Databricks metrics API (per-endpoint) | Medium | Request count, latency percentiles (p75/p90/p95/p99), 4xx/5xx counts, CPU/GPU/memory usage. Datadog covers this; New Relic does not. New type `DatabricksServingEndpoint`. |
 
+### Tier 8 — Lakebase (Managed PostgreSQL)
+
+> Lakebase is Databricks' serverless managed PostgreSQL (announced 2025). The Foglight PostgreSQL cartridge handles per-branch query-level monitoring (one agent per branch, by design). This tier covers the **platform layer** — what Lakebase resources exist and their provisioning health — via the Databricks REST API at `/api/2.0/postgres/`.
+
+| Gap | API Source | Effort | Notes |
+|---|---|---|---|
+| Project inventory | `GET /api/2.0/postgres/projects` | Low | Project name, state, created/modified timestamps. New type `DatabricksLakebaseProject`. |
+| Branch inventory | `GET /api/2.0/postgres/projects/{id}/branches` | Low | Branch name, state, parent branch, created time. New type `DatabricksLakebaseBranch`. |
+| Endpoint status | `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` | Low | Endpoint state (provisioning/running/stopped), size, endpoint URL. |
+| In-flight operations | `GET /api/2.0/postgres/projects/{id}/operations` | Medium | Async op type (create/clone/restore), state, duration. Surfaces stuck or failed provisioning. |
+
+### Tier 9 — Lakewatch / Lakehouse Monitoring
+
+> **Clarification needed from user:** Databricks has two distinct products:
+> - **Lakewatch** — security SIEM (Private Preview, March 2026). No public API yet. Ingests security telemetry, AI-driven threat detection.
+> - **Lakehouse Monitoring** — data quality observability for Delta tables. Has a documented REST API (`/api/2.1/lakehouse-monitoring/`).
+>
+> The roadmap item below covers both options pending confirmation.
+
+| Gap | API Source | Effort | Notes |
+|---|---|---|---|
+| Monitor inventory (Lakehouse Monitoring) | `GET /api/2.1/lakehouse-monitoring/monitors` | Low | List monitors per table: status, monitor type, schedule. New type `DatabricksLakehouseMonitor`. |
+| Monitor refresh / drift status | Same API — per-monitor status + metrics tables | Medium | Last refresh time, drift detected, anomaly counts. Requires querying output Delta tables for metric values. |
+| Lakewatch SIEM integration | TBD — Private Preview, no public API | High | Blocked until Databricks releases the API. Low priority until GA. |
+
 ---
 
 ## Priority Order (agreed)
@@ -97,9 +122,11 @@
 1. **Tier 1** — Job & cluster depth ✓ (mostly complete — multi-workspace deferred)
 2. **Tier 2** — Dashboards & packaging (nav module ✓, landing page ✓, portlets ✓)
 3. **Tier 3** — SQL Warehouse query metrics ✓
-4. **Tier 4** — DBU consumption & cost
+4. **Tier 4** — DBU consumption & cost ✓ (mostly complete — cost-per-job deferred)
 5. **Tier 5** — DLT Pipeline depth
-6. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
+6. **Tier 8** — Lakebase platform monitoring
+7. **Tier 9** — Lakehouse Monitoring / Lakewatch
+8. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
 
 ---
 
@@ -167,3 +194,4 @@
 | 1.0.60 | Graphical: Cost vs DBU by SKU bubble chart (wcf.html-chart.scatter.bubble) — DatabricksBubbleNode type |
 | 1.0.61 | Graphical: User Activity treemap and bubble chart |
 | 1.0.62 | Fix: treemap layout bug — added component-sizing to treemap views |
+| 1.0.63 | Tier 4: SKU List Prices — DatabricksSkuPrice topology type + WCF portlet (view 41, script 42) |
