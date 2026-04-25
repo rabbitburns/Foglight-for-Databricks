@@ -101,19 +101,19 @@
 | Endpoint status | `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` | Low | Endpoint state (provisioning/running/stopped), size, endpoint URL. |
 | In-flight operations | `GET /api/2.0/postgres/projects/{id}/operations` | Medium | Async op type (create/clone/restore), state, duration. Surfaces stuck or failed provisioning. |
 
-### Tier 9 — Lakewatch / Lakehouse Monitoring
+### Tier 9 — Lakewatch (Security SIEM)
 
-> **Clarification needed from user:** Databricks has two distinct products:
-> - **Lakewatch** — security SIEM (Private Preview, March 2026). No public API yet. Ingests security telemetry, AI-driven threat detection.
-> - **Lakehouse Monitoring** — data quality observability for Delta tables. Has a documented REST API (`/api/2.1/lakehouse-monitoring/`).
+> Lakewatch is Databricks' open, agentic SIEM platform (announced March 2026, currently Private Preview). It ingests 100% of security telemetry (AWS, Okta, Zscaler, etc.), normalises to OCSF, stores in Delta Lake / Iceberg, and uses an AI agent ("Genie") for detection authoring and triage. No public REST API is available yet — the product is driven by SQL queries against ingested security tables rather than traditional metrics endpoints.
 >
-> The roadmap item below covers both options pending confirmation.
+> **Status: Blocked — waiting for GA and public API documentation.**
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Monitor inventory (Lakehouse Monitoring) | `GET /api/2.1/lakehouse-monitoring/monitors` | Low | List monitors per table: status, monitor type, schedule. New type `DatabricksLakehouseMonitor`. |
-| Monitor refresh / drift status | Same API — per-monitor status + metrics tables | Medium | Last refresh time, drift detected, anomaly counts. Requires querying output Delta tables for metric values. |
-| Lakewatch SIEM integration | TBD — Private Preview, no public API | High | Blocked until Databricks releases the API. Low priority until GA. |
+| Security event ingestion status | TBD — no public API in Private Preview | High | Would surface connector health, ingest lag, OCSF normalisation errors. |
+| Detection / alert inventory | TBD | Medium | List active detections, last fired, severity distribution. |
+| Incident summary | TBD | Medium | Open incidents, MTTD/MTTR metrics. High value for a SOC-facing Foglight dashboard. |
+
+> **Note:** Lakehouse Monitoring (data quality observability for Delta tables, GA today, `/api/2.1/lakehouse-monitoring/`) is a separate product and is not included in this tier. It could be added as Tier 10 if there is demand.
 
 ---
 
