@@ -113,7 +113,19 @@
 | Detection / alert inventory | TBD | Medium | List active detections, last fired, severity distribution. |
 | Incident summary | TBD | Medium | Open incidents, MTTD/MTTR metrics. High value for a SOC-facing Foglight dashboard. |
 
-> **Note:** Lakehouse Monitoring (data quality observability for Delta tables, GA today, `/api/2.1/lakehouse-monitoring/`) is a separate product and is not included in this tier. It could be added as Tier 10 if there is demand.
+> **Note:** Lakehouse Monitoring (data quality observability for Delta tables, GA today) is a separate product — see Tier 10.
+
+### Tier 10 — Lakehouse Monitoring (Data Quality Observability)
+
+> Lakehouse Monitoring attaches quality monitors to Delta tables and writes metric results to output Delta tables. Two data sources are available: the REST API for monitor inventory and status, and SQL queries against the output tables for actual quality and drift metrics. Potential to correlate with existing job and warehouse topology — e.g. job failure → downstream data quality degradation.
+
+| Gap | API Source | Effort | Notes |
+|---|---|---|---|
+| Monitor inventory | `GET /api/2.1/lakehouse-monitoring/monitors` | Low | Which tables are monitored, monitor type (snapshot/timeseries/inference), schedule, last refresh time, output table locations. New type `DatabricksLakehouseMonitor`. |
+| Monitor refresh status | Same API — `status` field per monitor | Low | Surfaces monitors that are failing or have stale refreshes. |
+| Profile metrics | SQL query against `profile_metrics` output table via warehouse | Medium | Column-level stats: null %, distinct count, min/max/mean. Surfaces tables with data quality issues. |
+| Drift metrics | SQL query against `drift_metrics` output table via warehouse | Medium | Statistical drift vs baseline (JS divergence, distribution % change). Surfaces columns where data has shifted unexpectedly. |
+| Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | Correlate job run failures or anomalies with downstream drift detection. Differentiator vs Datadog/New Relic. |
 
 ---
 
@@ -126,7 +138,8 @@
 5. **Tier 5** — DLT Pipeline depth
 6. **Tier 8** — Lakebase platform monitoring
 7. **Tier 9** — Lakehouse Monitoring / Lakewatch
-8. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
+8. **Tier 10** — Lakehouse Monitoring (data quality + drift)
+9. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
 
 ---
 
