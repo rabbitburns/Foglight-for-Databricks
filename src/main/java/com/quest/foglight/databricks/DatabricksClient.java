@@ -47,6 +47,10 @@ public class DatabricksClient {
         return get("/api/2.0/pipelines?max_results=100");
     }
 
+    public JsonNode getPipelineEvents(String pipelineId) throws Exception {
+        return get("/api/2.0/pipelines/" + pipelineId + "/events?max_results=200&order_by=timestamp+desc");
+    }
+
     public JsonNode listInstancePools() throws Exception {
         return get("/api/2.0/instance-pools/list");
     }

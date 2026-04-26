@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="42"
+        last-entity-id="46"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1351,6 +1351,129 @@
         </config>
     </view>
 
+    <view id="43" display-name="Databricks Pipeline Updates" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000043</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.44">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">pipelineName</string></property>
+                        <property name="header"><string xml:space="preserve">Pipeline</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="pipelineName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">state</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="state"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">startTime</string></property>
+                        <property name="header"><string xml:space="preserve">Started</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="startTime"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">durationStr</string></property>
+                        <property name="header"><string xml:space="preserve">Duration</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="durationStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">updateId</string></property>
+                        <property name="header"><string xml:space="preserve">Update ID</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="updateId"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="45" display-name="Databricks Pipeline Data Quality" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000045</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.46">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">pipelineName</string></property>
+                        <property name="header"><string xml:space="preserve">Pipeline</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="pipelineName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">flowName</string></property>
+                        <property name="header"><string xml:space="preserve">Flow</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="flowName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">expectationName</string></property>
+                        <property name="header"><string xml:space="preserve">Expectation</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="expectationName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dataset</string></property>
+                        <property name="header"><string xml:space="preserve">Dataset</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dataset"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">passRate</string></property>
+                        <property name="header"><string xml:space="preserve">Pass Rate</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="passRate"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">passedRecords</string></property>
+                        <property name="header"><string xml:space="preserve">Passed</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="passedRecords"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">failedRecords</string></property>
+                        <property name="header"><string xml:space="preserve">Failed</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="failedRecords"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">droppedRecords</string></property>
+                        <property name="header"><string xml:space="preserve">Dropped</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="droppedRecords"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <view id="41" display-name="Databricks SKU List Prices" public="true" component="wcf.table.row-table">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000041</uuid>
         <purpose name="page"/>
@@ -1553,6 +1676,24 @@
                      output-type="databricks:DatabricksSummaryRow" output-list="true"
                      cache-results="false">
         <uuid>a9b0c1d2-e3f4-5678-a901-234567890010</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="44" display-name="Get Pipeline Updates"
+                     output-type="databricks:DatabricksPipelineUpdateRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000044</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="46" display-name="Get Pipeline Data Quality"
+                     output-type="databricks:DatabricksPipelineExpectationRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000046</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>

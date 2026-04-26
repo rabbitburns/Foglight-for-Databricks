@@ -160,6 +160,27 @@
         <property name="region"               type="wcf:String"/>
         <property name="dbuConsumed"          type="wcf:String"/>
     </type>
+    <type name="DatabricksPipelineUpdateRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="pipelineName"  type="wcf:String"/>
+        <property name="updateId"      type="wcf:String"/>
+        <property name="state"         type="wcf:String"/>
+        <property name="startTime"     type="wcf:String"/>
+        <property name="durationStr"   type="wcf:String"/>
+        <property name="cause"         type="wcf:String"/>
+    </type>
+    <type name="DatabricksPipelineExpectationRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="pipelineName"     type="wcf:String"/>
+        <property name="updateId"         type="wcf:String"/>
+        <property name="flowName"         type="wcf:String"/>
+        <property name="expectationName"  type="wcf:String"/>
+        <property name="dataset"          type="wcf:String"/>
+        <property name="passedRecords"    type="wcf:String"/>
+        <property name="failedRecords"    type="wcf:String"/>
+        <property name="droppedRecords"   type="wcf:String"/>
+        <property name="passRate"         type="wcf:String"/>
+    </type>
     <type name="DatabricksSkuPriceRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
         <property name="skuName"         type="wcf:String"/>

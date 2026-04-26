@@ -447,6 +447,94 @@ public class ClusterCollector {
                     setValue(plNode, "stateStr", pl.path("state").asText(""), false);
                     setValue(plNode, "creatorUserName", pl.path("creator_user_name").asText(""), false);
                     setValue(plNode, "runAsUserName", pl.path("run_as_user_name").asText(""), false);
+
+                    // Fetch update history + expectations (last 5 updates)
+                    try {
+                        JsonNode eventsResp = client.getPipelineEvents(plId);
+                        JsonNode events = eventsResp.path("events");
+                        if (!events.isArray()) continue;
+
+                        TopologyNode updatesNode = plNode.createNode("updates");
+
+                        // Track updates seen — cap at 5
+                        java.util.LinkedHashMap<String, TopologyNode> updateNodes = new java.util.LinkedHashMap<>();
+                        // Expectations keyed by updateId -> list
+                        java.util.Map<String, java.util.List<JsonNode>> expectationsByUpdate = new java.util.LinkedHashMap<>();
+
+                        for (JsonNode ev : events) {
+                            String evType = ev.path("event_type").asText("");
+
+                            if ("update_progress".equals(evType)) {
+                                String updateId = ev.path("origin").path("update_id").asText("");
+                                if (updateId.isBlank() || updateNodes.containsKey(updateId)) continue;
+                                if (updateNodes.size() >= 5) continue;
+
+                                String state     = ev.path("details").path("update_progress").path("state").asText("");
+                                String timestamp = ev.path("timestamp").asText("");
+                                String cause     = ev.path("origin").path("request_id").asText("");
+
+                                // Format timestamp
+                                String startTime = timestamp;
+                                if (!timestamp.isBlank()) {
+                                    try {
+                                        long epochMs = java.time.Instant.parse(timestamp).toEpochMilli();
+                                        startTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                                .format(new java.util.Date(epochMs));
+                                    } catch (Exception ignore) {}
+                                }
+
+                                TopologyNode upNode = updatesNode.createNode(updateId);
+                                upNode.setId(updateId);
+                                setValue(upNode, "updateId",    updateId,  true);
+                                setValue(upNode, "state",       state,     false);
+                                setValue(upNode, "startTime",   startTime, false);
+                                setValue(upNode, "durationStr", "",        false);
+                                setValue(upNode, "cause",       cause,     false);
+                                updateNodes.put(updateId, upNode);
+                                expectationsByUpdate.put(updateId, new java.util.ArrayList<>());
+                            }
+                        }
+
+                        // Second pass — flow_progress events for expectations
+                        for (JsonNode ev : events) {
+                            if (!"flow_progress".equals(ev.path("event_type").asText(""))) continue;
+                            String updateId = ev.path("origin").path("update_id").asText("");
+                            if (!updateNodes.containsKey(updateId)) continue;
+
+                            String flowName = ev.path("origin").path("flow_name").asText("");
+                            JsonNode dq = ev.path("details").path("flow_progress").path("data_quality");
+                            if (!dq.has("expectations")) continue;
+
+                            for (JsonNode exp : dq.path("expectations")) {
+                                String expName  = exp.path("name").asText("");
+                                String dataset  = exp.path("dataset").asText("");
+                                long passed  = exp.path("passed_records").asLong(0);
+                                long failed  = exp.path("failed_records").asLong(0);
+                                long dropped = exp.path("dropped_records").asLong(0);
+                                long total   = passed + failed;
+                                String passRate = total > 0
+                                        ? String.format("%.1f%%", 100.0 * passed / total)
+                                        : "N/A";
+
+                                String expKey = updateId + "|" + flowName + "|" + expName;
+                                TopologyNode upNode = updateNodes.get(updateId);
+                                TopologyNode expsNode = upNode.createNode("expectations");
+                                TopologyNode expNode  = expsNode.createNode(expKey);
+                                expNode.setId(expKey);
+                                setValue(expNode, "expectationKey",  expKey,                    true);
+                                setValue(expNode, "updateId",        updateId,                  false);
+                                setValue(expNode, "flowName",        flowName,                  false);
+                                setValue(expNode, "expectationName", expName,                   false);
+                                setValue(expNode, "dataset",         dataset,                   false);
+                                setValue(expNode, "passedRecords",   String.valueOf(passed),    false);
+                                setValue(expNode, "failedRecords",   String.valueOf(failed),    false);
+                                setValue(expNode, "droppedRecords",  String.valueOf(dropped),   false);
+                                setValue(expNode, "passRate",        passRate,                  false);
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.log("ClusterCollector: pipeline events fetch failed for " + plId + ": " + e.getMessage());
+                    }
                 }
             }
 

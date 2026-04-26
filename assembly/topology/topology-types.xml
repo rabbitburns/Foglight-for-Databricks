@@ -71,6 +71,28 @@
         <property name="stateStr"         type="String"/>
         <property name="creatorUserName"  type="String"/>
         <property name="runAsUserName"    type="String"/>
+        <property name="updates"          type="DatabricksPipelineUpdate" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksPipelineUpdate" extends="TopologyObject">
+        <property name="updateId"      type="String" is-identity="true"/>
+        <property name="state"         type="String"/>
+        <property name="startTime"     type="String"/>
+        <property name="durationStr"   type="String"/>
+        <property name="cause"         type="String"/>
+        <property name="expectations"  type="DatabricksPipelineExpectation" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksPipelineExpectation" extends="TopologyObject">
+        <property name="expectationKey"   type="String" is-identity="true"/>
+        <property name="updateId"         type="String"/>
+        <property name="flowName"         type="String"/>
+        <property name="expectationName"  type="String"/>
+        <property name="dataset"          type="String"/>
+        <property name="passedRecords"    type="String"/>
+        <property name="failedRecords"    type="String"/>
+        <property name="droppedRecords"   type="String"/>
+        <property name="passRate"         type="String"/>
     </type>
 
     <type name="DatabricksInstancePool" extends="TopologyObject">
