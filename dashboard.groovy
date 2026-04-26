@@ -106,6 +106,21 @@ accounts.each { acct ->
             out("      id:       ${pl.get('pipelineId')}")
             out("      creator:  ${pl.get('creatorUserName')}")
             out("      run as:   ${pl.get('runAsUserName')}")
+
+            def updates = pl.get("updates")
+            out("      updates:  ${updates?.size() ?: 0}")
+            updates?.each { up ->
+                out("        [${up.get('state') ?: 'n/a'}]  ${up.get('startTime') ?: ''}  id=${up.get('updateId') ?: ''}")
+                def exps = up.get("expectations")
+                if (exps?.size() > 0) {
+                    out("          expectations: ${exps.size()}")
+                    exps?.each { ex ->
+                        out("            ${ex.get('expectationName')}  flow=${ex.get('flowName')}  passRate=${ex.get('passRate')}  passed=${ex.get('passedRecords')}  failed=${ex.get('failedRecords')}")
+                    }
+                } else {
+                    out("          expectations: 0 (none defined or no flow_progress events yet)")
+                }
+            }
             out("")
         }
 
