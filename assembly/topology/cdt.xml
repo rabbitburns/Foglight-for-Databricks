@@ -438,6 +438,76 @@
               </node>
             </node>
 
+            <node pattern="servingEndpoints">
+              <node>
+                <node_name var="$seVar"/>
+                <obj type="DatabricksServingEndpoint" var="{$seVar}"/>
+                <metrics_group object="{{$seVar}}"/>
+                <attr name="servingEndpoints" target="{{$wsVar}}" val="{{$seVar}}" replace="false"/>
+
+                <node pattern="endpointName">
+                  <value var="$v"><attr name="endpointName" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="creator">
+                  <value var="$v"><attr name="creator" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="readyState">
+                  <value var="$v"><attr name="readyState" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="configUpdateState">
+                  <value var="$v"><attr name="configUpdateState" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="creationTime">
+                  <value var="$v"><attr name="creationTime" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastUpdatedTime">
+                  <value var="$v"><attr name="lastUpdatedTime" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="routeOptimized">
+                  <value var="$v"><attr name="routeOptimized" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+
+                <node pattern="servedModels">
+                  <node>
+                    <node_name var="$smVar"/>
+                    <obj type="DatabricksServedModel" var="{$smVar}"/>
+                    <metrics_group object="{{$smVar}}"/>
+                    <attr name="servedModels" target="{{$seVar}}" val="{{$smVar}}" replace="false"/>
+
+                    <node pattern="servedModelKey">
+                      <value var="$v"><attr name="servedModelKey" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="endpointName">
+                      <value var="$v"><attr name="endpointName" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="servedModelName">
+                      <value var="$v"><attr name="servedModelName" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="modelName">
+                      <value var="$v"><attr name="modelName" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="modelVersion">
+                      <value var="$v"><attr name="modelVersion" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="workloadSize">
+                      <value var="$v"><attr name="workloadSize" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="scaleToZero">
+                      <value var="$v"><attr name="scaleToZero" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="trafficPercentage">
+                      <value var="$v"><attr name="trafficPercentage" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="deploymentState">
+                      <value var="$v"><attr name="deploymentState" target="{{$smVar}}" val="{$v}"/></value>
+                    </node>
+
+                  </node>
+                </node>
+
+              </node>
+            </node>
+
             <node pattern="jobs">
               <node>
                 <node_name var="$jobVar"/>

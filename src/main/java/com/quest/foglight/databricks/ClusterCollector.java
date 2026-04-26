@@ -569,6 +569,74 @@ public class ClusterCollector {
             }
 
             // ---------------------------------------------------------------------
+            // servingEndpoints -> DatabricksServingEndpoint + DatabricksServedModel
+            // ---------------------------------------------------------------------
+            TopologyNode endpointsNode = workspaceNode.createNode("servingEndpoints");
+            int endpointCount = 0;
+            try {
+                JsonNode epResponse = client.listServingEndpoints();
+                JsonNode endpoints = epResponse.path("endpoints");
+                if (endpoints.isArray()) {
+                    for (JsonNode ep : endpoints) {
+                        String epName = ep.path("name").asText("");
+                        if (epName.isBlank()) continue;
+                        endpointCount++;
+
+                        String readyState        = ep.path("state").path("ready").asText("");
+                        String configUpdateState = ep.path("state").path("config_update").asText("");
+                        String creator           = ep.path("creator").asText("");
+                        String routeOptimized    = String.valueOf(ep.path("route_optimized").asBoolean(false));
+
+                        String creationTime  = fmtTs(ep.path("creation_timestamp").asLong(0));
+                        String lastUpdated   = fmtTs(ep.path("last_updated_timestamp").asLong(0));
+
+                        TopologyNode epNode = endpointsNode.createNode(epName);
+                        epNode.setId(epName);
+                        setValue(epNode, "endpointName",      epName,            true);
+                        setValue(epNode, "creator",           creator,           false);
+                        setValue(epNode, "readyState",        readyState,        false);
+                        setValue(epNode, "configUpdateState", configUpdateState, false);
+                        setValue(epNode, "creationTime",      creationTime,      false);
+                        setValue(epNode, "lastUpdatedTime",   lastUpdated,       false);
+                        setValue(epNode, "routeOptimized",    routeOptimized,    false);
+
+                        // Served models — check both served_models and served_entities (newer API)
+                        TopologyNode servedModelsNode = epNode.createNode("servedModels");
+                        JsonNode servedModels = ep.path("config").path("served_models");
+                        if (!servedModels.isArray() || servedModels.size() == 0)
+                            servedModels = ep.path("config").path("served_entities");
+
+                        if (servedModels.isArray()) {
+                            for (JsonNode sm : servedModels) {
+                                String smName      = sm.path("name").asText("");
+                                String modelName   = sm.path("model_name").asText(sm.path("entity_name").asText(""));
+                                String modelVer    = sm.path("model_version").asText("");
+                                String workload    = sm.path("workload_size").asText("");
+                                String scaleToZero = String.valueOf(sm.path("scale_to_zero_enabled").asBoolean(false));
+                                String traffic     = String.valueOf(sm.path("traffic_percentage").asInt(0)) + "%";
+                                String depState    = sm.path("state").path("deployment").asText("");
+
+                                String smKey = epName + "|" + smName;
+                                TopologyNode smNode = servedModelsNode.createNode(smKey);
+                                smNode.setId(smKey);
+                                setValue(smNode, "servedModelKey",    smKey,      true);
+                                setValue(smNode, "endpointName",      epName,     false);
+                                setValue(smNode, "servedModelName",   smName,     false);
+                                setValue(smNode, "modelName",         modelName,  false);
+                                setValue(smNode, "modelVersion",      modelVer,   false);
+                                setValue(smNode, "workloadSize",      workload,   false);
+                                setValue(smNode, "scaleToZero",       scaleToZero, false);
+                                setValue(smNode, "trafficPercentage", traffic,    false);
+                                setValue(smNode, "deploymentState",   depState,   false);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.log("ClusterCollector: serving endpoint collection failed: " + e.getMessage());
+            }
+
+            // ---------------------------------------------------------------------
             // usages -> DatabricksUsage (system.billing.usage via SQL warehouse)
             // ---------------------------------------------------------------------
             TopologyNode usagesNode = workspaceNode.createNode("usages");

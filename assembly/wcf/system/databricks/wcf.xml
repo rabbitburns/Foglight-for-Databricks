@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="46"
+        last-entity-id="50"
         main-view="9">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1351,6 +1351,134 @@
         </config>
     </view>
 
+    <view id="47" display-name="Databricks Model Serving Endpoints" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000047</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.48">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointName</string></property>
+                        <property name="header"><string xml:space="preserve">Endpoint</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">readyState</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="readyState"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">configUpdateState</string></property>
+                        <property name="header"><string xml:space="preserve">Config Update</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="configUpdateState"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">servedModelCount</string></property>
+                        <property name="header"><string xml:space="preserve">Served Models</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="servedModelCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">routeOptimized</string></property>
+                        <property name="header"><string xml:space="preserve">Route Optimized</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="routeOptimized"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">creator</string></property>
+                        <property name="header"><string xml:space="preserve">Creator</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="creator"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">lastUpdatedTime</string></property>
+                        <property name="header"><string xml:space="preserve">Last Updated</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="lastUpdatedTime"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="49" display-name="Databricks Served Models" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000049</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.50">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointName</string></property>
+                        <property name="header"><string xml:space="preserve">Endpoint</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">modelName</string></property>
+                        <property name="header"><string xml:space="preserve">Model</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="modelName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">modelVersion</string></property>
+                        <property name="header"><string xml:space="preserve">Version</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="modelVersion"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">deploymentState</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="deploymentState"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">workloadSize</string></property>
+                        <property name="header"><string xml:space="preserve">Workload Size</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="workloadSize"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">trafficPercentage</string></property>
+                        <property name="header"><string xml:space="preserve">Traffic</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="trafficPercentage"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">scaleToZero</string></property>
+                        <property name="header"><string xml:space="preserve">Scale to Zero</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="scaleToZero"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <view id="43" display-name="Databricks Pipeline Updates" public="true" component="wcf.table.row-table">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000043</uuid>
         <purpose name="page"/>
@@ -1676,6 +1804,24 @@
                      output-type="databricks:DatabricksSummaryRow" output-list="true"
                      cache-results="false">
         <uuid>a9b0c1d2-e3f4-5678-a901-234567890010</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="48" display-name="Get Model Serving Endpoints"
+                     output-type="databricks:DatabricksServingEndpointRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000048</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="50" display-name="Get Served Models"
+                     output-type="databricks:DatabricksServedModelRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000050</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>

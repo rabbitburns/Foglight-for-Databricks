@@ -18,7 +18,8 @@
         <property name="instancePools"  type="DatabricksInstancePool" is-many="true" is-containment="true"/>
         <property name="usages"          type="DatabricksUsage"        is-many="true" is-containment="true"/>
         <property name="jobDbus"         type="DatabricksJobDbu"       is-many="true" is-containment="true"/>
-        <property name="skuPrices"       type="DatabricksSkuPrice"     is-many="true" is-containment="true"/>
+        <property name="skuPrices"         type="DatabricksSkuPrice"         is-many="true" is-containment="true"/>
+        <property name="servingEndpoints"  type="DatabricksServingEndpoint"  is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -209,6 +210,29 @@
         <property name="currencyCode"    type="String"/>
         <property name="listPricePerDbu" type="String"/>
         <property name="priceStartTime"  type="String"/>
+    </type>
+
+    <type name="DatabricksServingEndpoint" extends="TopologyObject">
+        <property name="endpointName"      type="String" is-identity="true"/>
+        <property name="creator"           type="String"/>
+        <property name="readyState"        type="String"/>
+        <property name="configUpdateState" type="String"/>
+        <property name="creationTime"      type="String"/>
+        <property name="lastUpdatedTime"   type="String"/>
+        <property name="routeOptimized"    type="String"/>
+        <property name="servedModels"      type="DatabricksServedModel" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksServedModel" extends="TopologyObject">
+        <property name="servedModelKey"      type="String" is-identity="true"/>
+        <property name="endpointName"        type="String"/>
+        <property name="servedModelName"     type="String"/>
+        <property name="modelName"           type="String"/>
+        <property name="modelVersion"        type="String"/>
+        <property name="workloadSize"        type="String"/>
+        <property name="scaleToZero"         type="String"/>
+        <property name="trafficPercentage"   type="String"/>
+        <property name="deploymentState"     type="String"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

@@ -55,6 +55,14 @@ public class DatabricksClient {
         return get("/api/2.0/instance-pools/list");
     }
 
+    public JsonNode listServingEndpoints() throws Exception {
+        return get("/api/2.0/serving-endpoints");
+    }
+
+    public JsonNode getServingEndpointMetrics(String endpointName) throws Exception {
+        return get("/api/2.0/serving-endpoints/" + endpointName + "/metrics");
+    }
+
     public JsonNode listQueriesForWarehouse(String warehouseId) throws Exception {
         return get("/api/2.0/sql/history/queries?max_results=25&filter_by.warehouse_ids=" + warehouseId);
     }

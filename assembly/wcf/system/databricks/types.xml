@@ -160,6 +160,28 @@
         <property name="region"               type="wcf:String"/>
         <property name="dbuConsumed"          type="wcf:String"/>
     </type>
+    <type name="DatabricksServingEndpointRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="endpointName"      type="wcf:String"/>
+        <property name="readyState"        type="wcf:String"/>
+        <property name="configUpdateState" type="wcf:String"/>
+        <property name="creator"           type="wcf:String"/>
+        <property name="creationTime"      type="wcf:String"/>
+        <property name="lastUpdatedTime"   type="wcf:String"/>
+        <property name="routeOptimized"    type="wcf:String"/>
+        <property name="servedModelCount"  type="wcf:String"/>
+    </type>
+    <type name="DatabricksServedModelRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="endpointName"      type="wcf:String"/>
+        <property name="servedModelName"   type="wcf:String"/>
+        <property name="modelName"         type="wcf:String"/>
+        <property name="modelVersion"      type="wcf:String"/>
+        <property name="workloadSize"      type="wcf:String"/>
+        <property name="scaleToZero"       type="wcf:String"/>
+        <property name="trafficPercentage" type="wcf:String"/>
+        <property name="deploymentState"   type="wcf:String"/>
+    </type>
     <type name="DatabricksPipelineUpdateRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
         <property name="pipelineName"  type="wcf:String"/>
