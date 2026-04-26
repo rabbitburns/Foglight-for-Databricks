@@ -135,11 +135,12 @@
 2. **Tier 2** — Dashboards & packaging (nav module ✓, landing page ✓, portlets ✓)
 3. **Tier 3** — SQL Warehouse query metrics ✓
 4. **Tier 4** — DBU consumption & cost ✓ (mostly complete — cost-per-job deferred)
-5. **Tier 5** — DLT Pipeline depth
-6. **Tier 8** — Lakebase platform monitoring
-7. **Tier 9** — Lakehouse Monitoring / Lakewatch
-8. **Tier 10** — Lakehouse Monitoring (data quality + drift)
-9. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
+5. **Tier 5** — DLT Pipeline depth — **next**
+6. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (unblocked)
+7. **Tier 8** — Lakebase platform monitoring (unblocked)
+8. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**blocked: Unity Catalog check needed**)
+9. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
+10. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
 
 ---
 
