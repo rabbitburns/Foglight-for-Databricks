@@ -71,9 +71,9 @@
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Pipeline update history | `GET /api/2.0/pipelines/{id}/events` | Medium | Each pipeline update: status, duration, wait time, run time. New Relic covers this well. New type `DatabricksPipelineUpdate`. |
-| Pipeline flow metrics | Same events endpoint — per-flow stats | Medium | Backlog bytes, file counts, output rows, dropped records per flow within an update. |
-| Data quality expectations | Same events endpoint — expectation results | Medium | Pass/fail counts per expectation. Useful for data reliability monitoring — differentiator vs. Datadog. |
+| Pipeline update history | `GET /api/2.0/pipelines/{id}/events` | Medium | ✓ Done 1.0.64 — DatabricksPipelineUpdate type, Pipeline Updates WCF portlet (view 43/script 44). **Untested: DLT not enabled in dev workspace.** |
+| Data quality expectations | Same events endpoint — expectation results | Medium | ✓ Done 1.0.64 — DatabricksPipelineExpectation type, Pipeline Data Quality WCF portlet (view 45/script 46). **Untested: DLT not enabled in dev workspace.** |
+| Pipeline flow metrics | Same events endpoint — per-flow stats | Medium | Deferred — backlog bytes, file counts, output rows per flow stage. Lower priority than expectations. |
 
 ### Tier 6 — Cluster Runtime Metrics
 
@@ -135,9 +135,9 @@
 2. **Tier 2** — Dashboards & packaging (nav module ✓, landing page ✓, portlets ✓)
 3. **Tier 3** — SQL Warehouse query metrics ✓
 4. **Tier 4** — DBU consumption & cost ✓ (mostly complete — cost-per-job deferred)
-5. **Tier 5** — DLT Pipeline depth — **next**
-6. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (unblocked)
-7. **Tier 8** — Lakebase platform monitoring (unblocked)
+5. **Tier 5** — DLT Pipeline depth ✓ (built 1.0.64, untested — DLT not in dev workspace)
+6. **Tier 8** — Lakebase platform monitoring — **next** (unblocked)
+7. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold — UC dependency**)
 8. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**blocked: Unity Catalog check needed**)
 9. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
 10. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
@@ -209,3 +209,4 @@
 | 1.0.61 | Graphical: User Activity treemap and bubble chart |
 | 1.0.62 | Fix: treemap layout bug — added component-sizing to treemap views |
 | 1.0.63 | Tier 4: SKU List Prices — DatabricksSkuPrice topology type + WCF portlet (view 41, script 42) |
+| 1.0.64 | Tier 5: DLT Pipeline Updates (view 43/44) + Pipeline Data Quality / Expectations (view 45/46) |
