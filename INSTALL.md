@@ -8,44 +8,36 @@
 
 ## Files
 
-You should have received a zip file containing:
+You only need the `.car` file:
 
 ```
 DatabricksAgent-*.car
-agent-deploy/
-  config/
-    agent.manifest
-    databricks.properties
-  lib/
-    databricks-agent.jar
-    jackson-annotations-2.16.1.jar
-    jackson-core-2.16.1.jar
-    jackson-databind-2.16.1.jar
 ```
+
+The agent jars and config template are bundled inside the cartridge and deployed automatically via the Foglight UI.
 
 ---
 
-## Step 1 — Copy Agent Files to FglAM
+## Step 1 — Install the Cartridge
 
-Copy the `agent-deploy` folder contents into the FglAM agents directory, creating this structure:
-
-```
-C:\Quest\Foglight\fglam\agents\DatabricksAgent\1.0.6-1.0.6\
-  config\
-    agent.manifest
-    databricks.properties
-  lib\
-    databricks-agent.jar
-    jackson-annotations-2.16.1.jar
-    jackson-core-2.16.1.jar
-    jackson-databind-2.16.1.jar
-```
-
-> **Note:** Adjust the drive/path if Foglight is installed somewhere other than `C:\Quest\Foglight`.
+1. Log into the Foglight UI as an administrator
+2. Go to **Administration > Cartridges**
+3. Click **Install or Upgrade a Cartridge**
+4. Upload the `.car` file
+5. Confirm the install
 
 ---
 
-## Step 2 — Configure the Agent
+## Step 2 — Deploy the Agent to FglAM
+
+1. Go to **Administration > Agent Installers**
+2. Find **DatabricksAgent-1.0.6.zip** in the list
+3. Select your FglAM host and click **Deploy**
+4. FglAM will receive the agent jars automatically — no manual file copying required
+
+---
+
+## Step 3 — Configure the Agent
 
 Edit `config\databricks.properties`:
 
@@ -61,16 +53,6 @@ accountName=Databricks
 - `accessToken` — a Databricks personal access token (User Settings > Developer > Access Tokens)
 - `collectionIntervalSeconds` — how often to poll (60 recommended)
 - `accountId` / `accountName` — display labels; can be any string
-
----
-
-## Step 3 — Install the Cartridge
-
-1. Log into the Foglight UI as an administrator
-2. Go to **Administration > Cartridges**
-3. Click **Install or Upgrade a Cartridge**
-4. Upload the `.car` file included in the zip (`DatabricksAgent-*.car`)
-5. Confirm the install
 
 ---
 
