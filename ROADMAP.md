@@ -87,8 +87,9 @@
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Model serving endpoints | `GET /api/2.0/serving-endpoints` | Low | List of endpoints with state, creator, config. |
-| Model serving metrics | Databricks metrics API (per-endpoint) | Medium | Request count, latency percentiles (p75/p90/p95/p99), 4xx/5xx counts, CPU/GPU/memory usage. Datadog covers this; New Relic does not. New type `DatabricksServingEndpoint`. |
+| Model serving endpoints | `GET /api/2.0/serving-endpoints` | Low | ✓ Done 1.0.65 — DatabricksServingEndpoint topology type, Model Serving Endpoints portlet (view 47/script 48). |
+| Served model detail | `config.served_models` / `config.served_entities` per endpoint | Low | ✓ Done 1.0.65 — DatabricksServedModel topology type, Served Models portlet (view 49/script 50). |
+| Model serving metrics | Databricks metrics API (per-endpoint) | Medium | Request count, latency percentiles (p75/p90/p95/p99), 4xx/5xx counts, CPU/GPU/memory usage. Deferred — requires separate metrics API call per endpoint. |
 
 ### Tier 8 — Lakebase (Managed PostgreSQL)
 
@@ -210,3 +211,5 @@
 | 1.0.62 | Fix: treemap layout bug — added component-sizing to treemap views |
 | 1.0.63 | Tier 4: SKU List Prices — DatabricksSkuPrice topology type + WCF portlet (view 41, script 42) |
 | 1.0.64 | Tier 5: DLT Pipeline Updates (view 43/44) + Pipeline Data Quality / Expectations (view 45/46) |
+| 1.0.65 | Tier 7: Model Serving Endpoints (view 47/48) + Served Models (view 49/50) — DatabricksServingEndpoint, DatabricksServedModel topology types |
+| 1.0.66 | Nav main-view wired as composite-view (wcf.grid2 id=51): overview table top + DBU treemap + Cost vs DBU bubble side-by-side |

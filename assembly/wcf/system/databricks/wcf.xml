@@ -2,8 +2,8 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="50"
-        main-view="9">
+        last-entity-id="51"
+        main-view="51">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
         <uuid>f7a8b9c0-d1e2-3456-f012-345678900009</uuid>
@@ -1655,6 +1655,55 @@
             </property>
         </config>
     </view>
+
+    <!-- Databricks main-view: overview table (top) + DBU treemap + Cost vs DBU bubble (bottom row) -->
+    <composite-view id="51" display-name="Databricks" public="true" component="wcf.grid2">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000051</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="spacing">
+                <integer value="4"/>
+            </property>
+        </config>
+        <!-- Row 0: overview summary table, full width -->
+        <window id="0" view="system:databricks.9">
+            <size/>
+            <config>
+                <property name="colspan">
+                    <integer value="2"/>
+                </property>
+            </config>
+        </window>
+        <!-- Row 1 left: DBU by Product treemap -->
+        <window id="1" view="system:databricks.33">
+            <size/>
+            <config>
+                <property name="row">
+                    <integer value="1"/>
+                </property>
+            </config>
+        </window>
+        <!-- Row 1 right: Cost vs DBU bubble chart -->
+        <window id="2" view="system:databricks.35">
+            <size/>
+            <config>
+                <property name="row">
+                    <integer value="1"/>
+                </property>
+            </config>
+        </window>
+    </composite-view>
 
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"

@@ -45,7 +45,16 @@ The landing page is built into the nav entry automatically — no dashboard to c
 | Portlet | Layout suggestion |
 |---|---|
 | Databricks DLT Pipelines | Full width, top |
-| Databricks Instance Pools | Full width, below |
+| Databricks Pipeline Updates | Full width, middle |
+| Databricks Pipeline Data Quality | Full width, below |
+| Databricks Instance Pools | Full width, bottom |
+
+### Dashboard 7 — Databricks - Model Serving
+
+| Portlet | Layout suggestion |
+|---|---|
+| Databricks Model Serving Endpoints | Full width, top |
+| Databricks Served Models | Full width, below |
 
 ### Dashboard 6 — Databricks - DBU & Cost
 
@@ -56,6 +65,7 @@ The landing page is built into the nav entry automatically — no dashboard to c
 | Databricks Cost by SKU | Full width, middle |
 | Databricks MoM DBU Growth | Half width, bottom-left |
 | Databricks Top Jobs by DBU | Half width, bottom-right |
+| Databricks SKU List Prices | Full width, bottom |
 
 ### Notes
 
@@ -69,7 +79,7 @@ The landing page is built into the nav entry automatically — no dashboard to c
 
 WCF module name: `system:databricks`
 Nav entry: **Databricks** (top-level, appears alongside Administration / Alarms / Infrastructure)
-Landing page: **Databricks Overview** (view id=9)
+Landing page: **Databricks** composite (view id=51) — overview table top row, DBU treemap + Cost vs DBU bubble bottom row
 
 ---
 
@@ -105,6 +115,11 @@ All views are visible to: Administrator, Operator, Advanced Operator, Dashboard 
 | 35 | Databricks Cost vs DBU by SKU (Bubble) | 36 | wcf.html-chart.scatter.bubble | By DBU | Cost (Y) vs DBU (X) scatter bubble, sized by DBU, coloured by SKU |
 | 37 | Databricks User Activity (Treemap) | 38 | wcf.treemap | By query count size | Per-user query count — interactive treemap |
 | 39 | Databricks User Activity (Bubble) | 40 | wcf.html-chart.scatter.bubble | By query count | Query count (X) vs avg duration (Y), coloured by error rate |
+| 41 | Databricks SKU List Prices | 42 | wcf.table.row-table | SKU name, cloud asc | `system.billing.list_prices` — current prices per SKU/cloud/region |
+| 43 | Databricks Pipeline Updates | 44 | wcf.table.row-table | Start time desc | Last 5 DLT pipeline update events per pipeline (state, startTime, updateId) |
+| 45 | Databricks Pipeline Data Quality | 46 | wcf.table.row-table | Failures first | DLT data quality expectations — pass rate, passed/failed/dropped row counts |
+| 47 | Databricks Model Serving Endpoints | 48 | wcf.table.row-table | Endpoint name asc | Serving endpoint inventory — state, config update state, creator, model count |
+| 49 | Databricks Served Models | 50 | wcf.table.row-table | Endpoint name, model name asc | Per-served-model detail — model name, version, workload size, traffic %, deployment state |
 
 ---
 
@@ -129,6 +144,11 @@ All views are visible to: Administrator, Operator, Advanced Operator, Dashboard 
 | DatabricksSkuCostRow | sku, product, totalDbu, dollarCost | Cost by SKU |
 | DatabricksTreeMapNode | id, name, count, fillColor | DBU by Product (Treemap), User Activity (Treemap) |
 | DatabricksBubbleNode | xValue (wcf:Number), yValue (wcf:Number), size (wcf:Number), color (wcf:Color), label (wcf:String) | Cost vs DBU (Bubble), User Activity (Bubble) |
+| DatabricksSkuPriceRow | skuName, cloud, region, pricingUnit, dbuPrice, currency, effectiveFrom | SKU List Prices |
+| DatabricksPipelineUpdateRow | pipelineName, pipelineId, updateId, state, startTime | Pipeline Updates |
+| DatabricksPipelineExpectationRow | pipelineName, updateId, expectationName, flowName, passRate, passed, failed, dropped | Pipeline Data Quality |
+| DatabricksServingEndpointRow | endpointName, readyState, configUpdateState, creator, creationTime, lastUpdatedTime, routeOptimized, servedModelCount | Model Serving Endpoints |
+| DatabricksServedModelRow | endpointName, servedModelName, modelName, modelVersion, workloadSize, scaleToZero, trafficPercentage, deploymentState | Served Models |
 
 ---
 
@@ -164,6 +184,11 @@ All scripts use the pattern:
 | 36.groovy | Cost vs DBU Bubble Nodes — DatabricksBubbleNode list; x=DBU, y=cost, coloured by palette per SKU |
 | 38.groovy | User Activity Treemap Nodes — DatabricksTreeMapNode list sized by per-user query count |
 | 40.groovy | User Activity Bubble Nodes — DatabricksBubbleNode list; x=query count, y=avg duration (sec), coloured by error rate |
+| 42.groovy | SKU List Prices — one row per DatabricksSkuPrice, sorted by skuName + cloud |
+| 44.groovy | Pipeline Updates — traverses workspace → pipelines → updates; sorted by startTime desc |
+| 46.groovy | Pipeline Data Quality — traverses workspace → pipelines → updates → expectations; failures sorted first |
+| 48.groovy | Model Serving Endpoints — one row per DatabricksServingEndpoint, sorted by endpointName |
+| 50.groovy | Served Models — traverses servingEndpoints → servedModels; sorted by endpointName + servedModelName |
 
 ---
 
@@ -181,10 +206,14 @@ DatabricksModelRoot
               ├── DatabricksWarehouse (n)
               │     └── DatabricksQuery (up to 25 per warehouse)
               ├── DatabricksPipeline (n)
-              └── DatabricksInstancePool (n)
+              │     └── DatabricksPipelineUpdate (up to 5 per pipeline)
+              │           └── DatabricksPipelineExpectation (n per update)
+              ├── DatabricksInstancePool (n)
+              ├── DatabricksUsage (n) — system.billing.usage rows
+              ├── DatabricksSkuPrice (n) — system.billing.list_prices rows
+              └── DatabricksServingEndpoint (n)
+                    └── DatabricksServedModel (n per endpoint)
 ```
-
-No new collection is needed to support any of the current views — all fields exist in topology as of v1.0.43. DBU/cost views (21–32) read from `DatabricksUsage` objects collected since v1.0.48.
 
 ---
 
@@ -206,3 +235,7 @@ No new collection is needed to support any of the current views — all fields e
 | 1.0.60 | Cost vs DBU by SKU Bubble (id=35); DatabricksBubbleNode type; wcf.html-chart.scatter.bubble component |
 | 1.0.61 | User Activity Treemap (id=37) and User Activity Bubble (id=39) |
 | 1.0.62 | Fix: treemap sizing — added component-sizing to views 33 and 37 |
+| 1.0.63 | SKU List Prices (id=41) — DatabricksSkuPrice topology type; system.billing.list_prices source |
+| 1.0.64 | Pipeline Updates (id=43), Pipeline Data Quality (id=45) — DLT event history and expectation results |
+| 1.0.65 | Model Serving Endpoints (id=47), Served Models (id=49) — DatabricksServingEndpoint and DatabricksServedModel topology types |
+| 1.0.66 | Nav main-view changed from standalone Overview table (id=9) to composite-view (id=51, wcf.grid2): overview table full-width top + DBU treemap + Cost vs DBU bubble side-by-side below |
