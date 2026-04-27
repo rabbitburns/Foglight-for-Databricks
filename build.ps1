@@ -82,9 +82,10 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # --- GitHub release (personal) ---
+$CAR = "target\DatabricksAgent-$Version.car"
 Write-Host "Creating GitHub release v$Version..."
 & $GH release delete "v$Version" --repo rabbitburns/Foglight-for-Databricks --yes 2>$null
-& $GH release create "v$Version" $ZIP `
+& $GH release create "v$Version" $ZIP $CAR `
     --repo rabbitburns/Foglight-for-Databricks `
     --title "v$Version" `
     --notes "Release v$Version"
@@ -92,7 +93,7 @@ if ($LASTEXITCODE -ne 0) { Write-Host "GitHub release failed (non-fatal)" }
 
 # --- GitHub release (work) ---
 & $GH release delete "v$Version" --repo Mark-Gowdy_questsw/Foglight-for-Databricks --yes 2>$null
-& $GH release create "v$Version" $ZIP `
+& $GH release create "v$Version" $ZIP $CAR `
     --repo Mark-Gowdy_questsw/Foglight-for-Databricks `
     --title "v$Version" `
     --notes "Release v$Version"
