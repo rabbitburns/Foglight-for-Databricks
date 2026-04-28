@@ -88,9 +88,11 @@ public class ClusterCollector {
             setValue(workspaceNode, "workspaceUrl", workspaceUrl, true);
 
             int clusterCount = 0;
+            int activeClusterCount = 0;
             int jobCount = 0;
             int runCount = 0;
             int warehouseCount = 0;
+            int activeWarehouseCount = 0;
             int pipelineCount = 0;
             int poolCount = 0;
             int usageCount = 0;
@@ -116,6 +118,7 @@ public class ClusterCollector {
 
                     String clusterName = cluster.path("cluster_name").asText(clusterId);
                     String state = cluster.path("state").asText("UNKNOWN");
+                    if ("RUNNING".equals(state)) activeClusterCount++;
                     String clusterSource = cluster.path("cluster_source").asText("");
                     String nodeTypeId = cluster.path("node_type_id").asText("");
                     String driverNodeTypeId = cluster.path("driver_node_type_id").asText("");
@@ -169,6 +172,7 @@ public class ClusterCollector {
             }
 
             workspaceNode.createValue("clusterCount").setSampleValue((long) clusterCount);
+            workspaceNode.createValue("activeClusterCount").setSampleValue((long) activeClusterCount);
             setValue(workspaceNode, "clusterCountStr", String.valueOf(clusterCount), false);
 
             // ---------------------------------------------------------------------
@@ -259,6 +263,12 @@ public class ClusterCollector {
                             setValue(jobNode, "avgDurationStr",  durationCount > 0 ? fmtDur(totalDuration / durationCount) : "", false);
                             setValue(jobNode, "minDurationStr",  durationCount > 0 ? fmtDur(minDuration) : "", false);
                             setValue(jobNode, "maxDurationStr",  durationCount > 0 ? fmtDur(maxDuration) : "", false);
+                            jobNode.createValue("successCount").setSampleValue((long) successCount);
+                            jobNode.createValue("failureCount").setSampleValue((long) failureCount);
+                            jobNode.createValue("successRate").setSampleValue(rated > 0 ? (long)(successCount * 100 / rated) : 0L);
+                            jobNode.createValue("avgDurationMs").setSampleValue(durationCount > 0 ? totalDuration / durationCount : 0L);
+                            jobNode.createValue("minDurationMs").setSampleValue(durationCount > 0 && minDuration != Long.MAX_VALUE ? minDuration : 0L);
+                            jobNode.createValue("maxDurationMs").setSampleValue(durationCount > 0 ? maxDuration : 0L);
 
                             TopologyNode runsNode = jobNode.createNode("runs");
 
@@ -328,6 +338,7 @@ public class ClusterCollector {
                     jobNodes.put(jobId, jobNode);
                 }
             }
+            workspaceNode.createValue("jobCount").setSampleValue((long) jobCount);
 
             // ---------------------------------------------------------------------
             // warehouses -> DatabricksWarehouse
@@ -343,14 +354,16 @@ public class ClusterCollector {
                     if (whId == null || whId.isBlank()) continue;
 
                     warehouseCount++;
+                    String whState = wh.path("state").asText("");
+                    if ("RUNNING".equals(whState) || "STARTING".equals(whState)) activeWarehouseCount++;
 
                     TopologyNode whNode = warehousesNode.createNode(whId);
                     whNode.setId(whId);
 
                     setValue(whNode, "warehouseId", whId, true);
                     setValue(whNode, "warehouseName", wh.path("name").asText(whId), false);
-                    setValue(whNode, "state", wh.path("state").asText(""), false);
-                    setValue(whNode, "stateStr", wh.path("state").asText(""), false);
+                    setValue(whNode, "state", whState, false);
+                    setValue(whNode, "stateStr", whState, false);
                     setValue(whNode, "warehouseType", wh.path("warehouse_type").asText(""), false);
                     setValue(whNode, "size", wh.path("cluster_size").asText(""), false);
                     setValue(whNode, "creatorName", wh.path("creator_name").asText(""), false);
@@ -422,6 +435,9 @@ public class ClusterCollector {
                     }
                 }
             }
+
+            workspaceNode.createValue("warehouseCount").setSampleValue((long) warehouseCount);
+            workspaceNode.createValue("activeWarehouseCount").setSampleValue((long) activeWarehouseCount);
 
             // ---------------------------------------------------------------------
             // pipelines -> DatabricksPipeline
@@ -530,6 +546,10 @@ public class ClusterCollector {
                                 setValue(expNode, "failedRecords",   String.valueOf(failed),    false);
                                 setValue(expNode, "droppedRecords",  String.valueOf(dropped),   false);
                                 setValue(expNode, "passRate",        passRate,                  false);
+                                expNode.createValue("passedCount").setSampleValue(passed);
+                                expNode.createValue("failedCount").setSampleValue(failed);
+                                expNode.createValue("droppedCount").setSampleValue(dropped);
+                                expNode.createValue("passRatePct").setSampleValue(total > 0 ? (long)(100.0 * passed / total) : 0L);
                             }
                         }
                     } catch (Exception e) {
@@ -537,6 +557,8 @@ public class ClusterCollector {
                     }
                 }
             }
+
+            workspaceNode.createValue("pipelineCount").setSampleValue((long) pipelineCount);
 
             // ---------------------------------------------------------------------
             // instancePools -> DatabricksInstancePool

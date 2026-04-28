@@ -77,11 +77,15 @@
 
 ### Tier 6 — Cluster Runtime Metrics
 
+> **Revised approach:** The Databricks UI cluster metrics page (CPU, memory, network) is sourced from Ganglia on port 8652 inside the cluster — not reachable by an external FglAM agent. However, `system.compute.node_timeline` (Unity Catalog, GA) exposes the same per-node CPU/memory data via SQL warehouse at 1-minute granularity with 30-day retention. We already use this pattern for billing data. Unity Catalog is confirmed enabled.
+
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Spark executor metrics | Spark REST API on running cluster (`/api/v1/applications`) | High | CPU, memory, GC, shuffle per executor. Requires network access to cluster driver. Not available via Databricks REST API. |
-| Node-level CPU / memory / disk | Infrastructure agent via cluster init script | Very High | Out of scope for a Foglight agent approach — requires deploying an agent binary to every cluster node at startup. |
-| Streaming metrics | Spark Streaming REST API | High | Input/processing rates, batch delay. Same access constraints as executor metrics. |
+| Per-node CPU & memory utilisation | `system.compute.node_timeline` via SQL warehouse | Medium | 1-min granularity, 30-day retention. Queryable via same warehouse we use for billing. New topology type `DatabricksNodeMetric`. Driver vs worker breakdown available. |
+| Cluster-level CPU/memory summary | Aggregated from `node_timeline` (AVG/MAX per cluster_id) | Low | Rolled up from per-node data — avg CPU %, peak memory % per cluster over configurable window. |
+| Cluster config & state history | `system.compute.clusters` via SQL warehouse | Low | Historical record of cluster state transitions, config changes, creator, cloud provider attrs. Complements current snapshot-only cluster topology. |
+| Spark executor / task metrics | Spark REST API on running cluster (`/api/v1/applications`) | Very High | Requires network access to cluster driver on port 4040. Out of scope — not reachable by FglAM agent in standard deployments. |
+| Streaming metrics | Spark Streaming REST API | Very High | Same access constraints as executor metrics. Deferred. |
 
 ### Tier 7 — Model Serving
 
@@ -137,11 +141,12 @@
 3. **Tier 3** — SQL Warehouse query metrics ✓
 4. **Tier 4** — DBU consumption & cost ✓ (mostly complete — cost-per-job deferred)
 5. **Tier 5** — DLT Pipeline depth ✓ (built 1.0.64, untested — DLT not in dev workspace)
-6. **Tier 8** — Lakebase platform monitoring — **next** (unblocked)
-7. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold — UC dependency**)
-8. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**blocked: Unity Catalog check needed**)
-9. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
-10. **Tier 6/7** — Runtime metrics & model serving (lower priority, higher effort)
+6. **Tier 7** — Model Serving ✓ (1.0.65)
+7. **Tier 8** — Lakebase platform monitoring — **next** (unblocked)
+8. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` — **unblocked** (UC confirmed; revised from Ganglia approach)
+9. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
+10. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**on hold**)
+11. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
 
 ---
 

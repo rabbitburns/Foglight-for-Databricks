@@ -8,18 +8,23 @@
     </type>
 
     <type name="DatabricksWorkspace" extends="TopologyObject">
-        <property name="workspaceUrl"   type="String"                is-identity="true"/>
-        <property name="clusterCount"    type="Metric"                is-containment="true"/>
-        <property name="clusterCountStr" type="String"/>
-        <property name="clusters"       type="DatabricksCluster"     is-many="true" is-containment="true"/>
-        <property name="jobs"           type="DatabricksJob"         is-many="true" is-containment="true"/>
-        <property name="warehouses"     type="DatabricksWarehouse"   is-many="true" is-containment="true"/>
-        <property name="pipelines"      type="DatabricksPipeline"    is-many="true" is-containment="true"/>
-        <property name="instancePools"  type="DatabricksInstancePool" is-many="true" is-containment="true"/>
-        <property name="usages"          type="DatabricksUsage"        is-many="true" is-containment="true"/>
-        <property name="jobDbus"         type="DatabricksJobDbu"       is-many="true" is-containment="true"/>
-        <property name="skuPrices"         type="DatabricksSkuPrice"         is-many="true" is-containment="true"/>
-        <property name="servingEndpoints"  type="DatabricksServingEndpoint"  is-many="true" is-containment="true"/>
+        <property name="workspaceUrl"        type="String"                is-identity="true"/>
+        <property name="clusterCount"        type="Metric"                is-containment="true"/>
+        <property name="clusterCountStr"     type="String"/>
+        <property name="activeClusterCount"  type="Metric"                is-containment="true"/>
+        <property name="warehouseCount"      type="Metric"                is-containment="true"/>
+        <property name="activeWarehouseCount" type="Metric"               is-containment="true"/>
+        <property name="jobCount"            type="Metric"                is-containment="true"/>
+        <property name="pipelineCount"       type="Metric"                is-containment="true"/>
+        <property name="clusters"            type="DatabricksCluster"     is-many="true" is-containment="true"/>
+        <property name="jobs"                type="DatabricksJob"         is-many="true" is-containment="true"/>
+        <property name="warehouses"          type="DatabricksWarehouse"   is-many="true" is-containment="true"/>
+        <property name="pipelines"           type="DatabricksPipeline"    is-many="true" is-containment="true"/>
+        <property name="instancePools"       type="DatabricksInstancePool" is-many="true" is-containment="true"/>
+        <property name="usages"              type="DatabricksUsage"        is-many="true" is-containment="true"/>
+        <property name="jobDbus"             type="DatabricksJobDbu"       is-many="true" is-containment="true"/>
+        <property name="skuPrices"           type="DatabricksSkuPrice"     is-many="true" is-containment="true"/>
+        <property name="servingEndpoints"    type="DatabricksServingEndpoint" is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -94,6 +99,10 @@
         <property name="failedRecords"    type="String"/>
         <property name="droppedRecords"   type="String"/>
         <property name="passRate"         type="String"/>
+        <property name="passedCount"      type="Metric" is-containment="true"/>
+        <property name="failedCount"      type="Metric" is-containment="true"/>
+        <property name="droppedCount"     type="Metric" is-containment="true"/>
+        <property name="passRatePct"      type="Metric" is-containment="true"/>
     </type>
 
     <type name="DatabricksInstancePool" extends="TopologyObject">
@@ -109,24 +118,30 @@
     </type>
 
     <type name="DatabricksJob" extends="TopologyObject">
-        <property name="jobId"           type="String"           is-identity="true"/>
-        <property name="jobName"         type="String"/>
-        <property name="creatorUserName" type="String"/>
-        <property name="scheduleCron"       type="String"/>
-        <property name="scheduleStatus"     type="String"/>
-        <property name="triggerType"        type="String"/>
-        <property name="tagsStr"            type="String"/>
-        <property name="lastRunState"       type="String"/>
-        <property name="lastRunResult"      type="String"/>
-        <property name="lastRunStartStr"    type="String"/>
+        <property name="jobId"             type="String"           is-identity="true"/>
+        <property name="jobName"           type="String"/>
+        <property name="creatorUserName"   type="String"/>
+        <property name="scheduleCron"      type="String"/>
+        <property name="scheduleStatus"    type="String"/>
+        <property name="triggerType"       type="String"/>
+        <property name="tagsStr"           type="String"/>
+        <property name="lastRunState"      type="String"/>
+        <property name="lastRunResult"     type="String"/>
+        <property name="lastRunStartStr"   type="String"/>
         <property name="lastRunDurationStr" type="String"/>
-        <property name="successRateStr"     type="String"/>
-        <property name="avgDurationStr"     type="String"/>
-        <property name="minDurationStr"     type="String"/>
-        <property name="maxDurationStr"     type="String"/>
-        <property name="successCountStr"    type="String"/>
-        <property name="failureCountStr"    type="String"/>
-        <property name="runs"               type="DatabricksJobRun" is-many="true" is-containment="true"/>
+        <property name="successRateStr"    type="String"/>
+        <property name="avgDurationStr"    type="String"/>
+        <property name="minDurationStr"    type="String"/>
+        <property name="maxDurationStr"    type="String"/>
+        <property name="successCountStr"   type="String"/>
+        <property name="failureCountStr"   type="String"/>
+        <property name="successRate"       type="Metric" is-containment="true"/>
+        <property name="successCount"      type="Metric" is-containment="true"/>
+        <property name="failureCount"      type="Metric" is-containment="true"/>
+        <property name="avgDurationMs"     type="Metric" is-containment="true"/>
+        <property name="minDurationMs"     type="Metric" is-containment="true"/>
+        <property name="maxDurationMs"     type="Metric" is-containment="true"/>
+        <property name="runs"              type="DatabricksJobRun" is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksJobRun" extends="TopologyObject">
