@@ -1807,6 +1807,8 @@
     <!-- Databricks main-view: overview table (top) + DBU treemap + Cost vs DBU bubble (bottom row) -->
     <composite-view id="51" display-name="Databricks" public="true" component="wcf.grid2">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000051</uuid>
+        <purpose name="homepage"/>
+        <purpose name="monitor"/>
         <purpose name="page"/>
         <purpose name="pagelet"/>
         <relevant-role name="Administrator"/>
