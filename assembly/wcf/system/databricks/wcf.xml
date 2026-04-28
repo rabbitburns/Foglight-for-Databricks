@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="54"
+        last-entity-id="51"
         main-view="51">
 
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
@@ -1656,113 +1656,6 @@
         </config>
     </view>
 
-    <!-- Query: fetch a DatabricksWorkspace for metric trend views -->
-    <query select="DatabricksWorkspace" id="52" display-name="Get Databricks Workspace" root-query="true">
-        <uuid>a3b4c5d6-e7f8-9012-a012-900000000052</uuid>
-    </query>
-
-    <!-- Active Resource Trend: cluster and warehouse counts over time -->
-    <view id="53" display-name="Active Resource Trend" public="true" component="wcf.chart.time-plot">
-        <uuid>a3b4c5d6-e7f8-9012-a012-900000000053</uuid>
-        <purpose name="page"/>
-        <purpose name="pagelet"/>
-        <purpose name="portlet"/>
-        <purpose name="reportlet"/>
-        <relevant-role name="Administrator"/>
-        <relevant-role name="Operator"/>
-        <relevant-role name="Advanced Operator"/>
-        <relevant-role name="Dashboard Designer"/>
-        <relevant-role name="Dashboard User"/>
-        <relevant-role name="General Access"/>
-        <inputs>
-            <entry key="timeRange" data-type="wcf:TimeRange"/>
-        </inputs>
-        <flow/>
-        <component-sizing>
-            <width/>
-            <height preferred="250"/>
-        </component-sizing>
-        <config>
-            <property name="title">
-                <string value="Cluster &amp; Warehouse Counts"/>
-            </property>
-            <property name="simpleMetricData">
-                <object type="wcf:simpleMetricData">
-                    <property name="metricParent">
-                        <query-selection-rv query="system:databricks.52" results-index="0"/>
-                    </property>
-                    <property name="metricBindings">
-                        <list>
-                            <object type="wcf:metricBinding">
-                                <property name="label"><string value="Active Clusters"/></property>
-                                <property name="metricName"><string value="activeClusterCount"/></property>
-                            </object>
-                            <object type="wcf:metricBinding">
-                                <property name="label"><string value="Total Clusters"/></property>
-                                <property name="metricName"><string value="clusterCount"/></property>
-                            </object>
-                            <object type="wcf:metricBinding">
-                                <property name="label"><string value="Active Warehouses"/></property>
-                                <property name="metricName"><string value="activeWarehouseCount"/></property>
-                            </object>
-                            <object type="wcf:metricBinding">
-                                <property name="label"><string value="Total Warehouses"/></property>
-                                <property name="metricName"><string value="warehouseCount"/></property>
-                            </object>
-                        </list>
-                    </property>
-                </object>
-            </property>
-        </config>
-    </view>
-
-    <!-- Job &amp; Pipeline Count Trend: job and pipeline counts over time -->
-    <view id="54" display-name="Job &amp; Pipeline Count Trend" public="true" component="wcf.chart.time-plot">
-        <uuid>a3b4c5d6-e7f8-9012-a012-900000000054</uuid>
-        <purpose name="page"/>
-        <purpose name="pagelet"/>
-        <purpose name="portlet"/>
-        <purpose name="reportlet"/>
-        <relevant-role name="Administrator"/>
-        <relevant-role name="Operator"/>
-        <relevant-role name="Advanced Operator"/>
-        <relevant-role name="Dashboard Designer"/>
-        <relevant-role name="Dashboard User"/>
-        <relevant-role name="General Access"/>
-        <inputs>
-            <entry key="timeRange" data-type="wcf:TimeRange"/>
-        </inputs>
-        <flow/>
-        <component-sizing>
-            <width/>
-            <height preferred="250"/>
-        </component-sizing>
-        <config>
-            <property name="title">
-                <string value="Job &amp; Pipeline Counts"/>
-            </property>
-            <property name="simpleMetricData">
-                <object type="wcf:simpleMetricData">
-                    <property name="metricParent">
-                        <query-selection-rv query="system:databricks.52" results-index="0"/>
-                    </property>
-                    <property name="metricBindings">
-                        <list>
-                            <object type="wcf:metricBinding">
-                                <property name="label"><string value="Jobs"/></property>
-                                <property name="metricName"><string value="jobCount"/></property>
-                            </object>
-                            <object type="wcf:metricBinding">
-                                <property name="label"><string value="Pipelines"/></property>
-                                <property name="metricName"><string value="pipelineCount"/></property>
-                            </object>
-                        </list>
-                    </property>
-                </object>
-            </property>
-        </config>
-    </view>
-
     <!-- Databricks main-view: overview table (top) + DBU treemap + Cost vs DBU bubble (bottom row) -->
     <composite-view id="51" display-name="Databricks" public="true" component="wcf.grid2">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000051</uuid>
@@ -1807,24 +1700,6 @@
             <config>
                 <property name="row">
                     <integer value="1"/>
-                </property>
-            </config>
-        </window>
-        <!-- Row 2 left: Active Resource Trend (clusters/warehouses over time) -->
-        <window id="3" view="system:databricks.53">
-            <size/>
-            <config>
-                <property name="row">
-                    <integer value="2"/>
-                </property>
-            </config>
-        </window>
-        <!-- Row 2 right: Job &amp; Pipeline Count Trend -->
-        <window id="4" view="system:databricks.54">
-            <size/>
-            <config>
-                <property name="row">
-                    <integer value="2"/>
                 </property>
             </config>
         </window>
