@@ -5,6 +5,14 @@
         last-entity-id="54"
         main-view="51">
 
+    <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
+    <query select="foglight-5:DatabricksWorkspace" id="52" display-name="Get Databricks Workspace" public="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000052</uuid>
+        <root>
+            <datasource-root-reference datasource-type="foglight-5" path="DatabricksModelRoot/accounts/workspaces"/>
+        </root>
+    </query>
+
     <view id="9" display-name="Databricks Overview" public="true" component="wcf.table.row-table">
         <uuid>f7a8b9c0-d1e2-3456-f012-345678900009</uuid>
         <purpose name="page"/>
@@ -1655,14 +1663,6 @@
             </property>
         </config>
     </view>
-
-    <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
-    <query select="foglight-5:DatabricksWorkspace" id="52" display-name="Get Databricks Workspace" public="false">
-        <uuid>a3b4c5d6-e7f8-9012-a012-900000000052</uuid>
-        <root>
-            <datasource-root-reference datasource-type="foglight-5" path="DatabricksModelRoot/accounts/workspaces"/>
-        </root>
-    </query>
 
     <!-- Active Resource Trend: cluster and warehouse counts over time -->
     <view id="53" display-name="Active Resource Trend" public="true" component="wcf.chart.time-plot">

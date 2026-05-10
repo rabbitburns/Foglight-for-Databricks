@@ -44,6 +44,11 @@
             <node pattern="clusterCountStr">
               <value var="$v"><attr name="clusterCountStr" target="{{$wsVar}}" val="{$v}"/></value>
             </node>
+            <node pattern="activeClusterCount"><value><metric type="activeClusterCount"/></value></node>
+            <node pattern="warehouseCount"><value><metric type="warehouseCount"/></value></node>
+            <node pattern="activeWarehouseCount"><value><metric type="activeWarehouseCount"/></value></node>
+            <node pattern="jobCount"><value><metric type="jobCount"/></value></node>
+            <node pattern="pipelineCount"><value><metric type="pipelineCount"/></value></node>
 
             <node pattern="clusters">
               <node>
@@ -318,6 +323,10 @@
                         <node pattern="passRate">
                           <value var="$v"><attr name="passRate" target="{{$exVar}}" val="{$v}"/></value>
                         </node>
+                        <node pattern="passedCount"><value><metric type="passedCount"/></value></node>
+                        <node pattern="failedCount"><value><metric type="failedCount"/></value></node>
+                        <node pattern="droppedCount"><value><metric type="droppedCount"/></value></node>
+                        <node pattern="passRatePct"><value><metric type="passRatePct"/></value></node>
 
                       </node>
                     </node>
@@ -566,6 +575,12 @@
                 <node pattern="failureCountStr">
                   <value var="$v"><attr name="failureCountStr" target="{{$jobVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="successRate"><value><metric type="successRate"/></value></node>
+                <node pattern="successCount"><value><metric type="successCount"/></value></node>
+                <node pattern="failureCount"><value><metric type="failureCount"/></value></node>
+                <node pattern="avgDurationMs"><value><metric type="avgDurationMs"/></value></node>
+                <node pattern="minDurationMs"><value><metric type="minDurationMs"/></value></node>
+                <node pattern="maxDurationMs"><value><metric type="maxDurationMs"/></value></node>
 
                 <node pattern="runs">
                   <node>
