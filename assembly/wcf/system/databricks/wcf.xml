@@ -1699,7 +1699,7 @@
                                     <context-rv input-key="workspace" path="activeClusterCount"/>
                                 </property>
                                 <property name="legendLabel">
-                                    <string-rv><value>Active Clusters</value></string-rv>
+                                    <string-rv><value xml:space="preserve">Active Clusters</value></string-rv>
                                 </property>
                             </object>
                             <object>
@@ -1707,7 +1707,7 @@
                                     <context-rv input-key="workspace" path="clusterCount"/>
                                 </property>
                                 <property name="legendLabel">
-                                    <string-rv><value>Total Clusters</value></string-rv>
+                                    <string-rv><value xml:space="preserve">Total Clusters</value></string-rv>
                                 </property>
                             </object>
                             <object>
@@ -1715,7 +1715,7 @@
                                     <context-rv input-key="workspace" path="activeWarehouseCount"/>
                                 </property>
                                 <property name="legendLabel">
-                                    <string-rv><value>Active Warehouses</value></string-rv>
+                                    <string-rv><value xml:space="preserve">Active Warehouses</value></string-rv>
                                 </property>
                             </object>
                             <object>
@@ -1723,7 +1723,7 @@
                                     <context-rv input-key="workspace" path="warehouseCount"/>
                                 </property>
                                 <property name="legendLabel">
-                                    <string-rv><value>Total Warehouses</value></string-rv>
+                                    <string-rv><value xml:space="preserve">Total Warehouses</value></string-rv>
                                 </property>
                             </object>
                         </list-value>
@@ -1777,7 +1777,7 @@
                                     <context-rv input-key="workspace" path="jobCount"/>
                                 </property>
                                 <property name="legendLabel">
-                                    <string-rv><value>Jobs</value></string-rv>
+                                    <string-rv><value xml:space="preserve">Jobs</value></string-rv>
                                 </property>
                             </object>
                             <object>
@@ -1785,7 +1785,7 @@
                                     <context-rv input-key="workspace" path="pipelineCount"/>
                                 </property>
                                 <property name="legendLabel">
-                                    <string-rv><value>Pipelines</value></string-rv>
+                                    <string-rv><value xml:space="preserve">Pipelines</value></string-rv>
                                 </property>
                             </object>
                         </list-value>
