@@ -1823,11 +1823,18 @@
         <flow/>
         <config>
             <property name="spacing"><integer value="4"/></property>
+            <property name="sizing">
+                <component-sizing>
+                    <width preferred="0"/>
+                    <height preferred="0"/>
+                </component-sizing>
+            </property>
         </config>
         <window id="0" view="system:databricks.9">
             <size/>
             <config>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
         <window id="1" view="system:databricks.35">
@@ -1835,6 +1842,7 @@
             <config>
                 <property name="row"><integer value="1"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
         <window id="2" view="system:databricks.33">
@@ -1842,6 +1850,7 @@
             <config>
                 <property name="row"><integer value="2"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
         <window id="3" view="system:databricks.53">
@@ -1849,6 +1858,7 @@
             <config>
                 <property name="row"><integer value="3"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
         <window id="4" view="system:databricks.54">
@@ -1856,6 +1866,7 @@
             <config>
                 <property name="row"><integer value="4"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
     </composite-view>
