@@ -1805,7 +1805,7 @@
     </view>
 
     <!-- Databricks main-view: overview table (top) + DBU treemap + Cost vs DBU bubble (bottom row) -->
-    <composite-view id="51" display-name="Databricks" public="true" component="wcf.grid2">
+    <composite-view id="51" display-name="Databricks" public="true" component="wcf.row-layout">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000051</uuid>
         <purpose name="homepage"/>
         <purpose name="monitor"/>
@@ -1821,54 +1821,40 @@
             <entry key="timeRange" data-type="wcf:TimeRange"/>
         </inputs>
         <flow/>
-        <config>
-            <property name="spacing">
-                <integer value="4"/>
-            </property>
-        </config>
-        <!-- Row 0: overview summary table, full width -->
+        <config/>
         <window id="0" view="system:databricks.9">
             <size/>
             <config>
-                <property name="colspan">
-                    <integer value="2"/>
-                </property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="hweight"><integer value="1"/></property>
             </config>
         </window>
-        <!-- Row 1 left: DBU by Product treemap -->
-        <window id="1" view="system:databricks.33">
+        <window id="1" view="system:databricks.35">
             <size/>
             <config>
-                <property name="row">
-                    <integer value="1"/>
-                </property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="hweight"><integer value="1"/></property>
             </config>
         </window>
-        <!-- Row 1 right: Cost vs DBU bubble chart -->
-        <window id="2" view="system:databricks.35">
+        <window id="2" view="system:databricks.33">
             <size/>
             <config>
-                <property name="row">
-                    <integer value="1"/>
-                </property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="hweight"><integer value="1"/></property>
             </config>
         </window>
-        <!-- Row 2 left: Active Resource Trend -->
         <window id="3" view="system:databricks.53">
             <size/>
             <config>
-                <property name="row">
-                    <integer value="2"/>
-                </property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="hweight"><integer value="1"/></property>
             </config>
         </window>
-        <!-- Row 2 right: Job and Pipeline Count Trend -->
         <window id="4" view="system:databricks.54">
             <size/>
             <config>
-                <property name="row">
-                    <integer value="2"/>
-                </property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="hweight"><integer value="1"/></property>
             </config>
         </window>
     </composite-view>
