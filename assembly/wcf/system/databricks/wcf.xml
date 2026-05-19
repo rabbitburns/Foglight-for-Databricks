@@ -1834,6 +1834,7 @@
             <size/>
             <config>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
@@ -1842,6 +1843,7 @@
             <config>
                 <property name="row"><integer value="1"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
@@ -1850,6 +1852,7 @@
             <config>
                 <property name="row"><integer value="2"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
@@ -1858,6 +1861,7 @@
             <config>
                 <property name="row"><integer value="3"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
@@ -1866,6 +1870,7 @@
             <config>
                 <property name="row"><integer value="4"/></property>
                 <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
