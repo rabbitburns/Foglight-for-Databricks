@@ -1,9 +1,9 @@
 # Foglight for Databricks — Product Management Specification
 
-**Version:** 1.0.65  
+**Version:** 1.0.78  
 **Status:** POC / Active Development  
 **Owner:** Quest Software  
-**Last Updated:** 2026-04-26
+**Last Updated:** 2026-05-19
 
 ---
 
@@ -80,7 +80,7 @@ Foglight Topology Store
               └── DatabricksServedModel (n)
         │
         ▼
-WCF Portlets (25 views, Groovy scripts)
+WCF Portlets (27 views, Groovy scripts)
 Foglight Dashboards (user-configured)
 ```
 
@@ -231,6 +231,8 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | 23 | Databricks SKU List Prices | Cost |
 | 24 | Databricks Model Serving Endpoints | Model Serving |
 | 25 | Databricks Served Models | Model Serving |
+| 26 | Databricks Active Resource Trend | Compute |
+| 27 | Databricks Job and Pipeline Count Trend | Jobs |
 
 ---
 
@@ -283,9 +285,9 @@ FglAM runs on-premises or in a private cloud. For organisations with data sovere
 
 ## 6. Roadmap
 
-### 6.1 In Progress / Complete (v1.0.65)
+### 6.1 In Progress / Complete (v1.0.78)
 
-All items in Tiers 1–5 and Tier 7 are complete. See ROADMAP.md for full version history.
+All items in Tiers 1–5 and Tier 7 are complete. Time-plot trend views (Active Resource Trend, Job & Pipeline Count Trend) added in 1.0.74. Landing page composite-view finalized in 1.0.78 — 5 views stacked full-width with titles. See ROADMAP.md for full version history.
 
 ### 6.2 Next — Tier 8: Lakebase Platform Monitoring
 
@@ -386,7 +388,7 @@ The cartridge provides portlets but does not automatically create dashboards. Re
 | DBU cost estimation | Based on list prices from `system.billing.list_prices`. Does not account for committed use discounts or negotiated rates. |
 | Query text retention | Query text stored in topology for up to 25 queries per warehouse per collection cycle. No historical retention beyond what Foglight retains in topology. |
 | No packaged dashboards | Dashboards must be built manually by the Foglight administrator. Packaged dashboard export deferred to v2. |
-| AUI layer | All portlets use WCF (v1 framework). No charts (line/bar/Gantt) until v2 AUI layer is implemented. |
+| AUI layer | Most portlets use WCF tables. Time-plot charts (wcf.chart.time-plot) added for resource and job/pipeline trends. No line/bar/Gantt until v2 AUI layer is implemented. |
 
 ---
 

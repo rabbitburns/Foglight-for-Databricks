@@ -218,3 +218,5 @@
 | 1.0.64 | Tier 5: DLT Pipeline Updates (view 43/44) + Pipeline Data Quality / Expectations (view 45/46) |
 | 1.0.65 | Tier 7: Model Serving Endpoints (view 47/48) + Served Models (view 49/50) — DatabricksServingEndpoint, DatabricksServedModel topology types |
 | 1.0.66 | Nav main-view wired as composite-view (wcf.grid2 id=51): overview table top + DBU treemap + Cost vs DBU bubble side-by-side |
+| 1.0.67–1.0.74 | Time-plot trend views: Active Resource Trend (id=53) — activeClusterCount, clusterCount, activeWarehouseCount, warehouseCount; Job & Pipeline Count Trend (id=54) — jobCount, pipelineCount; query id=52 selects DatabricksWorkspace |
+| 1.0.75–1.0.78 | Landing page layout: single-column wcf.grid2, 5 views stacked full-width (Overview → Bubble → Treemap → Trend 53 → Trend 54); `align=stretch`, `showTitle=true`, `<width preferred="0"/>` sizing |

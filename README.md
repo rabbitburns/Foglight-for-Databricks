@@ -34,11 +34,11 @@ Download the latest release zip from the [Releases](../../releases) page and fol
 
 ## Dashboards & Portlets
 
-The cartridge includes a **Databricks** top-level nav entry with a landing page and 20 portlets, all available in the Add View picker:
+The cartridge includes a **Databricks** top-level nav entry with a composite landing page and 27 portlets, all available in the Add View picker:
 
 | Portlet | Description |
 |---|---|
-| Databricks Overview | Summary counts by resource category — landing page |
+| Databricks Overview | Summary counts by resource category |
 | Databricks Clusters | One row per cluster with state, config, and timing |
 | Databricks SQL Warehouses | One row per warehouse with state, size, and query count |
 | Databricks Jobs | One row per job with last run and historical stats |
@@ -58,6 +58,15 @@ The cartridge includes a **Databricks** top-level nav entry with a landing page 
 | Databricks Cost by SKU | Total DBU and estimated dollar cost grouped by SKU |
 | Databricks Cost vs DBU by SKU (Bubble) | Cost vs DBU scatter bubble chart by SKU |
 | Databricks User Activity (Bubble) | Query count vs avg duration scatter bubble by user |
+| Databricks SKU List Prices | Current price per DBU by SKU, cloud, and region |
+| Databricks Pipeline Updates | Last 5 DLT update events per pipeline |
+| Databricks Pipeline Data Quality | DLT expectation pass/fail counts per update |
+| Databricks Model Serving Endpoints | Serving endpoint inventory — state, config, model count |
+| Databricks Served Models | Per-served-model detail — version, size, traffic % |
+| Databricks Active Resource Trend | Cluster and warehouse counts over time (time-plot) |
+| Databricks Job and Pipeline Count Trend | Job and pipeline counts over time (time-plot) |
+
+The **Databricks** nav landing page is a composite view stacking the Overview table, Cost vs DBU bubble chart, DBU by Product treemap, Active Resource Trend chart, and Job & Pipeline Count Trend chart — full-width, with titles.
 
 See [DASHBOARDS.md](DASHBOARDS.md) for full portlet and script reference.
 
@@ -93,7 +102,7 @@ accountName=Databricks
 Requirements: JDK 11+, Python 3, Maven dependencies in local `.m2` cache, Foglight installed at `C:\Quest\Foglight\`.
 
 ```powershell
-.\build.ps1 -Version 1.0.47
+.\build.ps1 -Version 1.0.78
 ```
 
 Outputs:

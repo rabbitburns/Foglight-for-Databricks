@@ -16,7 +16,13 @@ The cartridge ships portlets but does not automatically create dashboards. After
 
 ### Dashboard 1 — Databricks (Overview)
 
-The landing page is built into the nav entry automatically — no dashboard to create. Clicking **Databricks** in the left nav goes directly to the Overview summary table.
+The landing page is built into the nav entry automatically — no dashboard to create. Clicking **Databricks** in the left nav opens the composite landing page (view id=51), which stacks full-width:
+
+1. Databricks Overview (summary table)
+2. Databricks Cost vs DBU by SKU (bubble chart)
+3. Databricks DBU by Product (treemap)
+4. Databricks Active Resource Trend (cluster/warehouse counts over time)
+5. Databricks Job and Pipeline Count Trend (job/pipeline counts over time)
 
 ### Dashboard 2 — Databricks - Compute
 
@@ -79,7 +85,7 @@ The landing page is built into the nav entry automatically — no dashboard to c
 
 WCF module name: `system:databricks`
 Nav entry: **Databricks** (top-level, appears alongside Administration / Alarms / Infrastructure)
-Landing page: **Databricks** composite (view id=51) — overview table top row, DBU treemap + Cost vs DBU bubble bottom row
+Landing page: **Databricks** composite (view id=51, wcf.grid2) — five views stacked full-width: overview table, Cost vs DBU bubble, DBU by Product treemap, Active Resource Trend, Job & Pipeline Count Trend
 
 ---
 
@@ -120,6 +126,8 @@ All views are visible to: Administrator, Operator, Advanced Operator, Dashboard 
 | 45 | Databricks Pipeline Data Quality | 46 | wcf.table.row-table | Failures first | DLT data quality expectations — pass rate, passed/failed/dropped row counts |
 | 47 | Databricks Model Serving Endpoints | 48 | wcf.table.row-table | Endpoint name asc | Serving endpoint inventory — state, config update state, creator, model count |
 | 49 | Databricks Served Models | 50 | wcf.table.row-table | Endpoint name, model name asc | Per-served-model detail — model name, version, workload size, traffic %, deployment state |
+| 53 | Databricks Active Resource Trend | — | wcf.chart.time-plot | Time asc | Historical time-plot of activeClusterCount, clusterCount, activeWarehouseCount, warehouseCount |
+| 54 | Databricks Job and Pipeline Count Trend | — | wcf.chart.time-plot | Time asc | Historical time-plot of jobCount, pipelineCount |
 
 ---
 
@@ -239,3 +247,5 @@ DatabricksModelRoot
 | 1.0.64 | Pipeline Updates (id=43), Pipeline Data Quality (id=45) — DLT event history and expectation results |
 | 1.0.65 | Model Serving Endpoints (id=47), Served Models (id=49) — DatabricksServingEndpoint and DatabricksServedModel topology types |
 | 1.0.66 | Nav main-view changed from standalone Overview table (id=9) to composite-view (id=51, wcf.grid2): overview table full-width top + DBU treemap + Cost vs DBU bubble side-by-side below |
+| 1.0.67–1.0.74 | Active Resource Trend (id=53, wcf.chart.time-plot): activeClusterCount, clusterCount, activeWarehouseCount, warehouseCount; Job & Pipeline Count Trend (id=54): jobCount, pipelineCount; both use query id=52 (DatabricksWorkspace datasource) |
+| 1.0.75–1.0.78 | Landing page layout overhaul: single-column wcf.grid2 with 5 stacked full-width views (row 0–4); `align=stretch` + `hweight=1` per window; `showTitle=true` for view title headers; `<width preferred="0"/>` on composite-view sizing |
