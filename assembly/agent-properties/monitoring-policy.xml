@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foglight-config version="1.0.0" exported-on="2026-05-21T00:00:00.000">
+	<persistable-config-model>
+		<config_id>d4b7c2a1-e3f4-4a5b-9c8d-100000000001</config_id>
+		<adapter>DatabricksAgent</adapter>
+		<agent_type>DatabricksAgent</agent_type>
+		<encoding_system>Foglight4-XML</encoding_system>
+		<config_type>default</config_type>
+		<config_qualifier>template</config_qualifier>
+		<sharing_name/>
+		<known_name/>
+		<type_id>d4b7c2a1-e3f4-4a5b-9c8d-100000000002</type_id>
+		<asp name="primary" type="singleitem">
+			<structure>
+				<field name="workspaceUrl" dataType="STRING" size="256">
+					<attributes MustEnter="1" PageTitle="Databricks Configuration" PageLineNbr="1"/>
+					<prompt>Workspace URL</prompt>
+					<paramdata>https://</paramdata>
+				</field>
+				<field name="accessToken" dataType="STRING" size="256">
+					<attributes MustEnter="1" Encrypted="1" PageTitle="Databricks Configuration" PageLineNbr="2"/>
+					<prompt>Access Token</prompt>
+					<paramdata></paramdata>
+				</field>
+				<field name="collectionIntervalSeconds" dataType="INT">
+					<attributes MustEnter="1" PageTitle="Databricks Configuration" PageLineNbr="3"/>
+					<prompt>Collection Interval (seconds)</prompt>
+					<paramdata>60</paramdata>
+				</field>
+				<field name="billing.warehouse.id" dataType="STRING" size="128">
+					<attributes PageTitle="Databricks Configuration" PageLineNbr="4"/>
+					<prompt>Billing Warehouse ID (optional)</prompt>
+					<paramdata></paramdata>
+				</field>
+				<field name="workspace.region" dataType="STRING" size="64">
+					<attributes PageTitle="Databricks Configuration" PageLineNbr="5"/>
+					<prompt>Workspace Region (optional)</prompt>
+					<paramdata></paramdata>
+				</field>
+			</structure>
+			<valuelist/>
+		</asp>
+	</persistable-config-model>
+</foglight-config>

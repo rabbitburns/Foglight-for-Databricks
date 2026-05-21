@@ -82,7 +82,7 @@ def build_agent_gar():
 
 
 def make_manifest(topo_size, binding_size, model_root_size, wcf_files,
-                  installers_xml_size, agent_zip_size):
+                  installers_xml_size, agent_zip_size, monitoring_policy_size):
     wcf_entries = '\n'.join(
         f'            <file name="{path}" size="{size}"/>' if not is_dir
         else f'            <file name="{path}" directory="true"/>'
@@ -113,6 +113,12 @@ def make_manifest(topo_size, binding_size, model_root_size, wcf_files,
                       creation-date="2026-04-05T00:00:00Z"/>
             <file name="wcf" directory="true"/>
 {wcf_entries}
+        </component>
+
+        <component type="Monitoring Policy">
+            <identity name="DatabricksAgent-Properties" version="{VERSION}"
+                      creation-date="2026-04-05T00:00:00Z"/>
+            <file name="monitoring-policy.xml" size="{monitoring_policy_size}"/>
         </component>
 
         <component type="Installers" deployment-item="installers.xml">
@@ -163,6 +169,9 @@ def main():
     agent_zip_bytes = build_agent_gar()
     agent_zip_name = "DatabricksAgent.gar"
 
+    with open("assembly/agent-properties/monitoring-policy.xml", "rb") as f:
+        monitoring_policy_bytes = f.read()
+
     wcf_entries, wcf_contents = collect_wcf_files("assembly/wcf")
 
     manifest = make_manifest(
@@ -172,6 +181,7 @@ def main():
         wcf_entries,
         len(installers_bytes),
         len(agent_zip_bytes),
+        len(monitoring_policy_bytes),
     )
 
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
@@ -181,6 +191,8 @@ def main():
         z.writestr(f"{cdir}/databricks-model-root-cdt.xml", model_root_bytes)
         for rel_path, data in wcf_contents:
             z.writestr(f"{wdir}/{rel_path}", data)
+        pdir = f"{cart}/DatabricksAgent-Properties-{VER_FLAT}"
+        z.writestr(f"{pdir}/monitoring-policy.xml", monitoring_policy_bytes)
         z.writestr(f"{idir}/installers.xml", installers_bytes)
         z.writestr(f"{idir}/{agent_zip_name}", agent_zip_bytes)
 
