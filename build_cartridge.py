@@ -7,6 +7,8 @@ import sys
 import zipfile
 import os
 import io
+import tarfile
+import gzip
 
 VERSION = sys.argv[1] if len(sys.argv) > 1 else "1.0.18"
 VER_FLAT = VERSION.replace(".", "_")
@@ -43,7 +45,7 @@ CDT_BINDING = f"""\
 INSTALLERS_XML = f"""\
 <?xml version="1.0" encoding="UTF-8"?>
 <installers>
-    <installer name="DatabricksAgent-{AGENT_VER}.zip" version="{AGENT_VER}" filename="DatabricksAgent-{AGENT_VER}.zip" type="manual">
+    <installer name="DatabricksAgent" version="{AGENT_VER}" filename="DatabricksAgent.gar" type="fglam-client-pkg">
         <agent-types>
             <agent-type name="DatabricksAgent"/>
         </agent-types>
@@ -52,26 +54,31 @@ INSTALLERS_XML = f"""\
 """
 
 
-def build_agent_zip():
-    """Build the agent deployment zip (embedded in the .car as an installer).
-    Structure mirrors what FglAM expects under its agents/ directory."""
-    buf = io.BytesIO()
-    base = f"DatabricksAgent/{AGENT_VER}-{AGENT_VER}"
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
-        # agent.manifest
+def build_agent_gar():
+    """Build the agent .gar (gzip tar) for remote FglAM deployment.
+    Structure: agent.manifest at root + lib/*.jar — matches fglam-client-pkg format."""
+    tar_buf = io.BytesIO()
+    with tarfile.open(fileobj=tar_buf, mode="w") as tar:
+        def add_bytes(name, data):
+            info = tarfile.TarInfo(name=name)
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data))
+
         with open("src/main/resources/config/agent.manifest", "rb") as f:
-            z.writestr(f"{base}/config/agent.manifest", f.read())
-        # properties template
-        z.writestr(f"{base}/config/databricks.properties", DATABRICKS_PROPERTIES_TEMPLATE)
-        # agent jar
+            add_bytes("agent.manifest", f.read())
+
         with open("target/databricks-agent.jar", "rb") as f:
-            z.writestr(f"{base}/lib/databricks-agent.jar", f.read())
-        # jackson jars
+            add_bytes("lib/databricks-agent.jar", f.read())
+
         for jar_path in JACKSON_JARS:
             jar_name = os.path.basename(jar_path)
             with open(jar_path, "rb") as f:
-                z.writestr(f"{base}/lib/{jar_name}", f.read())
-    return buf.getvalue()
+                add_bytes(f"lib/{jar_name}", f.read())
+
+    gz_buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=gz_buf, mode="wb", mtime=0) as gz:
+        gz.write(tar_buf.getvalue())
+    return gz_buf.getvalue()
 
 
 def make_manifest(topo_size, binding_size, model_root_size, wcf_files,
@@ -81,7 +88,6 @@ def make_manifest(topo_size, binding_size, model_root_size, wcf_files,
         else f'            <file name="{path}" directory="true"/>'
         for path, size, is_dir in wcf_files
     )
-    agent_zip_name = f"DatabricksAgent-{AGENT_VER}.zip"
     return f"""\
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -113,7 +119,7 @@ def make_manifest(topo_size, binding_size, model_root_size, wcf_files,
             <identity name="DatabricksAgent-Installer" version="{VERSION}"
                       creation-date="2026-04-05T00:00:00Z"/>
             <file name="installers.xml" size="{installers_xml_size}"/>
-            <file name="{agent_zip_name}" size="{agent_zip_size}"/>
+            <file name="DatabricksAgent.gar" size="{agent_zip_size}"/>
         </component>
     </cartridge>
 </manifest>
@@ -154,8 +160,8 @@ def main():
 
     binding_bytes = CDT_BINDING.encode("utf-8")
     installers_bytes = INSTALLERS_XML.encode("utf-8")
-    agent_zip_bytes = build_agent_zip()
-    agent_zip_name = f"DatabricksAgent-{AGENT_VER}.zip"
+    agent_zip_bytes = build_agent_gar()
+    agent_zip_name = "DatabricksAgent.gar"
 
     wcf_entries, wcf_contents = collect_wcf_files("assembly/wcf")
 
