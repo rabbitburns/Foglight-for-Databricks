@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Jobs"
@@ -27,7 +27,6 @@
                 </component-sizing>
             </property>
         </config>
-        <!-- Row 0: Jobs table -->
         <window id="0" view="system:databricks.15">
             <size/>
             <config>
@@ -37,7 +36,6 @@
                 <property name="showTitle"><boolean value="false"/></property>
             </config>
         </window>
-        <!-- Row 1: Job Runs -->
         <window id="1" view="system:databricks.1">
             <size/>
             <config>
@@ -47,7 +45,6 @@
                 <property name="showTitle"><boolean value="false"/></property>
             </config>
         </window>
-        <!-- Row 2: Top Jobs by DBU -->
         <window id="2" view="system:databricks.29">
             <size/>
             <config>
@@ -59,5 +56,3 @@
         </window>
     </composite-view>
 </module>
-
-

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Queries"
@@ -27,7 +27,6 @@
                 </component-sizing>
             </property>
         </config>
-        <!-- Row 0: Query History -->
         <window id="0" view="system:databricks.3">
             <size/>
             <config>
@@ -37,7 +36,6 @@
                 <property name="showTitle"><boolean value="false"/></property>
             </config>
         </window>
-        <!-- Row 1: Slow Queries -->
         <window id="1" view="system:databricks.5">
             <size/>
             <config>
@@ -47,7 +45,6 @@
                 <property name="showTitle"><boolean value="false"/></property>
             </config>
         </window>
-        <!-- Row 2, col 0: User Activity Treemap | col 1: User Activity table -->
         <window id="2" view="system:databricks.37">
             <size/>
             <config>
@@ -70,5 +67,3 @@
         </window>
     </composite-view>
 </module>
-
-
