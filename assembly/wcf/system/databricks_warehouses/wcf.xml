@@ -24,6 +24,7 @@
             <property name="sizing">
                 <component-sizing>
                     <width preferred="0"/>
+                    <height preferred="0"/>
                 </component-sizing>
             </property>
         </config>
