@@ -5,7 +5,7 @@ package system._databricks.scripts;
 def ts = server.get("TopologyService")
 
 def rawRows = []
-def workspaces = ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))
+def workspaces = (ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
 workspaces?.each { ws ->
     ws.get("clusters")?.each { c ->
         def autoscale = c.get("autoscaleEnabled")

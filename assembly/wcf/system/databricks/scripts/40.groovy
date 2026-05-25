@@ -7,7 +7,7 @@ import java.awt.Color;
 def ts = server.get("TopologyService")
 def userMap = [:]
 
-ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))?.each { ws ->
+(ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
     ws.get("warehouses")?.each { wh ->
         wh.get("queries")?.each { q ->
             def user = q.get("userName") ?: "(unknown)"

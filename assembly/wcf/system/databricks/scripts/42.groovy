@@ -5,7 +5,7 @@ package system._databricks.scripts;
 def ts = server.get("TopologyService")
 def rows = new java.util.ArrayList()
 
-ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))?.each { ws ->
+(ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
     ws.get("skuPrices")?.each { sp ->
         def row = functionHelper.createDataObject('databricks:DatabricksSkuPriceRow', 'none', null)
         row.store('skuName',         sp.get("skuName")         ?: "", specificTimeRange)

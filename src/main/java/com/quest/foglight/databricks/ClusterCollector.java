@@ -59,17 +59,13 @@ public class ClusterCollector {
             TopologyDataSubmissionService3.TopologySubmitter3 submitter =
                     topologyService.getTopologySubmitter();
 
-            log.log("ClusterCollector: creating top-level node type=DatabricksModelRoot"
-                    + ", accountId=" + accountId
-                    + ", workspace=" + workspaceUrl
-                    + ", now=" + now);
+            System.out.println("ClusterCollector: creating top-level node"
+                    + " accountId=" + accountId
+                    + " workspace=" + workspaceUrl
+                    + " now=" + now);
 
             TopologyNode root = submitter.createTopLevelNode("DatabricksModelRoot", now);
             root.setId("DatabricksModelRoot");
-
-            log.log("ClusterCollector: created top-level node type=DatabricksModelRoot"
-                    + ", accountId=" + accountId
-                    + ", workspace=" + workspaceUrl);
 
             // ---------------------------------------------------------------------
             // Direct DatabricksAccount under root
@@ -804,7 +800,7 @@ public class ClusterCollector {
                 log.log("ClusterCollector: no billing warehouse configured, skipping billing collection");
             }
 
-            log.log("ClusterCollector: topology summary rootType=DatabricksModelRoot"
+            System.out.println("ClusterCollector: topology summary rootType=DatabricksModelRoot"
                     + ", accountId=" + accountId
                     + ", accountName=" + accountName
                     + ", workspace=" + workspaceUrl

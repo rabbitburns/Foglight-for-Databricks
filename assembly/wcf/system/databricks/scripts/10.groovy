@@ -15,7 +15,7 @@ def pipelines     = 0; def pipelinesRunning = 0; def pipelinesStopped = 0
 def pools         = 0
 def totalQueries  = 0; def queryErrors = 0; def totalQueryMs = 0L
 
-def workspaces = ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))
+def workspaces = (ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
 workspaces?.each { ws ->
 
     ws.get("clusters")?.each { c ->
@@ -51,7 +51,7 @@ workspaces?.each { ws ->
 }
 
 def monthDbu = 0.0; def monthCost = 0.0; def productDbu = [:]
-ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))?.each { ws ->
+(ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
     ws.get("usages")?.each { u ->
         def dateStr = u.get("usageDate") ?: ""
         if (!dateStr) return

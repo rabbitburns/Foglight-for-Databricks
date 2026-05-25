@@ -32,7 +32,7 @@ public class DatabricksAgent implements Agent {
         try {
             LogService logService = serviceFactory.getService(LogService.class);
             log = logService.getLogger(DatabricksAgent.class);
-            log.log("DatabricksAgent: startDataCollection entered");
+            System.out.println("DatabricksAgent: startDataCollection entered");
 
             Properties fileProps = loadConfigFile(log);
             ASPService aspService = serviceFactory.getService(ASPService.class);
@@ -47,12 +47,12 @@ public class DatabricksAgent implements Agent {
             );
 
             if (workspaceUrl == null || workspaceUrl.isBlank()) {
-                log.log("DatabricksAgent: workspaceUrl not configured, collection disabled");
+                System.out.println("DatabricksAgent: workspaceUrl not configured, collection disabled");
                 return;
             }
 
             if (accessToken == null || accessToken.isBlank()) {
-                log.log("DatabricksAgent: accessToken not configured, collection disabled");
+                System.out.println("DatabricksAgent: accessToken not configured, collection disabled");
                 return;
             }
 
@@ -89,7 +89,7 @@ public class DatabricksAgent implements Agent {
                 workspaceRegion
             );
 
-            log.log("DatabricksAgent: running initial collection");
+            System.out.println("DatabricksAgent: running initial collection");
             collector.collect();
 
             scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -100,7 +100,7 @@ public class DatabricksAgent implements Agent {
                 TimeUnit.SECONDS
             );
 
-            log.log("DatabricksAgent started: workspace=" + workspaceUrl
+            System.out.println("DatabricksAgent started: workspace=" + workspaceUrl
                 + ", accountId=" + accountId
                 + ", interval=" + intervalSeconds + "s");
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class DatabricksAgent implements Agent {
         Properties props = new Properties();
 
         File jarDir = getJarDir();
-        log.log("DatabricksAgent: jar dir=" + jarDir);
+        System.out.println("DatabricksAgent: jar dir=" + jarDir);
 
         List<File> candidates = new ArrayList<>();
         if (jarDir != null && jarDir.getParentFile() != null) {
@@ -127,11 +127,11 @@ public class DatabricksAgent implements Agent {
         candidates.add(new File("config/databricks.properties"));
 
         for (File configFile : candidates) {
-            log.log("DatabricksAgent: trying " + configFile.getAbsolutePath() + " exists=" + configFile.exists());
+            System.out.println("DatabricksAgent: trying " + configFile.getAbsolutePath() + " exists=" + configFile.exists());
             if (configFile.exists()) {
                 try (FileInputStream fis = new FileInputStream(configFile)) {
                     props.load(fis);
-                    log.log("DatabricksAgent: loaded config from " + configFile.getAbsolutePath());
+                    System.out.println("DatabricksAgent: loaded config from " + configFile.getAbsolutePath());
                     return props;
                 } catch (Exception e) {
                     log.log("DatabricksAgent: failed to load " + configFile.getAbsolutePath() + ": " + e.getMessage());
