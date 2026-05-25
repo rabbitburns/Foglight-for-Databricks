@@ -6,7 +6,7 @@ import java.awt.Color;
 def ts = server.get("TopologyService")
 def skuData = [:]
 
-(ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
+(ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
     ws.get("usages")?.each { u ->
         def sku = u.get("sku") ?: "UNKNOWN"
         double dbu = 0.0; double cost = 0.0

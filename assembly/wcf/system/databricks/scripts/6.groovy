@@ -6,7 +6,7 @@ def ts = server.get("TopologyService")
 
 def rawRows = []
 
-def workspaces = (ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
+def workspaces = (ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
 workspaces?.each { ws ->
     ws.get("warehouses")?.each { wh ->
         def whName = wh.get("warehouseName") ?: ""

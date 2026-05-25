@@ -5,7 +5,7 @@ package system._databricks.scripts;
 def ts = server.get("TopologyService")
 def rows = new java.util.ArrayList()
 
-(ts.getObjectsOfType(ts.getType("DatabricksModelRoot")) ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
+(ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }?.each { ws ->
     ws.get("servingEndpoints")?.each { ep ->
         ep.get("servedModels")?.each { sm ->
             def row = functionHelper.createDataObject('databricks:DatabricksServedModelRow', 'none', null)
