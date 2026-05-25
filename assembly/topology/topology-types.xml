@@ -30,7 +30,7 @@
     <type name="DatabricksWarehouse" extends="TopologyObject">
         <property name="warehouseId"    type="String" is-identity="true"/>
         <property name="warehouseName"  type="String"/>
-        <property name="state"          type="String"/>
+        <property name="state"          type="StringObservation" is-containment="true"/>
         <property name="stateStr"       type="String"/>
         <property name="warehouseType"  type="String"/>
         <property name="size"           type="String"/>
@@ -73,7 +73,7 @@
     <type name="DatabricksPipeline" extends="TopologyObject">
         <property name="pipelineId"       type="String" is-identity="true"/>
         <property name="pipelineName"     type="String"/>
-        <property name="state"            type="String"/>
+        <property name="state"            type="StringObservation" is-containment="true"/>
         <property name="stateStr"         type="String"/>
         <property name="creatorUserName"  type="String"/>
         <property name="runAsUserName"    type="String"/>
@@ -125,8 +125,8 @@
         <property name="scheduleStatus"    type="String"/>
         <property name="triggerType"       type="String"/>
         <property name="tagsStr"           type="String"/>
-        <property name="lastRunState"      type="String"/>
-        <property name="lastRunResult"     type="String"/>
+        <property name="lastRunState"      type="StringObservation" is-containment="true"/>
+        <property name="lastRunResult"     type="StringObservation" is-containment="true"/>
         <property name="lastRunStartStr"   type="String"/>
         <property name="lastRunDurationStr" type="String"/>
         <property name="successRateStr"    type="String"/>
@@ -148,9 +148,9 @@
         <property name="runId"                  type="String" is-identity="true"/>
         <property name="clusterId"              type="String"/>
         <property name="runName"                type="String"/>
-        <property name="lifeCycleState"         type="String"/>
+        <property name="lifeCycleState"         type="StringObservation" is-containment="true"/>
         <property name="lifeCycleStateStr"      type="String"/>
-        <property name="resultState"            type="String"/>
+        <property name="resultState"            type="StringObservation" is-containment="true"/>
         <property name="resultStateStr"         type="String"/>
         <property name="runType"                type="String"/>
         <property name="triggerType"            type="String"/>
@@ -177,7 +177,7 @@
     <type name="DatabricksCluster" extends="TopologyObject">
         <property name="clusterId"                    type="String"  is-identity="true"/>
         <property name="clusterName"                  type="String"/>
-        <property name="state"                        type="String"/>
+        <property name="state"                        type="StringObservation" is-containment="true"/>
         <property name="stateStr"                     type="String"/>
         <property name="clusterSource"                type="String"/>
         <property name="nodeTypeId"                   type="String"/>

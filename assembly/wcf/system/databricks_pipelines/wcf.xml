@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        version="3-027"
+        display-name="DLT Pipelines"
+        parent="system:databricks"
+        main-view="1"
+        last-entity-id="1">
+    <relevant-role name="Administrator"/>
+    <relevant-role name="Operator"/>
+    <relevant-role name="Advanced Operator"/>
+    <relevant-role name="Dashboard Designer"/>
+    <relevant-role name="Dashboard User"/>
+    <relevant-role name="General Access"/>
+    <composite-view id="1" display-name="DLT Pipelines" public="true" component="wcf.grid2">
+        <uuid>a1b2c3d4-e5f6-4a7b-8c9d-100000000004</uuid>
+        <purpose name="homepage"/>
+        <purpose name="page"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="spacing"><integer value="4"/></property>
+            <property name="sizing">
+                <component-sizing>
+                    <width preferred="0"/>
+                </component-sizing>
+            </property>
+        </config>
+        <window id="0" view="system:databricks.17">
+            <size/>
+            <config>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="false"/></property>
+            </config>
+        </window>
+    </composite-view>
+</module>
+
+
