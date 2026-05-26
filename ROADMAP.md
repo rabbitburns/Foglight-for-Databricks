@@ -132,6 +132,22 @@
 | Drift metrics | SQL query against `drift_metrics` output table via warehouse | Medium | Statistical drift vs baseline (JS divergence, distribution % change). Surfaces columns where data has shifted unexpectedly. |
 | Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | Correlate job run failures or anomalies with downstream drift detection. Differentiator vs Datadog/New Relic. |
 
+### Tier 11 — AI Gateway Observability (Token & GenAI Usage)
+
+> **Competitive note:** Token-level GenAI observability from the Databricks-native `system.ai_gateway.usage` system table — surfaced inside the same Foglight platform as DBU cost, query, pipeline, and Lakebase monitoring — is differentiated. Neither Datadog nor New Relic surfaces Databricks AI Gateway token economics natively. This extends the "Databricks-native, not cloud-billing-estimated" wedge into the fastest-growing workload on the platform. Tag-based attribution (project / team / cost-center) gives FinOps and platform buyers a per-team GenAI consumption view that complements existing DBU rollups.
+
+| Gap | API Source | Effort | Notes |
+|---|---|---|---|
+| AI Gateway endpoint inventory | Aggregate `endpoint_name` from `system.ai_gateway.usage` | Low | New type `DatabricksAiEndpoint` under `DatabricksWorkspace`. Current-window rollup: request count, total tokens, error rate, p95 latency. |
+| Token consumption rollup | `SUM(total/input/output tokens)` by date × endpoint × model | Low | New type `DatabricksAiUsage`. Daily aggregated rows for trend portlets. Includes cache + reasoning token breakdown. Direct analogue of `DatabricksUsage`. |
+| Per-requester activity | `GROUP BY requester, requester_type` | Low | New type `DatabricksAiUserActivity`. Request count, total tokens, error count per requester. Reuses User Activity treemap + bubble pattern. |
+| Endpoint performance metrics | `approx_percentile(latency_ms, …)`, status-code rollup in SQL | Medium | p50/p90/p95/p99 latency, TTFB, 4xx/5xx error counts per endpoint. Percentiles pre-computed in SQL warehouse. |
+| Tag-based usage attribution | `request_tags['…']`, `endpoint_tags['…']` columns | Low | Per-team/project/cost-center token rollups. Same tag-propagation pattern planned for Lakebase. |
+| Overview summary row | Derived from `DatabricksAiUsage` | Low | "AI Gateway (This Month)" row in Overview: total tokens, top endpoint/model, request count. Mirrors DBU summary row (1.0.58). |
+| Token → dollar cost attribution | Join to `system.billing.usage` model-serving/foundation-model SKU records | High | **Deferred (fast-follow).** Same join complexity as Tier 4 cost-per-job. Ship after token-volume tier proves out. |
+
+**Prerequisites:** Unity AI Gateway V2 Preview enabled (account Previews toggle). **Account-admin access required** for `system.ai_gateway.usage` — stricter than `system.billing.*`. Collector must degrade gracefully if preview is disabled or access is revoked.
+
 ---
 
 ## Priority Order (agreed)
@@ -143,10 +159,11 @@
 5. **Tier 5** — DLT Pipeline depth ✓ (built 1.0.64, untested — DLT not in dev workspace)
 6. **Tier 7** — Model Serving ✓ (1.0.65)
 7. **Tier 8** — Lakebase platform monitoring — **next** (unblocked)
-8. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` — **unblocked** (UC confirmed; revised from Ganglia approach)
-9. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
-10. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**on hold**)
-11. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
+8. **Tier 11** — AI Gateway Observability — **next** (unblocked; preview confirmed enabled)
+9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` — **unblocked** (UC confirmed; revised from Ganglia approach)
+10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
+11. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**on hold**)
+12. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
 
 ---
 
@@ -220,3 +237,4 @@
 | 1.0.66 | Nav main-view wired as composite-view (wcf.grid2 id=51): overview table top + DBU treemap + Cost vs DBU bubble side-by-side |
 | 1.0.67–1.0.74 | Time-plot trend views: Active Resource Trend (id=53) — activeClusterCount, clusterCount, activeWarehouseCount, warehouseCount; Job & Pipeline Count Trend (id=54) — jobCount, pipelineCount; query id=52 selects DatabricksWorkspace |
 | 1.0.75–1.0.78 | Landing page layout: single-column wcf.grid2, 5 views stacked full-width (Overview → Bubble → Treemap → Trend 53 → Trend 54); `align=stretch`, `showTitle=true`, `<width preferred="0"/>` sizing |
+| 1.0.79–1.0.113 | CDT diagnostics and stability fixes: DOCTYPE restoration in cdt.xml (parsing failure); StringObservation → plain String for all state fields (runtime type mismatch); same-version reinstall CDT skip documented. No feature changes. |

@@ -343,7 +343,7 @@
   <!-- ── SLIDE 1: Title ─────────────────────────────────────────── -->
   <div class="slide active" id="s1">
     <div class="logo">Quest Software</div>
-    <div class="eyebrow">Enablement Overview · v1.0.65</div>
+    <div class="eyebrow">Enablement Overview · v1.0.113</div>
     <h1>Foglight for<br><span style="color:var(--quest-cyan)">Databricks</span></h1>
     <div class="divider"></div>
     <p class="subtitle">Unified Lakehouse observability — compute, jobs, queries, cost intelligence, data quality, and model serving — natively inside Foglight.</p>
@@ -443,8 +443,8 @@
     </div>
     <div class="stat-grid">
       <div class="stat-card">
-        <div class="stat-num">25</div>
-        <div class="stat-label">WCF Portlets across 6 monitoring categories</div>
+        <div class="stat-num">34</div>
+        <div class="stat-label">WCF Portlets across 7 monitoring categories</div>
       </div>
       <div class="stat-card">
         <div class="stat-num">60s</div>
@@ -704,8 +704,64 @@
     <div class="slide-footer">CONFIDENTIAL</div>
   </div>
 
-  <!-- ── SLIDE 10: Getting Started ──────────────────────────────── -->
+  <!-- ── SLIDE 10: AI Gateway Observability ───────────────────────── -->
   <div class="slide" id="s10">
+    <div class="eyebrow">Tier 11 — Coming Next</div>
+    <h2>AI Gateway Observability</h2>
+    <div class="grid-2" style="align-items:start; gap:24px; margin-top:4px;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="pillar" style="border-color: rgba(0,180,216,0.4); background: rgba(0,180,216,0.06);">
+          <div class="pillar-icon">🧠</div>
+          <h3 style="color:var(--quest-cyan)">Token & Usage Metrics</h3>
+          <ul>
+            <li>Total, input, output tokens by endpoint × model × day</li>
+            <li>Cache token breakdown (read, creation, reasoning)</li>
+            <li>Request counts and error rates per endpoint</li>
+            <li>Per-requester token aggregates (user / service)</li>
+            <li>Tag-based rollups — project, team, cost-center</li>
+          </ul>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">⏱️</div>
+          <h3>Endpoint Performance</h3>
+          <ul>
+            <li>p50 / p90 / p95 / p99 latency per endpoint</li>
+            <li>Average time-to-first-byte (TTFB)</li>
+            <li>4xx / 5xx error counts, error rate %</li>
+            <li>Pre-aggregated in SQL warehouse — no raw row pull</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="diff-card">
+          <h3>AI Gateway — Databricks-Native, Same Platform</h3>
+          <p>Queries <code style="font-size:12px;color:var(--quest-cyan)">system.ai_gateway.usage</code> via the same SQL warehouse pattern already used for <code style="font-size:12px;color:var(--quest-cyan)">system.billing.usage</code>. No new collection mechanism. 7 new portlets under a dedicated <strong>Databricks - AI Gateway</strong> dashboard.</p>
+          <div class="versus" style="margin-top:12px;">
+            <span class="vs-dd">Datadog: No AI Gateway token observability</span>
+            <span class="vs-nr">New Relic: No AI Gateway token observability</span>
+            <span class="vs-win">Foglight: Included</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tag tag-orange">Prerequisites</div>
+          <h3>What's needed</h3>
+          <ul class="feature-list">
+            <li>Unity AI Gateway V2 Preview enabled (account Previews toggle)</li>
+            <li>Account-admin access for monitoring identity — stricter than billing tables</li>
+            <li>Existing SQL warehouse (reuses <code style="font-size:12px;color:var(--quest-cyan)">billingWarehouseId</code>)</li>
+            <li>Collector degrades gracefully if preview is disabled</li>
+          </ul>
+        </div>
+        <div class="card" style="background:rgba(0,180,216,0.06); border-color:rgba(0,180,216,0.3);">
+          <p style="font-size:13px;"><strong style="color:var(--quest-cyan)">Fast-follow (deferred):</strong> Token → dollar cost attribution via join to <code style="font-size:12px;color:var(--quest-cyan)">system.billing.usage</code> model-serving SKU records — same approach as DBU cost, same complexity class as Tier 4 cost-per-job.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">CONFIDENTIAL</div>
+  </div>
+
+  <!-- ── SLIDE 11: Getting Started ──────────────────────────────── -->
+  <div class="slide" id="s11">
     <div class="eyebrow">Next Steps</div>
     <h2>Getting started</h2>
     <div class="grid-2" style="align-items:start; gap:32px;">
@@ -778,7 +834,7 @@
 <!-- ── Navigation Controls ───────────────────────────────────────── -->
 <div class="nav">
   <button id="btn-prev" onclick="navigate(-1)" disabled>←</button>
-  <span id="slide-counter">1 / 10</span>
+  <span id="slide-counter">1 / 11</span>
   <button id="btn-next" onclick="navigate(1)">→</button>
 </div>
 

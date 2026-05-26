@@ -1,9 +1,9 @@
 # Foglight for Databricks — Product Management Specification
 
-**Version:** 1.0.78  
+**Version:** 1.0.113  
 **Status:** POC / Active Development  
 **Owner:** Quest Software  
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-26
 
 ---
 
@@ -76,8 +76,11 @@ Foglight Topology Store
           ├── DatabricksUsage (n)          ← billing data
           ├── DatabricksJobDbu (n)         ← per-job DBU
           ├── DatabricksSkuPrice (n)       ← list prices
-          └── DatabricksServingEndpoint (n)
-              └── DatabricksServedModel (n)
+          ├── DatabricksServingEndpoint (n)
+          │   └── DatabricksServedModel (n)
+          ├── DatabricksAiEndpoint (n)     ← AI Gateway endpoints
+          │   └── DatabricksAiUsage (n)    ← daily token aggregates
+          └── DatabricksAiUserActivity (n) ← per-requester token rollup
         │
         ▼
 WCF Portlets (27 views, Groovy scripts)
@@ -99,6 +102,7 @@ Foglight Dashboards (user-configured)
 | DBU Usage | `system.billing.usage` via SQL warehouse | 60s |
 | SKU List Prices | `system.billing.list_prices` via SQL warehouse | 60s |
 | Model Serving Endpoints | `GET /api/2.0/serving-endpoints` | 60s |
+| AI Gateway Usage | `system.ai_gateway.usage` via SQL warehouse (server-side aggregate) | 60s |
 
 ### 3.3 Authentication
 
@@ -190,7 +194,30 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 - Graphical: DBU by Product treemap, Cost vs DBU bubble chart by SKU
 - Overview summary: DBU this month, top product, estimated total cost
 
-### 4.5 Model Serving
+### 4.5 AI Gateway Observability (Tier 11 — Planned)
+
+**AI Gateway Endpoints**
+- Per-endpoint current-window rollup: request count, total tokens consumed, error rate, p95 latency
+- Destination model(s), requester breakdown, endpoint tags
+
+**Token Usage** (daily aggregates, 60-day rolling)
+- Total, input, and output tokens by date × endpoint × model
+- Cache breakdown: `cache_read_input_tokens`, `cache_creation_input_tokens`, `output_reasoning_tokens`
+- Daily trend portlet — mirrors DBU Daily Trend pattern
+
+**Per-Requester Activity**
+- Request count, total tokens, error count per requester/requester type
+- Treemap and bubble charts — reuses User Activity portlet pattern
+
+**Endpoint Performance**
+- p50/p90/p95/p99 latency and average time-to-first-byte (TTFB), pre-aggregated in SQL
+- 4xx/5xx error counts per endpoint
+
+**Overview summary row**: "AI Gateway (This Month)" — total tokens, top endpoint/model, request count. Mirrors DBU summary row.
+
+**Prerequisites:** Unity AI Gateway V2 Preview enabled; account-admin access required for `system.ai_gateway.usage`.
+
+### 4.6 Model Serving
 
 **Serving Endpoints**
 - Name, ready state (READY, NOT_READY, UPDATING), config update state
@@ -202,7 +229,7 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 - Deployment state, workload size (Small/Medium/Large)
 - Traffic percentage, scale-to-zero enabled
 
-### 4.6 Portlet Reference
+### 4.7 Portlet Reference
 
 | # | Portlet | Category |
 |---|---|---|
@@ -233,6 +260,13 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | 25 | Databricks Served Models | Model Serving |
 | 26 | Databricks Active Resource Trend | Compute |
 | 27 | Databricks Job and Pipeline Count Trend | Jobs |
+| 28 | Databricks AI Gateway Endpoints | AI Gateway |
+| 29 | Databricks AI Token Usage | AI Gateway |
+| 30 | Databricks AI Tokens by Model (Treemap) | AI Gateway |
+| 31 | Databricks AI User Activity | AI Gateway |
+| 32 | Databricks AI User Activity (Treemap) | AI Gateway |
+| 33 | Databricks AI Endpoint Performance | AI Gateway |
+| 34 | Databricks AI Daily Token Trend | AI Gateway |
 
 ---
 
@@ -251,6 +285,7 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | DLT pipeline update history | ✓ | ✗ | ✓ |
 | DLT data quality expectations | ✓ | ✗ | ✗ |
 | Model serving endpoint monitoring | ✓ | ✓ | ✗ |
+| AI Gateway token & latency observability | ✓ Planned (Tier 11) | ✗ | ✗ |
 | Graphical widgets (treemap/bubble) | ✓ | ✓ | ✓ |
 | Integrated with broader IT monitoring | ✓ (Foglight platform) | Partial | Partial |
 | On-premises deployment option | ✓ (FglAM) | ✗ | ✗ |
@@ -285,9 +320,9 @@ FglAM runs on-premises or in a private cloud. For organisations with data sovere
 
 ## 6. Roadmap
 
-### 6.1 In Progress / Complete (v1.0.78)
+### 6.1 In Progress / Complete (v1.0.113)
 
-All items in Tiers 1–5 and Tier 7 are complete. Time-plot trend views (Active Resource Trend, Job & Pipeline Count Trend) added in 1.0.74. Landing page composite-view finalized in 1.0.78 — 5 views stacked full-width with titles. See ROADMAP.md for full version history.
+All items in Tiers 1–5 and Tier 7 are complete. Time-plot trend views (Active Resource Trend, Job & Pipeline Count Trend) added in 1.0.74. Landing page composite-view finalized in 1.0.78. Versions 1.0.79–1.0.113 cover CDT stability fixes (DOCTYPE restoration, StringObservation → String type reversion for state fields). See ROADMAP.md for full version history.
 
 ### 6.2 Next — Tier 8: Lakebase Platform Monitoring
 
@@ -313,7 +348,27 @@ Requires Unity Catalog (confirmed enabled: `azure:eastus`). Two phases:
 
 **Phase 2** — Job → data quality correlation: cross-reference job run failures with downstream table drift metrics. If Job X failed and Table Y shows drift shortly after, surface both in a single view. **This capability does not exist in Datadog or New Relic** and is the primary differentiator for this tier.
 
-### 6.5 v2: AUI Dashboard Layer
+### 6.6 Tier 11: AI Gateway Observability (Token & GenAI Usage)
+
+Queries the `system.ai_gateway.usage` Unity Catalog system table via the same SQL warehouse mechanism used for billing data (Tier 4). Server-side aggregate query — raw per-request rows are not pulled.
+
+**Topology additions:** `DatabricksAiEndpoint`, `DatabricksAiUsage` (daily token rollup), `DatabricksAiUserActivity` (per-requester aggregates).
+
+**Portlets (7 new, views 55+):**
+- AI Gateway Endpoints — current-window request count, tokens, error rate, p95 latency
+- AI Token Usage — daily aggregated table (input/output/cache/reasoning tokens)
+- AI Tokens by Model (Treemap) — visual token volume by model
+- AI User Activity (table + treemap) — per-requester token and request counts
+- AI Endpoint Performance — latency percentiles (p50/p90/p95/p99), TTFB, error rates
+- AI Daily Token Trend (time-plot) — rolling token consumption over time
+
+**Value:** GenAI cost and performance governance from the same platform as DBU cost monitoring. Tag-based attribution (project / team / cost-center) enables per-team GenAI consumption rollups for FinOps. Neither Datadog nor New Relic surfaces this data natively.
+
+**Prerequisites:** Unity AI Gateway V2 Preview enabled; account-admin access required for `system.ai_gateway.usage` (stricter than `system.billing.*`). Collector degrades gracefully if preview is disabled.
+
+**Deferred (fast-follow):** Token → dollar cost attribution via join to `system.billing.usage` model-serving SKU records. Same complexity class as Tier 4 cost-per-job.
+
+### 6.7 v2: AUI Dashboard Layer
 
 WCF portlets are the v1 foundation. v2 replaces or supplements them with Foglight's Angular UI (AUI) framework:
 
@@ -360,6 +415,7 @@ billingWarehouseId=<warehouse-id>
 The token requires read access to:
 - Clusters, Jobs, Warehouses, Pipelines, Instance Pools, Serving Endpoints (standard workspace read)
 - `system.billing.usage` and `system.billing.list_prices` tables (requires Databricks Premium or system table access)
+- `system.ai_gateway.usage` table — **requires account-admin access** (Tier 11 only; stricter than billing tables)
 
 No write permissions are required or used.
 
@@ -389,6 +445,8 @@ The cartridge provides portlets but does not automatically create dashboards. Re
 | Query text retention | Query text stored in topology for up to 25 queries per warehouse per collection cycle. No historical retention beyond what Foglight retains in topology. |
 | No packaged dashboards | Dashboards must be built manually by the Foglight administrator. Packaged dashboard export deferred to v2. |
 | AUI layer | Most portlets use WCF tables. Time-plot charts (wcf.chart.time-plot) added for resource and job/pipeline trends. No line/bar/Gantt until v2 AUI layer is implemented. |
+| AI Gateway — account-admin required | `system.ai_gateway.usage` is accessible only to account admins. Production deployments should use a dedicated account-admin-scoped service principal rather than a personal PAT. |
+| AI Gateway — Beta feature | Unity AI Gateway V2 Preview must be enabled via the account Previews toggle. If disabled or access is revoked, the collector degrades gracefully (no data, no errors). |
 
 ---
 
@@ -401,6 +459,9 @@ The cartridge provides portlets but does not automatically create dashboards. Re
 | Is Lakebase deployed? | Customer | TBC — determines Tier 8 priority. |
 | AUI component library documentation available? | Quest Dev Team | Requested. Blocks v2 work. |
 | Target GA version and release process | Quest PM | TBC |
+| AI Gateway region support for `azure:eastus`? | Customer | Verify Unity AI Gateway model-serving region availability for the target workspace. |
+| Account-admin grant for monitoring principal vs. personal PAT? | Quest Dev / Customer | Production should use a dedicated account-admin-scoped service principal, not a personal PAT. |
+| Token → dollar fast-follow priority relative to Tier 8 / Tier 6? | Quest PM | Slot after token-volume tier (Tier 11 Phase 1) proves out in a live gateway. |
 
 ---
 
