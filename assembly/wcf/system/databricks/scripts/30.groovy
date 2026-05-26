@@ -5,12 +5,12 @@ package system._databricks.scripts;
 def ts = server.get("TopologyService")
 
 def jobNames = [:]
-(ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []).collectMany { _w -> (_w.get("jobs") ?: []) as List } } }?.each { j ->
+ts.getObjectsOfType(ts.getType("DatabricksJob"))?.each { j ->
     jobNames[j.get("jobId")] = j.get("jobName") ?: j.get("jobId")
 }
 
 def rawRows = []
-def workspaces = (ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
+def workspaces = ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))
 workspaces?.each { ws ->
     ws.get("jobDbus")?.each { jd ->
         def jobId = jd.get("jobId") ?: ""

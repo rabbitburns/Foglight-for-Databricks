@@ -15,7 +15,7 @@ def prevMonth = prevCal.get(Calendar.MONTH) + 1
 def currentDbu = [:]
 def previousDbu = [:]
 
-def workspaces = (ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
+def workspaces = ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))
 workspaces?.each { ws ->
     ws.get("usages")?.each { u ->
         def dateStr = u.get("usageDate") ?: ""

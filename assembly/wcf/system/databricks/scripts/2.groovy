@@ -12,7 +12,7 @@ def dur = { ms ->
 
 def rawRows = []
 
-def workspaces = (ts.getType("DatabricksModelRoot").findAll() ?: []).collectMany { _r -> (_r.get("accounts") ?: []).collectMany { _a -> (_a.get("workspaces") ?: []) as List } }
+def workspaces = ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))
 workspaces?.each { ws ->
     ws.get("jobs")?.each { job ->
         def jobName = job.get("jobName")         ?: ""
