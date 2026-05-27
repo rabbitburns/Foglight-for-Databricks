@@ -1,0 +1,14 @@
+workspace_url: ""
+access_token: ""
+project_id_filter: []
+include_tags:
+  - env
+  - app
+  - owner
+output_dir: "output"
+
+postgres:
+  database: "databricks_postgres"
+  port: 5432
+  sslmode: "require"
+  monitoring_user: "foglight_monitor"
