@@ -2,8 +2,6 @@ name: Lakebase Branch → Foglight Discovery
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: "0 5 * * *"
 
 # Opt into Node 24 now so you don't see the Node 20 deprecation warning.
 env:
