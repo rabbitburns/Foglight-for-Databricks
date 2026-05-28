@@ -225,6 +225,37 @@
         <property name="endpointHost"  type="wcf:String"/>
         <property name="endpointState" type="wcf:String"/>
     </type>
+    <type name="DatabricksAiEndpointRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="endpointName"  type="wcf:String"/>
+        <property name="endpointType"  type="wcf:String"/>
+        <property name="requestCount"  type="wcf:String"/>
+        <property name="totalTokens"   type="wcf:String"/>
+        <property name="inputTokens"   type="wcf:String"/>
+        <property name="outputTokens"  type="wcf:String"/>
+        <property name="errorCount"    type="wcf:String"/>
+        <property name="errorRate"     type="wcf:String"/>
+        <property name="avgLatency"    type="wcf:String"/>
+        <property name="p95Latency"    type="wcf:String"/>
+    </type>
+    <type name="DatabricksAiUsageRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="usageDate"     type="wcf:String"/>
+        <property name="endpointName"  type="wcf:String"/>
+        <property name="modelName"     type="wcf:String"/>
+        <property name="requestCount"  type="wcf:String"/>
+        <property name="totalTokens"   type="wcf:String"/>
+        <property name="inputTokens"   type="wcf:String"/>
+        <property name="outputTokens"  type="wcf:String"/>
+    </type>
+    <type name="DatabricksAiUserActivityRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="requester"     type="wcf:String"/>
+        <property name="requesterType" type="wcf:String"/>
+        <property name="requestCount"  type="wcf:String"/>
+        <property name="totalTokens"   type="wcf:String"/>
+        <property name="errorCount"    type="wcf:String"/>
+    </type>
     <type name="DatabricksTreeMapNode" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
         <property name="id"        type="wcf:String"/>

@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="58"
+        last-entity-id="64"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -1902,6 +1902,203 @@
         </config>
     </view>
 
+    <view id="59" display-name="Databricks AI Gateway Endpoints" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000059</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.60">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointName</string></property>
+                        <property name="header"><string xml:space="preserve">Endpoint</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointType</string></property>
+                        <property name="header"><string xml:space="preserve">Type</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointType"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">requestCount</string></property>
+                        <property name="header"><string xml:space="preserve">Requests (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="requestCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">totalTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Total Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="totalTokens"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">inputTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Input Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="inputTokens"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">outputTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Output Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="outputTokens"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorCount</string></property>
+                        <property name="header"><string xml:space="preserve">Errors</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorRate</string></property>
+                        <property name="header"><string xml:space="preserve">Error Rate</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorRate"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">avgLatency</string></property>
+                        <property name="header"><string xml:space="preserve">Avg Latency</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="avgLatency"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">p95Latency</string></property>
+                        <property name="header"><string xml:space="preserve">p95 Latency</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="p95Latency"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="61" display-name="Databricks AI Token Usage" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000061</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.62">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">usageDate</string></property>
+                        <property name="header"><string xml:space="preserve">Date</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="usageDate"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointName</string></property>
+                        <property name="header"><string xml:space="preserve">Endpoint</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">modelName</string></property>
+                        <property name="header"><string xml:space="preserve">Model</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="modelName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">requestCount</string></property>
+                        <property name="header"><string xml:space="preserve">Requests</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="requestCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">totalTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Total Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="totalTokens"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">inputTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Input Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="inputTokens"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">outputTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Output Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="outputTokens"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="63" display-name="Databricks AI User Activity" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000063</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.64">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">requester</string></property>
+                        <property name="header"><string xml:space="preserve">Requester</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="requester"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">requesterType</string></property>
+                        <property name="header"><string xml:space="preserve">Type</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="requesterType"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">requestCount</string></property>
+                        <property name="header"><string xml:space="preserve">Requests (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="requestCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">totalTokens</string></property>
+                        <property name="header"><string xml:space="preserve">Total Tokens</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="totalTokens"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorCount</string></property>
+                        <property name="header"><string xml:space="preserve">Errors</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorCount"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <!-- Databricks main-view: overview table (top) + DBU treemap + Cost vs DBU bubble (bottom row) -->
     <composite-view id="51" display-name="Databricks" public="true" component="wcf.grid2">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000051</uuid>
@@ -2185,6 +2382,33 @@
                      output-type="databricks:DatabricksLakebaseBranchRow" output-list="true"
                      cache-results="false">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000058</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="60" display-name="Get AI Gateway Endpoints"
+                     output-type="databricks:DatabricksAiEndpointRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000060</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="62" display-name="Get AI Token Usage"
+                     output-type="databricks:DatabricksAiUsageRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000062</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="64" display-name="Get AI User Activity"
+                     output-type="databricks:DatabricksAiUserActivityRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000064</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>

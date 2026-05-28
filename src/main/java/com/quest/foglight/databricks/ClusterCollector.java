@@ -865,6 +865,168 @@ public class ClusterCollector {
                 log.log("ClusterCollector: no billing warehouse configured, skipping billing collection");
             }
 
+            // ---------------------------------------------------------------------
+            // AI Gateway Observability (system.ai_gateway.usage)
+            // Requires account-admin; degrades gracefully if not available
+            // ---------------------------------------------------------------------
+            if (billingWarehouseId != null && !billingWarehouseId.isBlank()) {
+                TopologyNode aiEndpointsNode      = workspaceNode.createNode("aiEndpoints");
+                TopologyNode aiUsagesNode         = workspaceNode.createNode("aiUsages");
+                TopologyNode aiUserActivitiesNode = workspaceNode.createNode("aiUserActivities");
+                try {
+                    // --- endpoint rollup (30-day window) ---
+                    String epSql = "SELECT endpoint_name, MIN(endpoint_type) AS endpoint_type, "
+                            + "COUNT(*) AS request_count, "
+                            + "COALESCE(SUM(total_tokens), 0) AS total_tokens, "
+                            + "COALESCE(SUM(input_tokens), 0) AS input_tokens, "
+                            + "COALESCE(SUM(output_tokens), 0) AS output_tokens, "
+                            + "SUM(CASE WHEN status_code >= 400 THEN 1 ELSE 0 END) AS error_count, "
+                            + "CAST(ROUND(AVG(latency_ms)) AS BIGINT) AS avg_latency_ms, "
+                            + "CAST(ROUND(approx_percentile(latency_ms, 0.95)) AS BIGINT) AS p95_latency_ms "
+                            + "FROM system.ai_gateway.usage "
+                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
+                            + "GROUP BY endpoint_name "
+                            + "ORDER BY total_tokens DESC "
+                            + "LIMIT 200";
+
+                    JsonNode epResult = client.executeSqlStatement(billingWarehouseId, epSql);
+                    if ("SUCCEEDED".equals(epResult.path("status").path("state").asText(""))) {
+                        JsonNode epData = epResult.path("result").path("data_array");
+                        if (epData.isArray()) {
+                            for (JsonNode row : epData) {
+                                String epName    = row.path(0).asText("");
+                                if (epName.isBlank()) continue;
+                                String epType    = row.path(1).asText("");
+                                long   reqCount  = row.path(2).asLong(0);
+                                long   totTok    = row.path(3).asLong(0);
+                                long   inTok     = row.path(4).asLong(0);
+                                long   outTok    = row.path(5).asLong(0);
+                                long   errCount  = row.path(6).asLong(0);
+                                long   avgLat    = row.path(7).asLong(0);
+                                long   p95Lat    = row.path(8).asLong(0);
+                                String errRate   = reqCount > 0
+                                        ? String.format("%.1f%%", 100.0 * errCount / reqCount)
+                                        : "0.0%";
+
+                                TopologyNode epNode = aiEndpointsNode.createNode(epName);
+                                epNode.setId(epName);
+                                setValue(epNode, "endpointName",    epName,                    true);
+                                setValue(epNode, "endpointType",    epType,                    false);
+                                setValue(epNode, "requestCountStr", String.valueOf(reqCount),  false);
+                                setValue(epNode, "totalTokensStr",  String.valueOf(totTok),    false);
+                                setValue(epNode, "inputTokensStr",  String.valueOf(inTok),     false);
+                                setValue(epNode, "outputTokensStr", String.valueOf(outTok),    false);
+                                setValue(epNode, "errorCountStr",   String.valueOf(errCount),  false);
+                                setValue(epNode, "errorRateStr",    errRate,                   false);
+                                setValue(epNode, "avgLatencyStr",   avgLat + " ms",            false);
+                                setValue(epNode, "p95LatencyStr",   p95Lat + " ms",            false);
+                                epNode.createValue("requestCount").setSampleValue(reqCount);
+                                epNode.createValue("totalTokens").setSampleValue(totTok);
+                                epNode.createValue("inputTokens").setSampleValue(inTok);
+                                epNode.createValue("outputTokens").setSampleValue(outTok);
+                                epNode.createValue("errorCount").setSampleValue(errCount);
+                                epNode.createValue("avgLatencyMs").setSampleValue(avgLat);
+                                epNode.createValue("p95LatencyMs").setSampleValue(p95Lat);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: AI Gateway endpoint query state="
+                                + epResult.path("status").path("state").asText("")
+                                + " error=" + epResult.path("status").path("error").path("message").asText(""));
+                    }
+
+                    // --- daily usage by endpoint + model ---
+                    String dailySql = "SELECT CAST(timestamp AS DATE) AS usage_date, "
+                            + "endpoint_name, model_name, COUNT(*) AS request_count, "
+                            + "COALESCE(SUM(total_tokens), 0) AS total_tokens, "
+                            + "COALESCE(SUM(input_tokens), 0) AS input_tokens, "
+                            + "COALESCE(SUM(output_tokens), 0) AS output_tokens "
+                            + "FROM system.ai_gateway.usage "
+                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
+                            + "GROUP BY CAST(timestamp AS DATE), endpoint_name, model_name "
+                            + "ORDER BY usage_date DESC, total_tokens DESC "
+                            + "LIMIT 500";
+
+                    JsonNode dailyResult = client.executeSqlStatement(billingWarehouseId, dailySql);
+                    if ("SUCCEEDED".equals(dailyResult.path("status").path("state").asText(""))) {
+                        JsonNode dailyData = dailyResult.path("result").path("data_array");
+                        if (dailyData.isArray()) {
+                            for (JsonNode row : dailyData) {
+                                String date    = row.path(0).asText("");
+                                String epName  = row.path(1).asText("");
+                                String model   = row.path(2).asText("");
+                                long   req     = row.path(3).asLong(0);
+                                long   tot     = row.path(4).asLong(0);
+                                long   inp     = row.path(5).asLong(0);
+                                long   out     = row.path(6).asLong(0);
+                                String key     = date + "|" + epName + "|" + model;
+
+                                TopologyNode uNode = aiUsagesNode.createNode(key);
+                                uNode.setId(key);
+                                setValue(uNode, "aiUsageKey",      key,                   true);
+                                setValue(uNode, "usageDate",       date,                  false);
+                                setValue(uNode, "endpointName",    epName,                false);
+                                setValue(uNode, "modelName",       model,                 false);
+                                setValue(uNode, "requestCountStr", String.valueOf(req),   false);
+                                setValue(uNode, "totalTokensStr",  String.valueOf(tot),   false);
+                                setValue(uNode, "inputTokensStr",  String.valueOf(inp),   false);
+                                setValue(uNode, "outputTokensStr", String.valueOf(out),   false);
+                                uNode.createValue("requestCount").setSampleValue(req);
+                                uNode.createValue("totalTokens").setSampleValue(tot);
+                                uNode.createValue("inputTokens").setSampleValue(inp);
+                                uNode.createValue("outputTokens").setSampleValue(out);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: AI Gateway daily usage query state="
+                                + dailyResult.path("status").path("state").asText(""));
+                    }
+
+                    // --- per-requester activity ---
+                    String userSql = "SELECT requester, MIN(requester_type) AS requester_type, "
+                            + "COUNT(*) AS request_count, "
+                            + "COALESCE(SUM(total_tokens), 0) AS total_tokens, "
+                            + "SUM(CASE WHEN status_code >= 400 THEN 1 ELSE 0 END) AS error_count "
+                            + "FROM system.ai_gateway.usage "
+                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
+                            + "GROUP BY requester "
+                            + "ORDER BY total_tokens DESC "
+                            + "LIMIT 200";
+
+                    JsonNode userResult = client.executeSqlStatement(billingWarehouseId, userSql);
+                    if ("SUCCEEDED".equals(userResult.path("status").path("state").asText(""))) {
+                        JsonNode userData = userResult.path("result").path("data_array");
+                        if (userData.isArray()) {
+                            for (JsonNode row : userData) {
+                                String requester = row.path(0).asText("");
+                                if (requester.isBlank()) continue;
+                                String reqType   = row.path(1).asText("");
+                                long   req       = row.path(2).asLong(0);
+                                long   tot       = row.path(3).asLong(0);
+                                long   err       = row.path(4).asLong(0);
+
+                                TopologyNode uaNode = aiUserActivitiesNode.createNode(requester);
+                                uaNode.setId(requester);
+                                setValue(uaNode, "requester",       requester,            true);
+                                setValue(uaNode, "requesterType",   reqType,              false);
+                                setValue(uaNode, "requestCountStr", String.valueOf(req),  false);
+                                setValue(uaNode, "totalTokensStr",  String.valueOf(tot),  false);
+                                setValue(uaNode, "errorCountStr",   String.valueOf(err),  false);
+                                uaNode.createValue("requestCount").setSampleValue(req);
+                                uaNode.createValue("totalTokens").setSampleValue(tot);
+                                uaNode.createValue("errorCount").setSampleValue(err);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: AI Gateway user activity query state="
+                                + userResult.path("status").path("state").asText(""));
+                    }
+
+                } catch (Exception e) {
+                    log.log("ClusterCollector: AI Gateway collection failed (account-admin required): " + e.getMessage());
+                }
+            }
+
             System.out.println("ClusterCollector: topology summary rootType=DatabricksModelRoot"
                     + ", accountId=" + accountId
                     + ", accountName=" + accountName

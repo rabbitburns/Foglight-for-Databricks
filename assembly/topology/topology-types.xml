@@ -26,6 +26,9 @@
         <property name="skuPrices"           type="DatabricksSkuPrice"     is-many="true" is-containment="true"/>
         <property name="servingEndpoints"    type="DatabricksServingEndpoint" is-many="true" is-containment="true"/>
         <property name="lakebaseProjects"     type="DatabricksLakebaseProject" is-many="true" is-containment="true"/>
+        <property name="aiEndpoints"          type="DatabricksAiEndpoint"      is-many="true" is-containment="true"/>
+        <property name="aiUsages"             type="DatabricksAiUsage"         is-many="true" is-containment="true"/>
+        <property name="aiUserActivities"     type="DatabricksAiUserActivity"  is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -265,6 +268,52 @@
         <property name="displayName"   type="String"/>
         <property name="endpointHost"  type="String"/>
         <property name="endpointState" type="String"/>
+    </type>
+
+    <type name="DatabricksAiEndpoint" extends="TopologyObject">
+        <property name="endpointName"    type="String" is-identity="true"/>
+        <property name="endpointType"    type="String"/>
+        <property name="requestCountStr" type="String"/>
+        <property name="totalTokensStr"  type="String"/>
+        <property name="inputTokensStr"  type="String"/>
+        <property name="outputTokensStr" type="String"/>
+        <property name="errorCountStr"   type="String"/>
+        <property name="errorRateStr"    type="String"/>
+        <property name="avgLatencyStr"   type="String"/>
+        <property name="p95LatencyStr"   type="String"/>
+        <property name="requestCount"    type="Metric" is-containment="true"/>
+        <property name="totalTokens"     type="Metric" is-containment="true"/>
+        <property name="inputTokens"     type="Metric" is-containment="true"/>
+        <property name="outputTokens"    type="Metric" is-containment="true"/>
+        <property name="errorCount"      type="Metric" is-containment="true"/>
+        <property name="avgLatencyMs"    type="Metric" is-containment="true"/>
+        <property name="p95LatencyMs"    type="Metric" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksAiUsage" extends="TopologyObject">
+        <property name="aiUsageKey"      type="String" is-identity="true"/>
+        <property name="usageDate"       type="String"/>
+        <property name="endpointName"    type="String"/>
+        <property name="modelName"       type="String"/>
+        <property name="requestCountStr" type="String"/>
+        <property name="totalTokensStr"  type="String"/>
+        <property name="inputTokensStr"  type="String"/>
+        <property name="outputTokensStr" type="String"/>
+        <property name="requestCount"    type="Metric" is-containment="true"/>
+        <property name="totalTokens"     type="Metric" is-containment="true"/>
+        <property name="inputTokens"     type="Metric" is-containment="true"/>
+        <property name="outputTokens"    type="Metric" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksAiUserActivity" extends="TopologyObject">
+        <property name="requester"       type="String" is-identity="true"/>
+        <property name="requesterType"   type="String"/>
+        <property name="requestCountStr" type="String"/>
+        <property name="totalTokensStr"  type="String"/>
+        <property name="errorCountStr"   type="String"/>
+        <property name="requestCount"    type="Metric" is-containment="true"/>
+        <property name="totalTokens"     type="Metric" is-containment="true"/>
+        <property name="errorCount"      type="Metric" is-containment="true"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

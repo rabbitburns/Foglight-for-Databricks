@@ -40,12 +40,23 @@ workspaces?.each { ws ->
     def totalLakebase    = lakebaseProjects?.size() ?: 0
     def totalBranches    = lakebaseProjects?.collect { (it.get("branches")?.size() ?: 0) }?.sum() ?: 0
 
+    def aiEndpoints    = ws.get("aiEndpoints")
+    def totalAiEp      = aiEndpoints?.size() ?: 0
+    long totalAiTokens = 0L
+    aiEndpoints?.each { ep ->
+        try { totalAiTokens += Long.parseLong(ep.get("totalTokensStr") ?: "0") } catch (Exception ignore) {}
+    }
+    def aiTokensStr = totalAiTokens > 0 ? String.valueOf(totalAiTokens) : ""
+
     rows.add(mkRow("Clusters",          totalClusters,   String.valueOf(activeClusters),  String.valueOf(totalClusters - activeClusters),  ""))
     rows.add(mkRow("SQL Warehouses",    totalWH,         String.valueOf(activeWH),         String.valueOf(totalWH - activeWH),              ""))
     rows.add(mkRow("Jobs",              totalJobs,       String.valueOf(activeJobs),        String.valueOf(totalJobs - activeJobs),          "scheduled"))
     rows.add(mkRow("Pipelines",         totalPipelines,  String.valueOf(activePipelines),   String.valueOf(totalPipelines - activePipelines), ""))
     rows.add(mkRow("Instance Pools",    totalPools,      "",                                "",                                              ""))
     rows.add(mkRow("Lakebase",          totalLakebase,   String.valueOf(totalBranches),     "",                                              "projects · branches"))
+    if (totalAiEp > 0) {
+        rows.add(mkRow("AI Gateway (30d)", totalAiEp,   aiTokensStr,                       "",                                              "endpoints · tokens"))
+    }
 }
 
 if (rows.isEmpty()) {

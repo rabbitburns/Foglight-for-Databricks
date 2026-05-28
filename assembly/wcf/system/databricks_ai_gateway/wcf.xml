@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        version="3-027"
+        display-name="AI Gateway"
+        parent="system:databricks"
+        main-view="1"
+        last-entity-id="1">
+    <relevant-role name="Administrator"/>
+    <relevant-role name="Operator"/>
+    <relevant-role name="Advanced Operator"/>
+    <relevant-role name="Dashboard Designer"/>
+    <relevant-role name="Dashboard User"/>
+    <relevant-role name="General Access"/>
+    <composite-view id="1" display-name="AI Gateway" public="true" component="wcf.grid2">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000002001</uuid>
+        <purpose name="homepage"/>
+        <purpose name="page"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="spacing"><integer value="4"/></property>
+            <property name="sizing">
+                <component-sizing>
+                    <width preferred="0"/>
+                </component-sizing>
+            </property>
+        </config>
+        <window id="0" view="system:databricks.59">
+            <size/>
+            <config>
+                <property name="row"><integer value="0"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+        <window id="1" view="system:databricks.61">
+            <size/>
+            <config>
+                <property name="row"><integer value="1"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+        <window id="2" view="system:databricks.63">
+            <size/>
+            <config>
+                <property name="row"><integer value="2"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+    </composite-view>
+</module>

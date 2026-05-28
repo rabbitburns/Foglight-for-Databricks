@@ -564,6 +564,122 @@
               </node>
             </node>
 
+            <node pattern="aiEndpoints">
+              <node>
+                <node_name var="$aiepVar"/>
+                <obj type="DatabricksAiEndpoint" var="{$aiepVar}"/>
+                <metrics_group object="{{$aiepVar}}"/>
+                <attr name="aiEndpoints" target="{{$wsVar}}" val="{{$aiepVar}}" replace="false"/>
+
+                <node pattern="endpointName">
+                  <value var="$v"><attr name="endpointName" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="endpointType">
+                  <value var="$v"><attr name="endpointType" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requestCountStr">
+                  <value var="$v"><attr name="requestCountStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="totalTokensStr">
+                  <value var="$v"><attr name="totalTokensStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="inputTokensStr">
+                  <value var="$v"><attr name="inputTokensStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="outputTokensStr">
+                  <value var="$v"><attr name="outputTokensStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="errorCountStr">
+                  <value var="$v"><attr name="errorCountStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="errorRateStr">
+                  <value var="$v"><attr name="errorRateStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="avgLatencyStr">
+                  <value var="$v"><attr name="avgLatencyStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="p95LatencyStr">
+                  <value var="$v"><attr name="p95LatencyStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requestCount"><value><metric type="requestCount"/></value></node>
+                <node pattern="totalTokens"><value><metric type="totalTokens"/></value></node>
+                <node pattern="inputTokens"><value><metric type="inputTokens"/></value></node>
+                <node pattern="outputTokens"><value><metric type="outputTokens"/></value></node>
+                <node pattern="errorCount"><value><metric type="errorCount"/></value></node>
+                <node pattern="avgLatencyMs"><value><metric type="avgLatencyMs"/></value></node>
+                <node pattern="p95LatencyMs"><value><metric type="p95LatencyMs"/></value></node>
+
+              </node>
+            </node>
+
+            <node pattern="aiUsages">
+              <node>
+                <node_name var="$aiuVar"/>
+                <obj type="DatabricksAiUsage" var="{$aiuVar}"/>
+                <metrics_group object="{{$aiuVar}}"/>
+                <attr name="aiUsages" target="{{$wsVar}}" val="{{$aiuVar}}" replace="false"/>
+
+                <node pattern="aiUsageKey">
+                  <value var="$v"><attr name="aiUsageKey" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="usageDate">
+                  <value var="$v"><attr name="usageDate" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="endpointName">
+                  <value var="$v"><attr name="endpointName" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="modelName">
+                  <value var="$v"><attr name="modelName" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requestCountStr">
+                  <value var="$v"><attr name="requestCountStr" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="totalTokensStr">
+                  <value var="$v"><attr name="totalTokensStr" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="inputTokensStr">
+                  <value var="$v"><attr name="inputTokensStr" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="outputTokensStr">
+                  <value var="$v"><attr name="outputTokensStr" target="{{$aiuVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requestCount"><value><metric type="requestCount"/></value></node>
+                <node pattern="totalTokens"><value><metric type="totalTokens"/></value></node>
+                <node pattern="inputTokens"><value><metric type="inputTokens"/></value></node>
+                <node pattern="outputTokens"><value><metric type="outputTokens"/></value></node>
+
+              </node>
+            </node>
+
+            <node pattern="aiUserActivities">
+              <node>
+                <node_name var="$aiuaVar"/>
+                <obj type="DatabricksAiUserActivity" var="{$aiuaVar}"/>
+                <metrics_group object="{{$aiuaVar}}"/>
+                <attr name="aiUserActivities" target="{{$wsVar}}" val="{{$aiuaVar}}" replace="false"/>
+
+                <node pattern="requester">
+                  <value var="$v"><attr name="requester" target="{{$aiuaVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requesterType">
+                  <value var="$v"><attr name="requesterType" target="{{$aiuaVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requestCountStr">
+                  <value var="$v"><attr name="requestCountStr" target="{{$aiuaVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="totalTokensStr">
+                  <value var="$v"><attr name="totalTokensStr" target="{{$aiuaVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="errorCountStr">
+                  <value var="$v"><attr name="errorCountStr" target="{{$aiuaVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="requestCount"><value><metric type="requestCount"/></value></node>
+                <node pattern="totalTokens"><value><metric type="totalTokens"/></value></node>
+                <node pattern="errorCount"><value><metric type="errorCount"/></value></node>
+
+              </node>
+            </node>
+
             <node pattern="jobs">
               <node>
                 <node_name var="$jobVar"/>
