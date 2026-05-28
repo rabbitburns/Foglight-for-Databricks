@@ -875,16 +875,16 @@ public class ClusterCollector {
                 TopologyNode aiUserActivitiesNode = workspaceNode.createNode("aiUserActivities");
                 try {
                     // --- endpoint rollup (30-day window) ---
-                    String epSql = "SELECT endpoint_name, MIN(endpoint_type) AS endpoint_type, "
+                    String epSql = "SELECT endpoint_name, MIN(api_type) AS api_type, "
                             + "COUNT(*) AS request_count, "
                             + "COALESCE(SUM(total_tokens), 0) AS total_tokens, "
                             + "COALESCE(SUM(input_tokens), 0) AS input_tokens, "
                             + "COALESCE(SUM(output_tokens), 0) AS output_tokens, "
                             + "SUM(CASE WHEN status_code >= 400 THEN 1 ELSE 0 END) AS error_count, "
-                            + "CAST(ROUND(AVG(latency_ms)) AS BIGINT) AS avg_latency_ms, "
-                            + "CAST(ROUND(approx_percentile(latency_ms, 0.95)) AS BIGINT) AS p95_latency_ms "
+                            + "COALESCE(CAST(ROUND(AVG(latency_ms)) AS BIGINT), 0) AS avg_latency_ms, "
+                            + "COALESCE(CAST(ROUND(approx_percentile(latency_ms, 0.95)) AS BIGINT), 0) AS p95_latency_ms "
                             + "FROM system.ai_gateway.usage "
-                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
+                            + "WHERE event_time >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
                             + "GROUP BY endpoint_name "
                             + "ORDER BY total_tokens DESC "
                             + "LIMIT 200";
@@ -936,14 +936,14 @@ public class ClusterCollector {
                     }
 
                     // --- daily usage by endpoint + model ---
-                    String dailySql = "SELECT CAST(timestamp AS DATE) AS usage_date, "
-                            + "endpoint_name, model_name, COUNT(*) AS request_count, "
+                    String dailySql = "SELECT CAST(event_time AS DATE) AS usage_date, "
+                            + "endpoint_name, destination_model, COUNT(*) AS request_count, "
                             + "COALESCE(SUM(total_tokens), 0) AS total_tokens, "
                             + "COALESCE(SUM(input_tokens), 0) AS input_tokens, "
                             + "COALESCE(SUM(output_tokens), 0) AS output_tokens "
                             + "FROM system.ai_gateway.usage "
-                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
-                            + "GROUP BY CAST(timestamp AS DATE), endpoint_name, model_name "
+                            + "WHERE event_time >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
+                            + "GROUP BY CAST(event_time AS DATE), endpoint_name, destination_model "
                             + "ORDER BY usage_date DESC, total_tokens DESC "
                             + "LIMIT 500";
 
@@ -988,7 +988,7 @@ public class ClusterCollector {
                             + "COALESCE(SUM(total_tokens), 0) AS total_tokens, "
                             + "SUM(CASE WHEN status_code >= 400 THEN 1 ELSE 0 END) AS error_count "
                             + "FROM system.ai_gateway.usage "
-                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
+                            + "WHERE event_time >= CURRENT_TIMESTAMP - INTERVAL 30 DAYS "
                             + "GROUP BY requester "
                             + "ORDER BY total_tokens DESC "
                             + "LIMIT 200";
