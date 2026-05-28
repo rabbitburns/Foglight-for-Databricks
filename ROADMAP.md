@@ -23,6 +23,8 @@
 | WCF job runs portlet (`databricks_jobruns` module, `wcf.table.row-table`) | 1.0.33 |
 | Databricks nav module — top-level nav entry, Job Runs as landing page | 1.0.39 |
 | SQL Warehouse query history, slow query leaderboard, user activity portlets | 1.0.40–1.0.42 |
+| Tier 7: Model Serving Endpoints + Served Models | 1.0.65 |
+| Tier 8: Lakebase platform monitoring — project + branch inventory, endpoint state (3 projects, 5 branches confirmed) | 1.0.118 |
 
 ---
 
@@ -95,16 +97,18 @@
 | Served model detail | `config.served_models` / `config.served_entities` per endpoint | Low | ✓ Done 1.0.65 — DatabricksServedModel topology type, Served Models portlet (view 49/script 50). |
 | Model serving metrics | Databricks metrics API (per-endpoint) | Medium | Request count, latency percentiles (p75/p90/p95/p99), 4xx/5xx counts, CPU/GPU/memory usage. Deferred — requires separate metrics API call per endpoint. |
 
-### Tier 8 — Lakebase (Managed PostgreSQL)
+### Tier 8 — Lakebase (Managed PostgreSQL) ✓ Done 1.0.118
 
 > Lakebase is Databricks' serverless managed PostgreSQL (announced 2025). The Foglight PostgreSQL cartridge handles per-branch query-level monitoring (one agent per branch, by design). This tier covers the **platform layer** — what Lakebase resources exist and their provisioning health — via the Databricks REST API at `/api/2.0/postgres/`.
+>
+> **API note:** The JSON response from `/api/2.0/postgres/projects` (and `/branches`) nests the fields `project_id`, `display_name`, and `branch_id` under a `status` sub-object — not at the top level. The `name` field at the top level is a resource path (e.g. `projects/abc123`), not the display name.
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Project inventory | `GET /api/2.0/postgres/projects` | Low | Project name, state, created/modified timestamps. New type `DatabricksLakebaseProject`. |
-| Branch inventory | `GET /api/2.0/postgres/projects/{id}/branches` | Low | Branch name, state, parent branch, created time. New type `DatabricksLakebaseBranch`. |
-| Endpoint status | `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` | Low | Endpoint state (provisioning/running/stopped), size, endpoint URL. |
-| In-flight operations | `GET /api/2.0/postgres/projects/{id}/operations` | Medium | Async op type (create/clone/restore), state, duration. Surfaces stuck or failed provisioning. |
+| Project inventory | `GET /api/2.0/postgres/projects` | Low | ✓ Done 1.0.118 — project ID/name, state, endpoint URL stored. New type `DatabricksLakebaseProject`. |
+| Branch inventory | `GET /api/2.0/postgres/projects/{id}/branches` | Low | ✓ Done 1.0.118 — branch ID/name, state, parent project, endpoint state/URL. New type `DatabricksLakebaseBranch`. |
+| Endpoint status | `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` | Low | ✓ Done 1.0.118 — first endpoint per branch; endpoint state + URL stored on branch. |
+| In-flight operations | `GET /api/2.0/postgres/projects/{id}/operations` | Medium | Deferred — async op type (create/clone/restore), state, duration. Surfaces stuck or failed provisioning. |
 
 ### Tier 9 — Lakewatch (Security SIEM)
 
@@ -158,7 +162,7 @@
 4. **Tier 4** — DBU consumption & cost ✓ (mostly complete — cost-per-job deferred)
 5. **Tier 5** — DLT Pipeline depth ✓ (built 1.0.64, untested — DLT not in dev workspace)
 6. **Tier 7** — Model Serving ✓ (1.0.65)
-7. **Tier 8** — Lakebase platform monitoring — **next** (unblocked)
+7. **Tier 8** — Lakebase platform monitoring ✓ (1.0.118, CONFIRMED: 3 projects, 5 branches)
 8. **Tier 11** — AI Gateway Observability — **next** (unblocked; preview confirmed enabled)
 9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` — **unblocked** (UC confirmed; revised from Ganglia approach)
 10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
@@ -238,3 +242,7 @@
 | 1.0.67–1.0.74 | Time-plot trend views: Active Resource Trend (id=53) — activeClusterCount, clusterCount, activeWarehouseCount, warehouseCount; Job & Pipeline Count Trend (id=54) — jobCount, pipelineCount; query id=52 selects DatabricksWorkspace |
 | 1.0.75–1.0.78 | Landing page layout: single-column wcf.grid2, 5 views stacked full-width (Overview → Bubble → Treemap → Trend 53 → Trend 54); `align=stretch`, `showTitle=true`, `<width preferred="0"/>` sizing |
 | 1.0.79–1.0.113 | CDT diagnostics and stability fixes: DOCTYPE restoration in cdt.xml (parsing failure); StringObservation → plain String for all state fields (runtime type mismatch); same-version reinstall CDT skip documented. No feature changes. |
+| 1.0.114 | Tier 8 Lakebase: DatabricksLakebaseProject + DatabricksLakebaseBranch topology types; REST collector calling /api/2.0/postgres/projects → /branches → /endpoints; WCF sub-module databricks_lakebase with Projects (view 55) and Branches (view 57) portlets; Lakebase row added to Overview. **Build process bugs present — agent code did not execute.** |
+| 1.0.115–1.0.116 | Debug iterations: confirmed FglAM was loading cached April-compiled JAR (not new code). Root causes identified: (1) Maven compile not run before packaging; (2) AGENT_VER hardcoded "1.0.6" so FglAM never fetched new package; (3) --deploy targeted deploy/deployed/ staging area, not actual agent cache at agents/DatabricksAgent/<ver>/lib/. |
+| 1.0.117 | Build process fully fixed: auto Maven compile in build_cartridge.py; AGENT_VER synced to VERSION; agent.manifest ver/build-id injected at build time; --deploy now targets correct FglAM agent cache dir. JSON parsing fix: project_id/display_name/branch_id are nested under status sub-object in API response. Lakebase collection running. |
+| 1.0.118 | Clean production build: debug System.out.println removed; Lakebase CONFIRMED working (3 projects, 5 branches, all API calls succeeding in ~150ms). |

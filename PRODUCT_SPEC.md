@@ -1,9 +1,9 @@
 # Foglight for Databricks — Product Management Specification
 
-**Version:** 1.0.113  
+**Version:** 1.0.118  
 **Status:** POC / Active Development  
 **Owner:** Quest Software  
-**Last Updated:** 2026-05-26
+**Last Updated:** 2026-05-27
 
 ---
 
@@ -78,6 +78,8 @@ Foglight Topology Store
           ├── DatabricksSkuPrice (n)       ← list prices
           ├── DatabricksServingEndpoint (n)
           │   └── DatabricksServedModel (n)
+          ├── DatabricksLakebaseProject (n) ← Lakebase managed PostgreSQL
+          │   └── DatabricksLakebaseBranch (n)
           ├── DatabricksAiEndpoint (n)     ← AI Gateway endpoints
           │   └── DatabricksAiUsage (n)    ← daily token aggregates
           └── DatabricksAiUserActivity (n) ← per-requester token rollup
@@ -102,6 +104,9 @@ Foglight Dashboards (user-configured)
 | DBU Usage | `system.billing.usage` via SQL warehouse | 60s |
 | SKU List Prices | `system.billing.list_prices` via SQL warehouse | 60s |
 | Model Serving Endpoints | `GET /api/2.0/serving-endpoints` | 60s |
+| Lakebase Projects | `GET /api/2.0/postgres/projects` | 60s |
+| Lakebase Branches | `GET /api/2.0/postgres/projects/{id}/branches` | 60s |
+| Lakebase Endpoints | `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` | 60s |
 | AI Gateway Usage | `system.ai_gateway.usage` via SQL warehouse (server-side aggregate) | 60s |
 
 ### 3.3 Authentication

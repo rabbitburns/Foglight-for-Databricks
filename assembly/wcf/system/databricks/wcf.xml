@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="54"
+        last-entity-id="58"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -1804,6 +1804,104 @@
         </config>
     </view>
 
+    <view id="55" display-name="Databricks Lakebase Projects" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000055</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.56">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">projectId</string></property>
+                        <property name="header"><string xml:space="preserve">Project ID</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="projectId"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">displayName</string></property>
+                        <property name="header"><string xml:space="preserve">Display Name</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="displayName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">branchCount</string></property>
+                        <property name="header"><string xml:space="preserve">Branches</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="branchCount"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="57" display-name="Databricks Lakebase Branches" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000057</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.58">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">projectId</string></property>
+                        <property name="header"><string xml:space="preserve">Project</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="projectId"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">branchId</string></property>
+                        <property name="header"><string xml:space="preserve">Branch</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="branchId"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">displayName</string></property>
+                        <property name="header"><string xml:space="preserve">Name</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="displayName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointHost</string></property>
+                        <property name="header"><string xml:space="preserve">Endpoint Host</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointHost"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">endpointState</string></property>
+                        <property name="header"><string xml:space="preserve">Endpoint State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="endpointState"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <!-- Databricks main-view: overview table (top) + DBU treemap + Cost vs DBU bubble (bottom row) -->
     <composite-view id="51" display-name="Databricks" public="true" component="wcf.grid2">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000051</uuid>
@@ -2069,6 +2167,24 @@
                      output-type="databricks:DatabricksSkuPriceRow" output-list="true"
                      cache-results="false">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000042</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="56" display-name="Get Lakebase Projects"
+                     output-type="databricks:DatabricksLakebaseProjectRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000056</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="58" display-name="Get Lakebase Branches"
+                     output-type="databricks:DatabricksLakebaseBranchRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000058</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>

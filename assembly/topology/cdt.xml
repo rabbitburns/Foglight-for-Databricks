@@ -517,6 +517,53 @@
               </node>
             </node>
 
+            <node pattern="lakebaseProjects">
+              <node>
+                <node_name var="$lbpVar"/>
+                <obj type="DatabricksLakebaseProject" var="{$lbpVar}"/>
+                <metrics_group object="{{$lbpVar}}"/>
+                <attr name="lakebaseProjects" target="{{$wsVar}}" val="{{$lbpVar}}" replace="false"/>
+
+                <node pattern="projectId">
+                  <value var="$v"><attr name="projectId" target="{{$lbpVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="displayName">
+                  <value var="$v"><attr name="displayName" target="{{$lbpVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="branchCount"><value><metric type="branchCount"/></value></node>
+
+                <node pattern="branches">
+                  <node>
+                    <node_name var="$lbbVar"/>
+                    <obj type="DatabricksLakebaseBranch" var="{$lbbVar}"/>
+                    <metrics_group object="{{$lbbVar}}"/>
+                    <attr name="branches" target="{{$lbpVar}}" val="{{$lbbVar}}" replace="false"/>
+
+                    <node pattern="branchKey">
+                      <value var="$v"><attr name="branchKey" target="{{$lbbVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="projectId">
+                      <value var="$v"><attr name="projectId" target="{{$lbbVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="branchId">
+                      <value var="$v"><attr name="branchId" target="{{$lbbVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="displayName">
+                      <value var="$v"><attr name="displayName" target="{{$lbbVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="endpointHost">
+                      <value var="$v"><attr name="endpointHost" target="{{$lbbVar}}" val="{$v}"/></value>
+                    </node>
+                    <node pattern="endpointState">
+                      <value var="$v"><attr name="endpointState" target="{{$lbbVar}}" val="{$v}"/></value>
+                    </node>
+
+                  </node>
+                </node>
+
+              </node>
+            </node>
+
             <node pattern="jobs">
               <node>
                 <node_name var="$jobVar"/>

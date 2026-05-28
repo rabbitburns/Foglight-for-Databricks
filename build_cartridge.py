@@ -1,21 +1,31 @@
 """
 Build DatabricksAgent-<version>.car Foglight cartridge.
-Usage: python build_cartridge.py [version]
+Usage: python build_cartridge.py [version] [--deploy] [--fglam-dir=PATH]
 Output: target/DatabricksAgent-<version>.car
+
+--deploy          Compile Java, build .car, and deploy agent JAR directly into FglAM's agent cache.
+                  FglAM re-reads the JAR on next agent stop/start — no FglAM restart needed.
+--fglam-dir=PATH  Override default FglAM root (default: C:\\Quest\\Foglight\\fglam)
 """
 import sys
+import re
+import subprocess
 import zipfile
 import os
 import io
 import tarfile
 import gzip
 
-VERSION = sys.argv[1] if len(sys.argv) > 1 else "1.0.18"
+_args = sys.argv[1:]
+VERSION  = next((a for a in _args if not a.startswith("--")), "1.0.18")
+DEPLOY   = "--deploy" in _args
+FGLAM_DIR = next((a.split("=", 1)[1] for a in _args if a.startswith("--fglam-dir=")),
+                 r"C:\Quest\Foglight\fglam")
 VER_FLAT = VERSION.replace(".", "_")
 
-# Agent protocol version — matches agent.manifest ver/build-id and FglAM directory name.
-# This is independent of the cartridge version.
-AGENT_VER = "1.0.6"
+# Agent package version — must change with every release so FglAM knows to download the new .gar.
+# Synced to cartridge version so any new .car automatically triggers a FglAM package update.
+AGENT_VER = VERSION
 
 # Jackson jars bundled with the agent
 M2 = os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), ".m2", "repository")
@@ -64,8 +74,11 @@ def build_agent_gar():
             info.size = len(data)
             tar.addfile(info, io.BytesIO(data))
 
-        with open("src/main/resources/config/agent.manifest", "rb") as f:
-            add_bytes("agent.manifest", f.read())
+        with open("src/main/resources/config/agent.manifest", "r", encoding="utf-8") as f:
+            manifest_text = f.read()
+        manifest_text = re.sub(r'\bver="[^"]*"', f'ver="{VERSION}"', manifest_text)
+        manifest_text = re.sub(r'\bbuild-id="[^"]*"', f'build-id="{VERSION}"', manifest_text)
+        add_bytes("agent.manifest", manifest_text.encode("utf-8"))
 
         with open("target/databricks-agent.jar", "rb") as f:
             add_bytes("lib/databricks-agent.jar", f.read())
@@ -148,7 +161,45 @@ def collect_wcf_files(wcf_src_dir):
     return entries, contents
 
 
+def find_mvn():
+    """Return path to mvn executable, searching common install locations if not on PATH."""
+    import shutil
+    mvn = shutil.which("mvn") or shutil.which("mvn.cmd")
+    if mvn:
+        return mvn
+    candidates = [
+        r"C:\Apache\apache-maven-3.9.14-bin\apache-maven-3.9.14\bin\mvn.cmd",
+        r"C:\Program Files\Apache\maven\bin\mvn.cmd",
+        r"C:\tools\maven\bin\mvn.cmd",
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return c
+    # Search C:\Apache for any mvn.cmd
+    for root, dirs, files in os.walk(r"C:\Apache"):
+        for f in files:
+            if f in ("mvn.cmd", "mvn"):
+                return os.path.join(root, f)
+    sys.exit("ERROR: mvn not found. Add Maven bin to PATH or install Maven.")
+
+
+def compile_java():
+    mvn = find_mvn()
+    env = os.environ.copy()
+    result = subprocess.run(
+        [mvn, "package", "-Dmaven.test.skip=true", "-q"],
+        env=env, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        print("Maven compilation failed:")
+        print(result.stdout)
+        print(result.stderr)
+        sys.exit(1)
+    print("Java compiled.")
+
+
 def main():
+    compile_java()
     os.makedirs("target", exist_ok=True)
     out = f"target/DatabricksAgent-{VERSION}.car"
 
@@ -200,6 +251,35 @@ def main():
     with zipfile.ZipFile(out) as z:
         for e in z.infolist():
             print(f"  {e.file_size:6d}  {e.filename}")
+
+    if DEPLOY:
+        # Find the agent cache dir: fglam/agents/DatabricksAgent/<ver>-<ver>/lib/
+        agents_root = os.path.join(FGLAM_DIR, "agents", "DatabricksAgent")
+        if not os.path.isdir(agents_root):
+            print(f"\nWARNING: FglAM agent cache not found: {agents_root}")
+            print("Skipping local deployment. Use --fglam-dir=PATH to override.")
+        else:
+            # Pick the most recently modified version dir — that's the one FglAM is using
+            ver_dirs = sorted(
+                [d for d in os.listdir(agents_root)
+                 if os.path.isdir(os.path.join(agents_root, d))],
+                key=lambda d: os.path.getmtime(os.path.join(agents_root, d)),
+                reverse=True
+            )
+            if not ver_dirs:
+                print(f"\nWARNING: No version directory found under {agents_root}")
+            else:
+                lib_dir = os.path.join(agents_root, ver_dirs[0], "lib")
+                dest = os.path.join(lib_dir, "databricks-agent.jar")
+                with open("target/databricks-agent.jar", "rb") as f:
+                    jar_bytes = f.read()
+                with open(dest, "wb") as f:
+                    f.write(jar_bytes)
+                print(f"\nDeployed databricks-agent.jar to {dest}")
+                print("Next steps:")
+                print("  1. Install the .car in Foglight (Administration -> Cartridges)")
+                print("  2. Stop the DatabricksAgent instance in Administration -> Agents")
+                print("  3. Start it — new code loads immediately, no FglAM restart needed.")
 
 
 if __name__ == "__main__":

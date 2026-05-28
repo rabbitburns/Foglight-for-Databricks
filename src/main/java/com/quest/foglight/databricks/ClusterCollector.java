@@ -655,6 +655,71 @@ public class ClusterCollector {
             }
 
             // ---------------------------------------------------------------------
+            // lakebaseProjects -> DatabricksLakebaseProject + DatabricksLakebaseBranch
+            // ---------------------------------------------------------------------
+            TopologyNode lakebaseProjectsNode = workspaceNode.createNode("lakebaseProjects");
+            try {
+                JsonNode projResponse = client.listLakebaseProjects();
+                JsonNode projects = projResponse.path("projects");
+                if (projects.isArray()) {
+                    for (JsonNode proj : projects) {
+                        String projectId   = proj.path("status").path("project_id")
+                                                     .asText(bareId(proj.path("name").asText("")));
+                        String displayName = proj.path("status").path("display_name").asText(projectId);
+                        if (projectId.isBlank()) continue;
+
+                        TopologyNode projNode = lakebaseProjectsNode.createNode(projectId);
+                        projNode.setId(projectId);
+                        setValue(projNode, "projectId",   projectId,   true);
+                        setValue(projNode, "displayName", displayName, false);
+
+                        TopologyNode branchesNode = projNode.createNode("branches");
+                        int branchCount = 0;
+                        try {
+                            JsonNode branchResp = client.listLakebaseBranches(projectId);
+                            JsonNode branches = branchResp.path("branches");
+                            if (branches.isArray()) {
+                                for (JsonNode branch : branches) {
+                                    String branchId    = branch.path("status").path("branch_id")
+                                                             .asText(bareId(branch.path("name").asText("")));
+                                    String branchName  = branch.path("status").path("display_name").asText(branchId);
+                                    if (branchId.isBlank()) continue;
+                                    branchCount++;
+
+                                    String endpointHost  = "";
+                                    String endpointState = "";
+                                    try {
+                                        JsonNode epResp = client.listLakebaseEndpoints(projectId, branchId);
+                                        JsonNode eps = epResp.path("endpoints");
+                                        if (eps.isArray() && eps.size() > 0) {
+                                            JsonNode ep = eps.get(0);
+                                            endpointHost  = ep.path("status").path("hosts").path("host").asText("");
+                                            endpointState = ep.path("status").path("state").asText("");
+                                        }
+                                    } catch (Exception ignored) {}
+
+                                    String branchKey = projectId + "|" + branchId;
+                                    TopologyNode branchNode = branchesNode.createNode(branchKey);
+                                    branchNode.setId(branchKey);
+                                    setValue(branchNode, "branchKey",     branchKey,     true);
+                                    setValue(branchNode, "projectId",     projectId,     false);
+                                    setValue(branchNode, "branchId",      branchId,      false);
+                                    setValue(branchNode, "displayName",   branchName,    false);
+                                    setValue(branchNode, "endpointHost",  endpointHost,  false);
+                                    setValue(branchNode, "endpointState", endpointState, false);
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.log("ClusterCollector: lakebase branch list failed for " + projectId + ": " + e.getMessage());
+                        }
+                        projNode.createValue("branchCount").setSampleValue(branchCount);
+                    }
+                }
+            } catch (Exception e) {
+                log.log("ClusterCollector: lakebase project collection failed: " + e.getMessage());
+            }
+
+            // ---------------------------------------------------------------------
             // usages -> DatabricksUsage (system.billing.usage via SQL warehouse)
             // ---------------------------------------------------------------------
             TopologyNode usagesNode = workspaceNode.createNode("usages");
@@ -854,6 +919,15 @@ public class ClusterCollector {
         if (h > 0) return h + "h " + (m % 60) + "m";
         if (m > 0) return m + "m " + (s % 60) + "s";
         return s + "s";
+    }
+
+    private static String bareId(String val) {
+        if (val == null || val.isEmpty()) return val == null ? "" : val;
+        for (String prefix : new String[]{"projects/", "branches/", "endpoints/"}) {
+            while (val.startsWith(prefix)) val = val.substring(prefix.length());
+        }
+        int slash = val.lastIndexOf('/');
+        return slash >= 0 ? val.substring(slash + 1) : val;
     }
 
     private static String fmtTs(long epochMs) {

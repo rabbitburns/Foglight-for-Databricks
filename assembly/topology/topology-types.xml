@@ -25,6 +25,7 @@
         <property name="jobDbus"             type="DatabricksJobDbu"       is-many="true" is-containment="true"/>
         <property name="skuPrices"           type="DatabricksSkuPrice"     is-many="true" is-containment="true"/>
         <property name="servingEndpoints"    type="DatabricksServingEndpoint" is-many="true" is-containment="true"/>
+        <property name="lakebaseProjects"     type="DatabricksLakebaseProject" is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -248,6 +249,22 @@
         <property name="scaleToZero"         type="String"/>
         <property name="trafficPercentage"   type="String"/>
         <property name="deploymentState"     type="String"/>
+    </type>
+
+    <type name="DatabricksLakebaseProject" extends="TopologyObject">
+        <property name="projectId"    type="String" is-identity="true"/>
+        <property name="displayName"  type="String"/>
+        <property name="branchCount"  type="Metric" is-containment="true"/>
+        <property name="branches"     type="DatabricksLakebaseBranch" is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksLakebaseBranch" extends="TopologyObject">
+        <property name="branchKey"     type="String" is-identity="true"/>
+        <property name="projectId"     type="String"/>
+        <property name="branchId"      type="String"/>
+        <property name="displayName"   type="String"/>
+        <property name="endpointHost"  type="String"/>
+        <property name="endpointState" type="String"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

@@ -36,11 +36,16 @@ workspaces?.each { ws ->
 
     def totalPools      = pools?.size()      ?: 0
 
+    def lakebaseProjects = ws.get("lakebaseProjects")
+    def totalLakebase    = lakebaseProjects?.size() ?: 0
+    def totalBranches    = lakebaseProjects?.collect { (it.get("branches")?.size() ?: 0) }?.sum() ?: 0
+
     rows.add(mkRow("Clusters",          totalClusters,   String.valueOf(activeClusters),  String.valueOf(totalClusters - activeClusters),  ""))
     rows.add(mkRow("SQL Warehouses",    totalWH,         String.valueOf(activeWH),         String.valueOf(totalWH - activeWH),              ""))
     rows.add(mkRow("Jobs",              totalJobs,       String.valueOf(activeJobs),        String.valueOf(totalJobs - activeJobs),          "scheduled"))
     rows.add(mkRow("Pipelines",         totalPipelines,  String.valueOf(activePipelines),   String.valueOf(totalPipelines - activePipelines), ""))
     rows.add(mkRow("Instance Pools",    totalPools,      "",                                "",                                              ""))
+    rows.add(mkRow("Lakebase",          totalLakebase,   String.valueOf(totalBranches),     "",                                              "projects · branches"))
 }
 
 if (rows.isEmpty()) {

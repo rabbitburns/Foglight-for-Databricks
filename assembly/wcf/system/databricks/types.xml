@@ -211,6 +211,20 @@
         <property name="listPricePerDbu" type="wcf:String"/>
         <property name="priceStartTime"  type="wcf:String"/>
     </type>
+    <type name="DatabricksLakebaseProjectRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="projectId"   type="wcf:String"/>
+        <property name="displayName" type="wcf:String"/>
+        <property name="branchCount" type="wcf:String"/>
+    </type>
+    <type name="DatabricksLakebaseBranchRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="projectId"     type="wcf:String"/>
+        <property name="branchId"      type="wcf:String"/>
+        <property name="displayName"   type="wcf:String"/>
+        <property name="endpointHost"  type="wcf:String"/>
+        <property name="endpointState" type="wcf:String"/>
+    </type>
     <type name="DatabricksTreeMapNode" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
         <property name="id"        type="wcf:String"/>

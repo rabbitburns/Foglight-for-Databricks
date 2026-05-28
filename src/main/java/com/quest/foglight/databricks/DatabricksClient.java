@@ -63,6 +63,18 @@ public class DatabricksClient {
         return get("/api/2.0/serving-endpoints/" + endpointName + "/metrics");
     }
 
+    public JsonNode listLakebaseProjects() throws Exception {
+        return get("/api/2.0/postgres/projects");
+    }
+
+    public JsonNode listLakebaseBranches(String projectId) throws Exception {
+        return get("/api/2.0/postgres/projects/" + projectId + "/branches");
+    }
+
+    public JsonNode listLakebaseEndpoints(String projectId, String branchId) throws Exception {
+        return get("/api/2.0/postgres/projects/" + projectId + "/branches/" + branchId + "/endpoints");
+    }
+
     public JsonNode listQueriesForWarehouse(String warehouseId) throws Exception {
         return get("/api/2.0/sql/history/queries?max_results=25&filter_by.warehouse_ids=" + warehouseId);
     }
