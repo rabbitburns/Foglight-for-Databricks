@@ -13,34 +13,31 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Override with -Dfoglight.home=... if installed elsewhere -->
-        <foglight.home>C:/Quest/Foglight</foglight.home>
-        <fglam.client.lib>${foglight.home}/fglam/client/8.2.0.0-202603110530-c653f370-1029/lib</fglam.client.lib>
-        <fglam.agents.lib>${foglight.home}/fglam/agents/HostAgents/8.2.0.0-8.2.0.0-202603110602.371142d8.4/lib</fglam.agents.lib>
+        <foglight.lib>${project.basedir}/lib/foglight</foglight.lib>
     </properties>
 
     <dependencies>
-        <!-- Foglight agent APIs — provided by FglAM at runtime -->
+        <!-- Foglight agent APIs — provided by FglAM at runtime; jars bundled in lib/foglight/ -->
         <dependency>
             <groupId>com.quest.glue</groupId>
             <artifactId>glueapi</artifactId>
             <version>8.2.0.0</version>
             <scope>system</scope>
-            <systemPath>${fglam.client.lib}/glueapi.jar</systemPath>
+            <systemPath>${foglight.lib}/glueapi.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.quest.glue</groupId>
             <artifactId>gluecommon</artifactId>
             <version>8.2.0.0</version>
             <scope>system</scope>
-            <systemPath>${fglam.client.lib}/gluecommon.jar</systemPath>
+            <systemPath>${foglight.lib}/gluecommon.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.quest.agent</groupId>
             <artifactId>agent-common</artifactId>
             <version>5.8.0</version>
             <scope>system</scope>
-            <systemPath>${fglam.agents.lib}/agent-common-5.8.0.jar</systemPath>
+            <systemPath>${foglight.lib}/agent-common-5.8.0.jar</systemPath>
         </dependency>
 
         <!-- Jackson — bundled in agent lib dir since agent classloader isolation -->
