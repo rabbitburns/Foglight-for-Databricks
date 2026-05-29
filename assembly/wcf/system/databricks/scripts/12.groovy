@@ -20,11 +20,10 @@ workspaces?.each { ws ->
             cores        : String.valueOf((c.get("clusterCores") ?: 0L) as long),
             sparkVersion : c.get("sparkVersion")       ?: "",
             creator      : c.get("creatorUserName")    ?: "",
+            instancePool : c.get("instancePoolName")   ?: "",
             started      : c.get("startTimeStr")       ?: "",
             lastActivity : c.get("lastActivityTimeStr") ?: "",
-            terminated   : c.get("terminatedTimeStr")  ?: "",
-            pinnedBy     : c.get("pinnedByUserName")   ?: "",
-            tags         : c.get("customTagsStr")      ?: ""
+            terminated   : c.get("terminatedTimeStr")  ?: ""
         ]
     }
 }
@@ -48,11 +47,10 @@ rawRows.each { r ->
     row.store('cores',        r.cores,        specificTimeRange)
     row.store('sparkVersion', r.sparkVersion, specificTimeRange)
     row.store('creator',      r.creator,      specificTimeRange)
+    row.store('instancePool', r.instancePool, specificTimeRange)
     row.store('started',      r.started,      specificTimeRange)
     row.store('lastActivity', r.lastActivity, specificTimeRange)
     row.store('terminated',   r.terminated,   specificTimeRange)
-    row.store('pinnedBy',     r.pinnedBy,     specificTimeRange)
-    row.store('tags',         r.tags,         specificTimeRange)
     rows.add(row)
 }
 return rows

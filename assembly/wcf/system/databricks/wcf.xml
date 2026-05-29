@@ -508,19 +508,14 @@
                         <property name="value"><context-rv input-key="currentRow" path="lastActivity"/></property>
                     </object>
                     <object>
+                        <property name="id"><string xml:space="preserve">instancePool</string></property>
+                        <property name="header"><string xml:space="preserve">Instance Pool</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="instancePool"/></property>
+                    </object>
+                    <object>
                         <property name="id"><string xml:space="preserve">terminated</string></property>
                         <property name="header"><string xml:space="preserve">Terminated</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="terminated"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">pinnedBy</string></property>
-                        <property name="header"><string xml:space="preserve">Pinned By</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="pinnedBy"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">tags</string></property>
-                        <property name="header"><string xml:space="preserve">Tags</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="tags"/></property>
                     </object>
                 </list-value>
             </property>
@@ -832,6 +827,21 @@
                         <property name="id"><string xml:space="preserve">used</string></property>
                         <property name="header"><string xml:space="preserve">In Use</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="used"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">total</string></property>
+                        <property name="header"><string xml:space="preserve">Total</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="total"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">utilization</string></property>
+                        <property name="header"><string xml:space="preserve">Utilization %</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="utilization"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">clusterCount</string></property>
+                        <property name="header"><string xml:space="preserve">Clusters</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="clusterCount"/></property>
                     </object>
                 </list-value>
             </property>

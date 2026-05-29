@@ -63,12 +63,11 @@
         <property name="maxWorkers"   type="wcf:String"/>
         <property name="cores"        type="wcf:String"/>
         <property name="sparkVersion" type="wcf:String"/>
-        <property name="creator"      type="wcf:String"/>
-        <property name="started"      type="wcf:String"/>
-        <property name="lastActivity" type="wcf:String"/>
-        <property name="terminated"   type="wcf:String"/>
-        <property name="pinnedBy"     type="wcf:String"/>
-        <property name="tags"         type="wcf:String"/>
+        <property name="creator"       type="wcf:String"/>
+        <property name="instancePool"  type="wcf:String"/>
+        <property name="started"       type="wcf:String"/>
+        <property name="lastActivity"  type="wcf:String"/>
+        <property name="terminated"    type="wcf:String"/>
     </type>
     <type name="DatabricksWarehouseRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -113,13 +112,16 @@
     </type>
     <type name="DatabricksInstancePoolRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
-        <property name="poolName"    type="wcf:String"/>
-        <property name="state"       type="wcf:String"/>
-        <property name="nodeType"    type="wcf:String"/>
-        <property name="minIdle"     type="wcf:String"/>
-        <property name="maxCapacity" type="wcf:String"/>
-        <property name="idle"        type="wcf:String"/>
-        <property name="used"        type="wcf:String"/>
+        <property name="poolName"      type="wcf:String"/>
+        <property name="state"         type="wcf:String"/>
+        <property name="nodeType"      type="wcf:String"/>
+        <property name="minIdle"       type="wcf:String"/>
+        <property name="maxCapacity"   type="wcf:String"/>
+        <property name="idle"          type="wcf:String"/>
+        <property name="used"          type="wcf:String"/>
+        <property name="total"         type="wcf:String"/>
+        <property name="utilization"   type="wcf:String"/>
+        <property name="clusterCount"  type="wcf:String"/>
     </type>
     <type name="DatabricksProductDbuRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>

@@ -193,6 +193,7 @@
         <property name="lastActivityTimeStr"          type="String"/>
         <property name="terminatedTimeStr"            type="String"/>
         <property name="pinnedByUserName"             type="String"/>
+        <property name="instancePoolName"             type="String"/>
         <property name="autoscaleEnabled"             type="Boolean"/>
         <property name="autoscaleMinWorkers"          type="Metric"  is-containment="true"/>
         <property name="autoscaleMaxWorkers"          type="Metric"  is-containment="true"/>

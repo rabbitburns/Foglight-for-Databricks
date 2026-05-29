@@ -95,6 +95,18 @@ public class ClusterCollector {
             int jobDbuCount = 0;
             String billingWarehouseId = configuredBillingWarehouseId;
 
+            // Build poolId -> poolName lookup from pools response
+            java.util.Map<String, String> poolIdToName = new java.util.HashMap<>();
+            if (poolsResponse != null
+                    && poolsResponse.has("instance_pools")
+                    && poolsResponse.get("instance_pools").isArray()) {
+                for (JsonNode pool : poolsResponse.get("instance_pools")) {
+                    String pid = pool.path("instance_pool_id").asText("");
+                    String pname = pool.path("instance_pool_name").asText(pid);
+                    if (!pid.isBlank()) poolIdToName.put(pid, pname);
+                }
+            }
+
             // ---------------------------------------------------------------------
             // clusters -> DatabricksCluster
             // ---------------------------------------------------------------------
@@ -134,6 +146,8 @@ public class ClusterCollector {
                     setValue(clusterNode, "creatorUserName", cluster.path("creator_user_name").asText(""), false);
                     setValue(clusterNode, "customTagsStr", serializeTags(cluster.path("custom_tags")), false);
                     setValue(clusterNode, "pinnedByUserName", cluster.path("pinned_by_user_name").asText(""), false);
+                    String poolId = cluster.path("instance_pool_id").asText("");
+                    setValue(clusterNode, "instancePoolName", poolId.isBlank() ? "" : poolIdToName.getOrDefault(poolId, poolId), false);
                     setValue(clusterNode, "startTimeStr",        fmtTs(cluster.path("start_time").asLong(0)), false);
                     setValue(clusterNode, "lastActivityTimeStr", fmtTs(cluster.path("last_activity_time").asLong(0)), false);
                     setValue(clusterNode, "terminatedTimeStr",   fmtTs(cluster.path("terminated_time").asLong(0)), false);
