@@ -21,6 +21,7 @@
         <flow/>
         <config>
             <property name="spacing"><integer value="4"/></property>
+            <property name="scroll"><boolean value="true"/></property>
             <property name="sizing">
                 <component-sizing>
                     <width preferred="0"/>
@@ -28,8 +29,10 @@
                 </component-sizing>
             </property>
         </config>
+
+        <!-- Row 0: Visual charts — Treemap + Bubble -->
         <window id="0" view="system:databricks.33">
-            <size/>
+            <size height="320"/>
             <config>
                 <property name="row"><integer value="0"/></property>
                 <property name="column"><integer value="0"/></property>
@@ -38,8 +41,8 @@
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
-        <window id="1" view="system:databricks.31">
-            <size/>
+        <window id="1" view="system:databricks.35">
+            <size height="320"/>
             <config>
                 <property name="row"><integer value="0"/></property>
                 <property name="column"><integer value="1"/></property>
@@ -48,7 +51,9 @@
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
-        <window id="2" view="system:databricks.35">
+
+        <!-- Row 1: Key summary tables — Cost by SKU + MoM Growth -->
+        <window id="2" view="system:databricks.31">
             <size/>
             <config>
                 <property name="row"><integer value="1"/></property>
@@ -68,21 +73,24 @@
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
-        <window id="4" view="system:databricks.23">
+
+        <!-- Row 2: Day-over-day spend trend table (full width) -->
+        <window id="4" view="system:databricks.65">
             <size/>
             <config>
                 <property name="row"><integer value="2"/></property>
-                <property name="column"><integer value="0"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
-        <window id="5" view="system:databricks.21">
+
+        <!-- Row 3: Top Jobs by DBU + Daily DBU Trend -->
+        <window id="5" view="system:databricks.29">
             <size/>
             <config>
-                <property name="row"><integer value="2"/></property>
-                <property name="column"><integer value="1"/></property>
+                <property name="row"><integer value="3"/></property>
+                <property name="column"><integer value="0"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
@@ -92,26 +100,40 @@
             <size/>
             <config>
                 <property name="row"><integer value="3"/></property>
-                <property name="column"><integer value="0"/></property>
-                <property name="hweight"><integer value="1"/></property>
-                <property name="align"><enum value="stretch"/></property>
-                <property name="showTitle"><boolean value="true"/></property>
-            </config>
-        </window>
-        <window id="7" view="system:databricks.29">
-            <size/>
-            <config>
-                <property name="row"><integer value="3"/></property>
                 <property name="column"><integer value="1"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
             </config>
         </window>
-        <window id="8" view="system:databricks.41">
+
+        <!-- Row 4: DBU by Product + Raw usage log -->
+        <window id="7" view="system:databricks.23">
             <size/>
             <config>
                 <property name="row"><integer value="4"/></property>
+                <property name="column"><integer value="0"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+        <window id="8" view="system:databricks.21">
+            <size/>
+            <config>
+                <property name="row"><integer value="4"/></property>
+                <property name="column"><integer value="1"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+
+        <!-- Row 5: SKU List Prices (full width, reference) -->
+        <window id="9" view="system:databricks.41">
+            <size/>
+            <config>
+                <property name="row"><integer value="5"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
