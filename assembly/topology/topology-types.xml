@@ -115,10 +115,14 @@
         <property name="state"             type="String"/>
         <property name="stateStr"          type="String"/>
         <property name="nodeTypeId"        type="String"/>
-        <property name="minIdleInstances"  type="Metric" is-containment="true"/>
-        <property name="maxCapacity"       type="Metric" is-containment="true"/>
-        <property name="idleCount"         type="Metric" is-containment="true"/>
-        <property name="usedCount"         type="Metric" is-containment="true"/>
+        <property name="minIdleInstances"         type="Metric" is-containment="true"/>
+        <property name="maxCapacity"              type="Metric" is-containment="true"/>
+        <property name="idleCount"                type="Metric" is-containment="true"/>
+        <property name="usedCount"                type="Metric" is-containment="true"/>
+        <property name="pendingIdleCount"         type="Metric" is-containment="true"/>
+        <property name="pendingUsedCount"         type="Metric" is-containment="true"/>
+        <property name="idleTerminationMinutes"   type="Metric" is-containment="true"/>
+        <property name="preloadedSparkVersions"   type="String"/>
     </type>
 
     <type name="DatabricksJob" extends="TopologyObject">

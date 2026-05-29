@@ -824,9 +824,19 @@
                         <property name="value"><context-rv input-key="currentRow" path="idle"/></property>
                     </object>
                     <object>
+                        <property name="id"><string xml:space="preserve">pendingIdle</string></property>
+                        <property name="header"><string xml:space="preserve">Pending Idle</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="pendingIdle"/></property>
+                    </object>
+                    <object>
                         <property name="id"><string xml:space="preserve">used</string></property>
                         <property name="header"><string xml:space="preserve">In Use</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="used"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">pendingUsed</string></property>
+                        <property name="header"><string xml:space="preserve">Pending Used</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="pendingUsed"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">total</string></property>
@@ -842,6 +852,16 @@
                         <property name="id"><string xml:space="preserve">clusterCount</string></property>
                         <property name="header"><string xml:space="preserve">Clusters</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="clusterCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">idleTerminationMins</string></property>
+                        <property name="header"><string xml:space="preserve">Idle Termination (min)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="idleTerminationMins"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">preloadedVersions</string></property>
+                        <property name="header"><string xml:space="preserve">Preloaded Spark</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="preloadedVersions"/></property>
                     </object>
                 </list-value>
             </property>

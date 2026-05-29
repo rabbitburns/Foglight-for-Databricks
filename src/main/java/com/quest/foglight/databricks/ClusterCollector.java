@@ -597,6 +597,17 @@ public class ClusterCollector {
                     poolNode.createValue("maxCapacity").setSampleValue(pool.path("max_capacity").asLong(0));
                     poolNode.createValue("idleCount").setSampleValue(pool.path("stats").path("idle_count").asLong(0));
                     poolNode.createValue("usedCount").setSampleValue(pool.path("stats").path("used_count").asLong(0));
+                    poolNode.createValue("pendingIdleCount").setSampleValue(pool.path("stats").path("pending_idle_count").asLong(0));
+                    poolNode.createValue("pendingUsedCount").setSampleValue(pool.path("stats").path("pending_used_count").asLong(0));
+                    poolNode.createValue("idleTerminationMinutes").setSampleValue(pool.path("idle_instance_autotermination_minutes").asLong(0));
+                    JsonNode sparkVersions = pool.path("preloaded_spark_versions");
+                    String versionsStr = "";
+                    if (sparkVersions.isArray()) {
+                        java.util.List<String> vlist = new java.util.ArrayList<>();
+                        for (JsonNode v : sparkVersions) vlist.add(v.asText(""));
+                        versionsStr = String.join(", ", vlist);
+                    }
+                    setValue(poolNode, "preloadedSparkVersions", versionsStr, false);
                 }
             }
 

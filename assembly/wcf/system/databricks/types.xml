@@ -117,11 +117,15 @@
         <property name="nodeType"      type="wcf:String"/>
         <property name="minIdle"       type="wcf:String"/>
         <property name="maxCapacity"   type="wcf:String"/>
-        <property name="idle"          type="wcf:String"/>
-        <property name="used"          type="wcf:String"/>
-        <property name="total"         type="wcf:String"/>
-        <property name="utilization"   type="wcf:String"/>
-        <property name="clusterCount"  type="wcf:String"/>
+        <property name="idle"                  type="wcf:String"/>
+        <property name="pendingIdle"           type="wcf:String"/>
+        <property name="used"                  type="wcf:String"/>
+        <property name="pendingUsed"           type="wcf:String"/>
+        <property name="total"                 type="wcf:String"/>
+        <property name="utilization"           type="wcf:String"/>
+        <property name="clusterCount"          type="wcf:String"/>
+        <property name="idleTerminationMins"   type="wcf:String"/>
+        <property name="preloadedVersions"     type="wcf:String"/>
     </type>
     <type name="DatabricksProductDbuRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
