@@ -38,12 +38,12 @@ public class DatabricksAgent implements Agent {
             ASPService aspService = serviceFactory.getService(ASPService.class);
 
             String workspaceUrl = firstNonBlank(
-                fileProps.getProperty("workspaceUrl"),
-                aspToString(aspService.getPrimaryASP("workspaceUrl"))
+                aspToString(aspService.getPrimaryASP("workspaceUrl")),
+                fileProps.getProperty("workspaceUrl")
             );
             String accessToken = firstNonBlank(
-                fileProps.getProperty("accessToken"),
-                aspToString(aspService.getPrimaryASP("accessToken"))
+                aspToString(aspService.getPrimaryASP("accessToken")),
+                fileProps.getProperty("accessToken")
             );
 
             if (workspaceUrl == null || workspaceUrl.isBlank()) {
@@ -57,20 +57,20 @@ public class DatabricksAgent implements Agent {
             }
 
             String intervalStr = firstNonBlank(
-                fileProps.getProperty("collectionIntervalSeconds"),
-                aspToString(aspService.getPrimaryASP("collectionIntervalSeconds"))
+                aspToString(aspService.getPrimaryASP("collectionIntervalSeconds")),
+                fileProps.getProperty("collectionIntervalSeconds")
             );
             long intervalSeconds = intervalStr != null ? Long.parseLong(intervalStr) : 60L;
 
             String accountId = firstNonBlank(fileProps.getProperty("accountId"), "default");
             String accountName = firstNonBlank(fileProps.getProperty("accountName"), "Databricks");
             String billingWarehouseId = firstNonBlank(
-                fileProps.getProperty("billing.warehouse.id"),
-                aspToString(aspService.getPrimaryASP("billing.warehouse.id"))
+                aspToString(aspService.getPrimaryASP("billing.warehouse.id")),
+                fileProps.getProperty("billing.warehouse.id")
             );
             String workspaceRegion = firstNonBlank(
-                fileProps.getProperty("workspace.region"),
-                aspToString(aspService.getPrimaryASP("workspace.region"))
+                aspToString(aspService.getPrimaryASP("workspace.region")),
+                fileProps.getProperty("workspace.region")
             );
             if (workspaceRegion == null) workspaceRegion = "";
 
