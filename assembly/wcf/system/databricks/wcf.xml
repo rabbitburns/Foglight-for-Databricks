@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="66"
+        last-entity-id="67"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -2446,6 +2446,57 @@
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>
     </script-function>
+
+    <view id="67" display-name="Databricks Daily DBU Accumulation" public="true" component="wcf.chart.time-plot">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000067</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+            <entry key="workspace" data-type="foglight-5:DatabricksWorkspace" usage="internal">
+                <query-selection-rv query="system:databricks.52" results-index="0"/>
+            </entry>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="simpleMetricData">
+                <object>
+                    <property name="metricParentLabel">
+                        <string-rv><value xml:space="preserve">Workspace</value></string-rv>
+                    </property>
+                    <property name="metricBindings">
+                        <list-value>
+                            <object>
+                                <property name="metric">
+                                    <context-rv input-key="workspace" path="totalDailyDbu"/>
+                                </property>
+                                <property name="legendLabel">
+                                    <string-rv><value xml:space="preserve">Total DBU Today</value></string-rv>
+                                </property>
+                            </object>
+                        </list-value>
+                    </property>
+                </object>
+            </property>
+            <property name="automaticSelection">
+                <boolean value="false"/>
+            </property>
+            <property name="sizing">
+                <component-sizing>
+                    <width/>
+                    <height preferred="220"/>
+                </component-sizing>
+            </property>
+        </config>
+    </view>
 
     <script-function type="groovy" id="66" display-name="Get SKU Spend Trend"
                      output-type="databricks:DatabricksSkuSparkRow" output-list="true"

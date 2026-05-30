@@ -74,9 +74,9 @@
             </config>
         </window>
 
-        <!-- Row 2: Day-over-day spend trend table (full width) -->
-        <window id="4" view="system:databricks.65">
-            <size/>
+        <!-- Row 2: Intra-day DBU accumulation chart (every collection point) -->
+        <window id="4" view="system:databricks.67">
+            <size height="220"/>
             <config>
                 <property name="row"><integer value="2"/></property>
                 <property name="hweight"><integer value="1"/></property>
@@ -85,11 +85,22 @@
             </config>
         </window>
 
-        <!-- Row 3: Top Jobs by DBU + Daily DBU Trend -->
-        <window id="5" view="system:databricks.29">
+        <!-- Row 3: Day-over-day spend trend table (full width) -->
+        <window id="10" view="system:databricks.65">
             <size/>
             <config>
                 <property name="row"><integer value="3"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+
+        <!-- Row 4: Top Jobs by DBU + Daily DBU Trend -->
+        <window id="5" view="system:databricks.29">
+            <size/>
+            <config>
+                <property name="row"><integer value="4"/></property>
                 <property name="column"><integer value="0"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
@@ -99,7 +110,7 @@
         <window id="6" view="system:databricks.25">
             <size/>
             <config>
-                <property name="row"><integer value="3"/></property>
+                <property name="row"><integer value="4"/></property>
                 <property name="column"><integer value="1"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
@@ -107,11 +118,11 @@
             </config>
         </window>
 
-        <!-- Row 4: DBU by Product + Raw usage log -->
+        <!-- Row 5: DBU by Product + Raw usage log -->
         <window id="7" view="system:databricks.23">
             <size/>
             <config>
-                <property name="row"><integer value="4"/></property>
+                <property name="row"><integer value="5"/></property>
                 <property name="column"><integer value="0"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
@@ -121,7 +132,7 @@
         <window id="8" view="system:databricks.21">
             <size/>
             <config>
-                <property name="row"><integer value="4"/></property>
+                <property name="row"><integer value="5"/></property>
                 <property name="column"><integer value="1"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
@@ -129,11 +140,11 @@
             </config>
         </window>
 
-        <!-- Row 5: SKU List Prices (full width, reference) -->
+        <!-- Row 6: SKU List Prices (full width, reference) -->
         <window id="9" view="system:databricks.41">
             <size/>
             <config>
-                <property name="row"><integer value="5"/></property>
+                <property name="row"><integer value="6"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>

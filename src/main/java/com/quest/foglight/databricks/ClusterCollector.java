@@ -751,6 +751,8 @@ public class ClusterCollector {
 
             if (billingWarehouseId != null && !billingWarehouseId.isBlank()) {
                 try {
+                    String todayStr = java.time.LocalDate.now(java.time.ZoneOffset.UTC).toString();
+                    double todayDbuTotal = 0.0;
                     String sql = "SELECT u.usage_date, u.sku_name, u.cloud, u.billing_origin_product, "
                             + "CAST(SUM(u.usage_quantity) AS DOUBLE) AS dbu_total, "
                             + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
@@ -793,8 +795,10 @@ public class ClusterCollector {
                                 usageNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
                                 setValue(usageNode, "dbuConsumedStr",  String.format("%.2f", dbu),  false);
                                 setValue(usageNode, "dollarCostStr",   String.format("%.4f", cost), false);
+                                if (usageDate.equals(todayStr)) todayDbuTotal += dbu;
                             }
                         }
+                        workspaceNode.createValue("totalDailyDbu").setSampleValue((long)(todayDbuTotal * 1000));
                     } else {
                         log.log("ClusterCollector: billing query did not succeed, state=" + stmtState
                                 + ", error=" + stmtResult.path("status").path("error").path("message").asText(""));
