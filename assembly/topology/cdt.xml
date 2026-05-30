@@ -50,6 +50,7 @@
             <node pattern="jobCount"><value><metric type="jobCount"/></value></node>
             <node pattern="pipelineCount"><value><metric type="pipelineCount"/></value></node>
             <node pattern="totalDailyDbu"><value><metric type="totalDailyDbu"/></value></node>
+            <node pattern="totalQueryCount"><value><metric type="totalQueryCount"/></value></node>
 
             <node pattern="clusters">
               <node>

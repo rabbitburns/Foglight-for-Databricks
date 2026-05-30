@@ -277,6 +277,21 @@
         <property name="color"  type="wcf:Color"/>
         <property name="label"  type="wcf:String"/>
     </type>
+    <type name="DatabricksJobTrendRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="jobName"  type="wcf:String"/>
+        <property name="d1"       type="wcf:String"/>
+        <property name="d2"       type="wcf:String"/>
+        <property name="d3"       type="wcf:String"/>
+        <property name="d4"       type="wcf:String"/>
+        <property name="d5"       type="wcf:String"/>
+        <property name="d6"       type="wcf:String"/>
+        <property name="d7"       type="wcf:String"/>
+        <property name="weekRuns" type="wcf:String"/>
+        <property name="weekSucc" type="wcf:String"/>
+        <property name="weekRate" type="wcf:String"/>
+        <property name="trend"    type="wcf:String"/>
+    </type>
     <type name="DatabricksSkuSparkRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
         <property name="sku"           type="wcf:String"/>

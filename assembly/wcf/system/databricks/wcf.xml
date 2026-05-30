@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="67"
+        last-entity-id="71"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -2503,6 +2503,155 @@
                      output-type="databricks:DatabricksSkuSparkRow" output-list="true"
                      cache-results="false">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000066</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <view id="69" display-name="Databricks Query Volume Trend" public="true" component="wcf.chart.time-plot">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000069</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+            <entry key="workspace" data-type="foglight-5:DatabricksWorkspace" usage="internal">
+                <query-selection-rv query="system:databricks.52" results-index="0"/>
+            </entry>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="simpleMetricData">
+                <object>
+                    <property name="metricParentLabel">
+                        <string-rv><value xml:space="preserve">Workspace</value></string-rv>
+                    </property>
+                    <property name="metricBindings">
+                        <list-value>
+                            <object>
+                                <property name="metric">
+                                    <context-rv input-key="workspace" path="totalQueryCount"/>
+                                </property>
+                                <property name="legendLabel">
+                                    <string-rv><value xml:space="preserve">Total Queries</value></string-rv>
+                                </property>
+                            </object>
+                        </list-value>
+                    </property>
+                </object>
+            </property>
+            <property name="automaticSelection">
+                <boolean value="false"/>
+            </property>
+            <property name="sizing">
+                <component-sizing>
+                    <width/>
+                    <height preferred="220"/>
+                </component-sizing>
+            </property>
+        </config>
+    </view>
+
+    <view id="71" display-name="Job Success Rate by Day" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000071</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.70">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">jobName</string></property>
+                        <property name="header"><string xml:space="preserve">Job</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="jobName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d1</string></property>
+                        <property name="header"><string xml:space="preserve">Today</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d1"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d2</string></property>
+                        <property name="header"><string xml:space="preserve">Yesterday</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d2"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d3</string></property>
+                        <property name="header"><string xml:space="preserve">D-3</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d3"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d4</string></property>
+                        <property name="header"><string xml:space="preserve">D-4</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d4"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d5</string></property>
+                        <property name="header"><string xml:space="preserve">D-5</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d5"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d6</string></property>
+                        <property name="header"><string xml:space="preserve">D-6</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d6"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">d7</string></property>
+                        <property name="header"><string xml:space="preserve">D-7</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="d7"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">weekRuns</string></property>
+                        <property name="header"><string xml:space="preserve">7d Runs</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="weekRuns"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">weekSucc</string></property>
+                        <property name="header"><string xml:space="preserve">7d Success</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="weekSucc"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">weekRate</string></property>
+                        <property name="header"><string xml:space="preserve">7d Rate</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="weekRate"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">trend</string></property>
+                        <property name="header"><string xml:space="preserve">Trend</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="trend"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <script-function type="groovy" id="70" display-name="Get Job Success Rate by Day"
+                     output-type="databricks:DatabricksJobTrendRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000070</uuid>
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>

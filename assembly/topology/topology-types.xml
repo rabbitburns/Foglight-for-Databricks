@@ -17,6 +17,7 @@
         <property name="jobCount"            type="Metric"                is-containment="true"/>
         <property name="pipelineCount"       type="Metric"                is-containment="true"/>
         <property name="totalDailyDbu"       type="Metric"                is-containment="true"/>
+        <property name="totalQueryCount"     type="Metric"                is-containment="true"/>
         <property name="clusters"            type="DatabricksCluster"     is-many="true" is-containment="true"/>
         <property name="jobs"                type="DatabricksJob"         is-many="true" is-containment="true"/>
         <property name="warehouses"          type="DatabricksWarehouse"   is-many="true" is-containment="true"/>

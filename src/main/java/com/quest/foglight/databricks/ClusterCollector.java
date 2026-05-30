@@ -355,6 +355,7 @@ public class ClusterCollector {
             // ---------------------------------------------------------------------
             TopologyNode warehousesNode = workspaceNode.createNode("warehouses");
 
+            int totalQueryCount = 0;
             if (warehousesResponse != null
                     && warehousesResponse.has("warehouses")
                     && warehousesResponse.get("warehouses").isArray()) {
@@ -440,6 +441,7 @@ public class ClusterCollector {
                         }
                         whNode.createValue("queryCount").setSampleValue((long) queryCount);
                         setValue(whNode, "queryCountStr", String.valueOf(queryCount), false);
+                        totalQueryCount += queryCount;
                     } catch (Exception e) {
                         log.log("ClusterCollector: failed to fetch queries for warehouse " + whId + ": " + e.getMessage());
                     }
@@ -448,6 +450,7 @@ public class ClusterCollector {
 
             workspaceNode.createValue("warehouseCount").setSampleValue((long) warehouseCount);
             workspaceNode.createValue("activeWarehouseCount").setSampleValue((long) activeWarehouseCount);
+            workspaceNode.createValue("totalQueryCount").setSampleValue((long) totalQueryCount);
 
             // ---------------------------------------------------------------------
             // pipelines -> DatabricksPipeline
