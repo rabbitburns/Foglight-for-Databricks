@@ -2,66 +2,93 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.113
+**Current version:** 1.0.126
 
 ## What It Monitors
 
 | Object | Data Collected |
 |---|---|
-| **Clusters** | State, node types, Spark version, autoscale config, worker/core/memory counts, termination reason, creator, timestamps |
+| **Clusters** | State, node types, Spark version, autoscale config, worker/core/memory counts, termination reason, creator, timestamps, custom tags |
 | **Jobs** | Name, creator, schedule (cron + status), trigger type, tags, last run state/result/start/duration, success rate, avg/min/max duration, success/failure counts |
 | **Job Runs** | Per-job run history (up to 10 most recent), lifecycle state, result, duration breakdown (queue/setup/execution/cleanup), task count, retry info |
 | **SQL Warehouses** | State, type, size, cluster counts, Photon, auto-resume/stop settings, creator, query count |
 | **SQL Queries** | Per-warehouse query history (up to 25 most recent), user, statement type, status, duration, compilation/execution/fetch times, bytes read, rows produced, cache hit, error message, query text |
 | **DLT Pipelines** | State, name, creator, run-as user, update history (last 5), data quality expectations (pass/fail/dropped per update) |
-| **Instance Pools** | State, node type, idle/used/max counts |
-| **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; estimated dollar cost via `system.billing.list_prices`; top jobs by DBU; SKU price reference |
+| **Instance Pools** | State, node type, idle/used/pending counts, max capacity, idle termination minutes, preloaded Spark versions |
+| **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; estimated dollar cost via `system.billing.list_prices`; top jobs by DBU; SKU price reference; daily per-SKU trend (7 days) |
 | **Model Serving** | Serving endpoint inventory (state, creator, config update state); per-endpoint served model detail (version, workload size, traffic %, scale-to-zero) |
+| **Lakebase** | Project and branch inventory, endpoint host, endpoint state |
+| **AI Gateway** | Endpoint inventory (request count, total/input/output tokens, error rate, avg/p95 latency); daily token usage by endpoint and model; per-requester activity |
+| **Workspace Metrics** | Time-series at each collection cycle: cluster counts, warehouse counts, job/pipeline counts, today's total DBU accumulation, total query volume |
 
 ## Requirements
 
 - Quest Foglight Management Server 8.2.0+
 - FglAM (Foglight Agent Manager) on the same host
-- Databricks Personal Access Token with read permissions
-- A running SQL Warehouse (required for DBU/cost features)
+- Databricks Personal Access Token with workspace read permissions
+- A running SQL Warehouse (required for DBU/cost and AI Gateway features)
 - Databricks Premium plan for `system.billing.*` system table access
+- Unity AI Gateway V2 Preview enabled for AI Gateway monitoring
 
 ## Installation
 
-Download the latest release zip from the [Releases](../../releases) page and follow the steps in [INSTALL.md](INSTALL.md).
+Download the latest `.car` from the [Releases](../../releases) page and install it via Foglight UI → Administration → Cartridges.
 
 ## Quick Start
 
-1. Extract the release zip
-2. Copy `agent-deploy/` contents to `C:\Quest\Foglight\fglam\agents\DatabricksAgent\1.0.6-1.0.6\`
-3. Edit `config\databricks.properties` with your workspace URL, access token, and (optional) billing warehouse ID
-4. Install the `.car` file via Foglight UI → Administration → Cartridges
-5. Restart FglAM
+1. Install the `.car` file via Foglight UI → Administration → Cartridges
+2. Configure the agent via Administration → Agents → Edit Properties (ASP):
+   - `workspaceUrl` — your Databricks workspace URL
+   - `accessToken` — a personal access token with read permissions
+   - `billingWarehouseId` — a running SQL warehouse ID (for DBU/cost/AI Gateway)
+3. Start the agent
 
-## Dashboards & Portlets
+## Dashboards
 
-The cartridge includes a **Databricks** top-level nav entry with a composite landing page and 27 portlets, all available in the Add View picker:
+The cartridge installs a **Databricks** top-level navigation entry with eight sub-pages, each scrollable:
+
+| Sub-nav | Contents |
+|---|---|
+| **Overview** | Resource summary counts + DBU this month; cluster/warehouse trend; job/pipeline trend; DBU treemap; cost vs DBU bubble |
+| **Clusters** | Cluster inventory table |
+| **SQL Warehouses** | Warehouse inventory table; query volume trend (time-plot) |
+| **Jobs** | Jobs list; job runs list; top jobs by DBU; job success rate by day |
+| **Queries** | Query history; slow queries leaderboard; user activity; query volume trend (time-plot) |
+| **DLT Pipelines** | Pipeline inventory |
+| **Cost & Usage** | DBU treemap; cost vs DBU bubble; cost by SKU; MoM growth; daily DBU accumulation (time-plot); SKU daily trend table; top jobs by DBU; daily DBU trend; DBU by product; DBU usage; SKU list prices |
+| **Lakebase** | Lakebase project and branch inventory |
+| **AI Gateway** | AI endpoint metrics; daily token usage; per-requester activity |
+
+## Portlets
+
+All portlets are available individually in the Add View picker:
 
 | Portlet | Description |
 |---|---|
 | Databricks Overview | Summary counts by resource category + DBU this month |
+| Databricks Active Resource Trend | Cluster and warehouse counts over time (time-plot) |
+| Databricks Job and Pipeline Count Trend | Job and pipeline counts over time (time-plot) |
 | Databricks Clusters | One row per cluster with state, config, and timing |
 | Databricks SQL Warehouses | One row per warehouse with state, size, and query count |
+| Databricks Query Volume Trend | Total queries across all warehouses over time (time-plot) |
 | Databricks Jobs | One row per job with last run and historical stats |
 | Databricks Job Runs | Flat cross-job run list sorted by start time |
+| Databricks Job Success Rate by Day | Per-job daily success rate for last 7 days + 7d totals and trend |
 | Databricks Query History | Cross-warehouse query list with text and timing |
 | Databricks Slow Queries | Top 25 queries by duration |
 | Databricks User Activity | Per-user query aggregates (table) |
 | Databricks User Activity (Treemap) | Per-user query count as interactive treemap |
-| Databricks User Activity (Bubble) | Query count vs avg duration scatter bubble by user |
+| Databricks User Activity (Bubble) | Query count vs avg duration scatter by user |
 | Databricks DLT Pipelines | One row per pipeline with state and ownership |
 | Databricks Pipeline Updates | Last 5 DLT update events per pipeline |
 | Databricks Pipeline Data Quality | DLT expectation pass/fail counts per update |
-| Databricks Instance Pools | One row per pool with capacity and usage |
+| Databricks Instance Pools | One row per pool with capacity, usage, and configuration |
 | Databricks DBU Usage | Raw DBU usage rows by date, SKU, product, cloud, region |
 | Databricks DBU by Product | Current-month DBU grouped by billing product (table) |
 | Databricks DBU by Product (Treemap) | Current-month DBU by product as interactive treemap |
 | Databricks Daily DBU Trend | Day-by-day total DBU for the current month |
+| Databricks Daily DBU Accumulation | Intra-day DBU accumulation at collection frequency (time-plot) |
+| Databricks DBU Spend Trend by SKU | Per-SKU daily DBU for last 7 days with 7d totals and trend |
 | Databricks MoM DBU Growth | Month-over-month DBU growth rate by product |
 | Databricks Top Jobs by DBU | Top jobs by DBU consumed (current month) |
 | Databricks Cost by SKU | Total DBU and estimated dollar cost grouped by SKU |
@@ -69,12 +96,11 @@ The cartridge includes a **Databricks** top-level nav entry with a composite lan
 | Databricks SKU List Prices | Current price per DBU by SKU, cloud, and region |
 | Databricks Model Serving Endpoints | Serving endpoint inventory — state, config, model count |
 | Databricks Served Models | Per-served-model detail — version, size, traffic % |
-| Databricks Active Resource Trend | Cluster and warehouse counts over time (time-plot) |
-| Databricks Job and Pipeline Count Trend | Job and pipeline counts over time (time-plot) |
-
-The **Databricks** nav landing page is a composite view stacking the Overview table, Cost vs DBU bubble chart, DBU by Product treemap, Active Resource Trend chart, and Job & Pipeline Count Trend chart — full-width, with titles.
-
-See [DASHBOARDS.md](DASHBOARDS.md) for full portlet and script reference.
+| Databricks Lakebase Projects | Lakebase project inventory with branch counts |
+| Databricks Lakebase Branches | Lakebase branch inventory with endpoint state |
+| Databricks AI Gateway Endpoints | AI Gateway endpoint metrics — tokens, errors, latency |
+| Databricks AI Token Usage | Daily token usage by endpoint and model |
+| Databricks AI User Activity | Per-requester token and request counts |
 
 ## Topology
 
@@ -91,47 +117,68 @@ DatabricksModelRoot
         │   └── DatabricksPipelineUpdate (up to 5 per pipeline)
         │       └── DatabricksPipelineExpectation (many)
         ├── DatabricksInstancePool (many)
-        ├── DatabricksUsage (many)          ← billing/DBU data
-        ├── DatabricksJobDbu (many)         ← per-job DBU
-        ├── DatabricksSkuPrice (many)       ← list prices
-        └── DatabricksServingEndpoint (many)
-            └── DatabricksServedModel (many)
+        ├── DatabricksUsage (many)             ← billing/DBU data
+        ├── DatabricksJobDbu (many)            ← per-job DBU
+        ├── DatabricksSkuPrice (many)          ← list prices
+        ├── DatabricksServingEndpoint (many)
+        │   └── DatabricksServedModel (many)
+        ├── DatabricksLakebaseProject (many)
+        │   └── DatabricksLakebaseBranch (many)
+        ├── DatabricksAiEndpoint (many)        ← AI Gateway endpoints
+        ├── DatabricksAiUsage (many)           ← AI Gateway daily token usage
+        └── DatabricksAiUserActivity (many)    ← AI Gateway per-requester activity
 ```
+
+Workspace-level time-series metrics (sampled at every collection cycle):
+- `clusterCount`, `activeClusterCount`
+- `warehouseCount`, `activeWarehouseCount`
+- `jobCount`, `pipelineCount`
+- `totalDailyDbu` — running total of DBU consumed today (UTC)
+- `totalQueryCount` — total queries across all warehouses this cycle
 
 ## Configuration
 
-Edit `config\databricks.properties` in the deployed agent directory:
+The agent is configured via Foglight's agent properties (Administration → Agents → Edit Properties). All properties can also be set in `databricks.properties` in the agent directory, though agent properties take precedence.
 
-```properties
-# Required
-workspaceUrl=https://<your-workspace>.azuredatabricks.net/
-accessToken=<your-token>
-
-# Optional — defaults shown
-collectionIntervalSeconds=60
-accountId=default
-accountName=Databricks
-
-# Optional — required for DBU/cost features
-billingWarehouseId=<warehouse-id>
-```
+| Property | Required | Description |
+|---|---|---|
+| `workspaceUrl` | Yes | Your Databricks workspace URL, e.g. `https://adb-123.azuredatabricks.net/` |
+| `accessToken` | Yes | Personal access token with workspace read permissions |
+| `billingWarehouseId` | No* | A running SQL warehouse ID — required for DBU/cost and AI Gateway features |
+| `collectionIntervalSeconds` | No | Collection interval in seconds (default: 60) |
+| `accountId` | No | Account identifier string (default: `default`) |
+| `accountName` | No | Account display name (default: `Databricks`) |
 
 ## Building from Source
 
-Requirements: JDK 11+, Python 3, Maven dependencies in local `.m2` cache, Foglight installed at `C:\Quest\Foglight\`.
+Requirements: Foglight installed at `C:\Quest\Foglight\` (provides JRE), Python 3, Maven.
 
 ```powershell
-.\build.ps1 -Version 1.0.113
+$env:JAVA_HOME = "C:\Quest\Foglight\jre"
+$env:PATH = "C:\Quest\Foglight\jre\bin;" + $env:PATH
+python build_cartridge.py 1.0.126 --deploy
 ```
 
-Outputs:
-- `target\DatabricksAgent-{VERSION}.car` — Foglight cartridge
-- `target\DatabricksAgent-{VERSION}-dist.zip` — distributable package with all files
+The `--deploy` flag copies the compiled JAR directly to the FglAM agent cache at `C:\Quest\Foglight\fglam\agents\DatabricksAgent\`. After deploying:
+
+1. Install the `.car` via Administration → Cartridges
+2. Stop and restart the agent in Administration → Agents — no FglAM restart needed
 
 ## Repository Structure
 
 ```
 assembly/         Cartridge sources (WCF, topology, CDT, monitoring policy)
+  topology/       Topology type definitions and CDT bindings
+  wcf/system/
+    databricks/           Main WCF module — all portlets, scripts, types
+    databricks_clusters/  Clusters sub-nav composite
+    databricks_cost/      Cost & Usage sub-nav composite
+    databricks_jobs/      Jobs sub-nav composite
+    databricks_queries/   Queries sub-nav composite
+    databricks_warehouses/ SQL Warehouses sub-nav composite
+    databricks_pipelines/ DLT Pipelines sub-nav composite
+    databricks_lakebase/  Lakebase sub-nav composite
+    databricks_ai_gateway/ AI Gateway sub-nav composite
 src/              Java agent source (FglAM collectors)
 docs/             Enablement deck (HTML + PPTX) and Lakebase executive summary
 tools/
@@ -164,7 +211,7 @@ Or trigger on-demand via **Actions → Lakebase Branch to Foglight Discovery →
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for planned features including Tier 8 (Lakebase platform monitoring), Tier 11 (AI Gateway token observability), Tier 6 (cluster runtime metrics via `system.compute.node_timeline`), and the v2 AUI dashboard layer.
+See [ROADMAP.md](ROADMAP.md) for planned features including Tier 6 (cluster runtime metrics via `system.compute.node_timeline`), Tier 10 (Lakehouse Monitoring), and the v2 AUI dashboard layer.
 
 ## License
 

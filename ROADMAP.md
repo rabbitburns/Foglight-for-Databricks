@@ -25,6 +25,12 @@
 | SQL Warehouse query history, slow query leaderboard, user activity portlets | 1.0.40–1.0.42 |
 | Tier 7: Model Serving Endpoints + Served Models | 1.0.65 |
 | Tier 8: Lakebase platform monitoring — project + branch inventory, endpoint state (3 projects, 5 branches confirmed) | 1.0.118 |
+| Tier 11: AI Gateway Observability — endpoint metrics, daily token usage, per-requester activity (3 portlets, sub-nav page) | 1.0.119 |
+| Instance Pool enhancements — pending idle/used counts, idle termination minutes, preloaded Spark versions | 1.0.124 |
+| Cost & Usage dashboard — scroll, intra-day DBU accumulation time-plot, per-SKU 7-day trend table, bubble chart labels | 1.0.125 |
+| All sub-nav dashboards scrollable | 1.0.125 |
+| Query Volume Trend time-plot (`totalQueryCount` workspace metric, sum of per-warehouse counts each cycle) | 1.0.126 |
+| Job Success Rate by Day table — per-job daily success %, 7d totals, trend vs prior 7 days | 1.0.126 |
 
 ---
 
@@ -136,21 +142,21 @@
 | Drift metrics | SQL query against `drift_metrics` output table via warehouse | Medium | Statistical drift vs baseline (JS divergence, distribution % change). Surfaces columns where data has shifted unexpectedly. |
 | Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | Correlate job run failures or anomalies with downstream drift detection. Differentiator vs Datadog/New Relic. |
 
-### Tier 11 — AI Gateway Observability (Token & GenAI Usage)
+### Tier 11 — AI Gateway Observability (Token & GenAI Usage) ✓ Done 1.0.119
 
 > **Competitive note:** Token-level GenAI observability from the Databricks-native `system.ai_gateway.usage` system table — surfaced inside the same Foglight platform as DBU cost, query, pipeline, and Lakebase monitoring — is differentiated. Neither Datadog nor New Relic surfaces Databricks AI Gateway token economics natively. This extends the "Databricks-native, not cloud-billing-estimated" wedge into the fastest-growing workload on the platform. Tag-based attribution (project / team / cost-center) gives FinOps and platform buyers a per-team GenAI consumption view that complements existing DBU rollups.
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| AI Gateway endpoint inventory | Aggregate `endpoint_name` from `system.ai_gateway.usage` | Low | New type `DatabricksAiEndpoint` under `DatabricksWorkspace`. Current-window rollup: request count, total tokens, error rate, p95 latency. |
-| Token consumption rollup | `SUM(total/input/output tokens)` by date × endpoint × model | Low | New type `DatabricksAiUsage`. Daily aggregated rows for trend portlets. Includes cache + reasoning token breakdown. Direct analogue of `DatabricksUsage`. |
-| Per-requester activity | `GROUP BY requester, requester_type` | Low | New type `DatabricksAiUserActivity`. Request count, total tokens, error count per requester. Reuses User Activity treemap + bubble pattern. |
-| Endpoint performance metrics | `approx_percentile(latency_ms, …)`, status-code rollup in SQL | Medium | p50/p90/p95/p99 latency, TTFB, 4xx/5xx error counts per endpoint. Percentiles pre-computed in SQL warehouse. |
-| Tag-based usage attribution | `request_tags['…']`, `endpoint_tags['…']` columns | Low | Per-team/project/cost-center token rollups. Same tag-propagation pattern planned for Lakebase. |
-| Overview summary row | Derived from `DatabricksAiUsage` | Low | "AI Gateway (This Month)" row in Overview: total tokens, top endpoint/model, request count. Mirrors DBU summary row (1.0.58). |
-| Token → dollar cost attribution | Join to `system.billing.usage` model-serving/foundation-model SKU records | High | **Deferred (fast-follow).** Same join complexity as Tier 4 cost-per-job. Ship after token-volume tier proves out. |
+| AI Gateway endpoint inventory | Aggregate `endpoint_name` from `system.ai_gateway.usage` | Low | ✓ Done 1.0.119 — `DatabricksAiEndpoint` type; current-window rollup: request count, total tokens, error rate, p95 latency. |
+| Token consumption rollup | `SUM(total/input/output tokens)` by date × endpoint × model | Low | ✓ Done 1.0.119 — `DatabricksAiUsage` type; daily aggregated rows. Direct analogue of `DatabricksUsage`. |
+| Per-requester activity | `GROUP BY requester, requester_type` | Low | ✓ Done 1.0.119 — `DatabricksAiUserActivity` type; request count, total tokens, error count per requester. |
+| Endpoint performance metrics | `approx_percentile(latency_ms, …)`, status-code rollup in SQL | Medium | Deferred — p50/p90/p95/p99 latency, TTFB, 4xx/5xx error counts per endpoint. |
+| Tag-based usage attribution | `request_tags['…']`, `endpoint_tags['…']` columns | Low | Deferred — per-team/project/cost-center token rollups. |
+| Overview summary row | Derived from `DatabricksAiUsage` | Low | Deferred — "AI Gateway (This Month)" row in Overview: total tokens, top endpoint/model, request count. |
+| Token → dollar cost attribution | Join to `system.billing.usage` model-serving/foundation-model SKU records | High | **Deferred.** Same join complexity as Tier 4 cost-per-job. |
 
-**Prerequisites:** Unity AI Gateway V2 Preview enabled (account Previews toggle). **Account-admin access required** for `system.ai_gateway.usage` — stricter than `system.billing.*`. Collector must degrade gracefully if preview is disabled or access is revoked.
+**Prerequisites:** Unity AI Gateway V2 Preview enabled (account Previews toggle). **Account-admin access required** for `system.ai_gateway.usage` — stricter than `system.billing.*`. Collector degrades gracefully if preview is disabled or access is revoked.
 
 ---
 
@@ -163,7 +169,7 @@
 5. **Tier 5** — DLT Pipeline depth ✓ (built 1.0.64, untested — DLT not in dev workspace)
 6. **Tier 7** — Model Serving ✓ (1.0.65)
 7. **Tier 8** — Lakebase platform monitoring ✓ (1.0.118, CONFIRMED: 3 projects, 5 branches)
-8. **Tier 11** — AI Gateway Observability — **next** (unblocked; preview confirmed enabled)
+8. **Tier 11** — AI Gateway Observability ✓ Done 1.0.119 (3 portlets, sub-nav page; deferred items: tag attribution, overview row, dollar cost join)
 9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` — **unblocked** (UC confirmed; revised from Ganglia approach)
 10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
 11. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**on hold**)
@@ -188,14 +194,14 @@
 
 ### v2 Target Pages
 
-| Page | Key additions over WCF |
-|---|---|
-| Overview | Sparklines for query volume, job success rate trend |
-| Clusters | State history timeline, memory/core utilization charts |
-| Jobs | Job run Gantt timeline, success rate trend chart |
-| SQL Warehouses | Query volume over time, warehouse utilization heatmap |
-| Queries | Query duration distribution, per-user trend charts |
-| DBU / Cost | Spend trend charts, cost-by-job bar chart (requires Tier 4) |
+| Page | Key additions over WCF | WCF approximation |
+|---|---|---|
+| Overview | Sparklines for query volume, job success rate trend | Query volume time-plot (view 69) + Job success rate table (view 71) added to sub-navs in 1.0.126 |
+| Clusters | State history timeline, memory/core utilization charts | Requires Tier 6 (node_timeline data) — no WCF approximation |
+| Jobs | Job run Gantt timeline, success rate trend chart | Job Success Rate by Day table (view 71) in 1.0.126 |
+| SQL Warehouses | Query volume over time, warehouse utilization heatmap | Query Volume Trend time-plot (view 69) in 1.0.126 |
+| Queries | Query duration distribution, per-user trend charts | Query Volume Trend time-plot (view 69) in 1.0.126 |
+| DBU / Cost | Spend trend charts, cost-by-job bar chart | SKU 7-day trend table (view 65) + intra-day accumulation time-plot (view 67) in 1.0.125 |
 
 ### Dependencies
 
@@ -246,3 +252,10 @@
 | 1.0.115–1.0.116 | Debug iterations: confirmed FglAM was loading cached April-compiled JAR (not new code). Root causes identified: (1) Maven compile not run before packaging; (2) AGENT_VER hardcoded "1.0.6" so FglAM never fetched new package; (3) --deploy targeted deploy/deployed/ staging area, not actual agent cache at agents/DatabricksAgent/<ver>/lib/. |
 | 1.0.117 | Build process fully fixed: auto Maven compile in build_cartridge.py; AGENT_VER synced to VERSION; agent.manifest ver/build-id injected at build time; --deploy now targets correct FglAM agent cache dir. JSON parsing fix: project_id/display_name/branch_id are nested under status sub-object in API response. Lakebase collection running. |
 | 1.0.118 | Clean production build: debug System.out.println removed; Lakebase CONFIRMED working (3 projects, 5 branches, all API calls succeeding in ~150ms). |
+| 1.0.119 | Tier 11 AI Gateway Observability: `DatabricksAiEndpoint`, `DatabricksAiUsage`, `DatabricksAiUserActivity` topology types; SQL queries against `system.ai_gateway.usage`; 3 WCF portlets (AI Endpoints, Token Usage, User Activity); `databricks_ai_gateway` sub-nav module. |
+| 1.0.121 | Fix sub-module nav registration (height preferred="0" required for wcf.grid2 sub-nav composite-views); fix AI Gateway SQL column names. |
+| 1.0.122 | Agent properties (ASP / Edit Properties) now take priority over `databricks.properties` file for all config keys. |
+| 1.0.123 | Instance pool improvements; clusters view cleanup. |
+| 1.0.124 | Instance Pool API fields: `pendingIdleCount`, `pendingUsedCount`, `idleTerminationMinutes` (Metric), `preloadedSparkVersions` (String). New columns in Instance Pools portlet. |
+| 1.0.125 | Cost & Usage dashboard redesign: `scroll:true` on all composite-views; intra-day DBU accumulation time-plot (`totalDailyDbu` Metric sampled each cycle, view 67); SKU 7-day spend trend table (view 65, script 66, `DatabricksSkuSparkRow` type); bubble chart `showLabels:true`. All 8 sub-nav dashboards made scrollable. |
+| 1.0.126 | `totalQueryCount` workspace Metric (sum of per-warehouse queryCount each collection cycle); Query Volume Trend time-plot (view 69) added to SQL Warehouses and Queries sub-navs; Job Success Rate by Day table (view 71, script 70, `DatabricksJobTrendRow` type) added to Jobs sub-nav — per-job daily success rate for last 7 days sorted worst-first. |
