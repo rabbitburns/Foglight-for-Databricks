@@ -2,7 +2,7 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.126
+**Current version:** 1.0.132
 
 ## What It Monitors
 

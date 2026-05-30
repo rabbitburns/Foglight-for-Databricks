@@ -183,6 +183,77 @@ def find_mvn():
     sys.exit("ERROR: mvn not found. Add Maven bin to PATH or install Maven.")
 
 
+def validate_wcf():
+    """Validate all WCF module XML files for known JiBX-fatal errors:
+    1. view/composite-view elements appearing after script-function elements —
+       Foglight drops the entire module when ordering is violated.
+    2. Unknown property names in specific component types — JiBX throws
+       'Unexpected property name' and drops the module (e.g. showLabels in bubble chart).
+    """
+    import xml.etree.ElementTree as ET
+
+    # Properties that are NOT valid for these component types (confirmed by JiBX errors).
+    # Scrolling in wcf.grid2: use pageOptions > scrollbars (enum: auto), not scroll (bool).
+    INVALID_PROPS = {
+        "wcf.html-chart.scatter.bubble": {"showLabels"},
+        "wcf.grid2":                     {"scroll", "scrollbars"},  # scrollbars belongs inside pageOptions
+    }
+
+    errors = []
+    for root, dirs, files in os.walk("assembly/wcf"):
+        for fname in files:
+            if fname != "wcf.xml":
+                continue
+            path = os.path.join(root, fname)
+            try:
+                tree = ET.parse(path)
+            except ET.ParseError as e:
+                errors.append(f"{path}: XML parse error: {e}")
+                continue
+            module = tree.getroot()
+
+            # Check 1: view/composite-view ordering relative to script-functions
+            first_sf_pos = None
+            for pos, child in enumerate(module):
+                tag = child.tag.split("}")[-1]
+                if tag == "script-function" and first_sf_pos is None:
+                    first_sf_pos = pos
+                if tag in ("view", "composite-view") and first_sf_pos is not None:
+                    vid = child.get("id", "?")
+                    errors.append(
+                        f"{path}: view/composite-view id={vid} appears after a "
+                        f"script-function (pos {first_sf_pos}). "
+                        f"All views must precede all script-functions."
+                    )
+
+            # Check 2: invalid property names per component type
+            for view in module.iter():
+                tag = view.tag.split("}")[-1]
+                if tag not in ("view", "composite-view"):
+                    continue
+                component = view.get("component", "")
+                invalid = INVALID_PROPS.get(component)
+                if not invalid:
+                    continue
+                config = view.find("config")
+                if config is None:
+                    continue
+                for prop in config.findall("property"):
+                    pname = prop.get("name", "")
+                    if pname in invalid:
+                        errors.append(
+                            f"{path}: view id={view.get('id')} component={component} "
+                            f"has invalid property '{pname}' (not supported by JiBX schema)."
+                        )
+
+    if errors:
+        print("WCF VALIDATION FAILED:")
+        for e in errors:
+            print(f"  {e}")
+        sys.exit(1)
+    print("WCF validation passed.")
+
+
 def compile_java():
     mvn = find_mvn()
     env = os.environ.copy()
@@ -199,6 +270,7 @@ def compile_java():
 
 
 def main():
+    validate_wcf()
     compile_java()
     os.makedirs("target", exist_ok=True)
     out = f"target/DatabricksAgent-{VERSION}.car"

@@ -21,7 +21,11 @@
         <flow/>
         <config>
             <property name="spacing"><integer value="4"/></property>
-            <property name="scroll"><boolean value="true"/></property>
+            <property name="pageOptions">
+                <object>
+                    <property name="scrollbars"><enum value="auto"/></property>
+                </object>
+            </property>
             <property name="sizing">
                 <component-sizing>
                     <width preferred="0"/>
