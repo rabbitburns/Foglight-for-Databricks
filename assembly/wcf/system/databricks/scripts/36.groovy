@@ -34,7 +34,7 @@ sorted.eachWithIndex { r, i ->
     node.set('yValue', r.cost)
     node.set('size',   r.dbu)
     node.set('color',  Color.decode(palette[i % palette.size()]))
-    node.store('label', r.sku, specificTimeRange)
+    node.set('label', r.sku)
     nodes.add(node)
 }
 return nodes

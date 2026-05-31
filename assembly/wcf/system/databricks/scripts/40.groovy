@@ -34,7 +34,7 @@ sorted.each { r ->
     node.set('yValue', avgSec)
     node.set('size',   (double) r.count)
     node.set('color',  Color.decode(colorStr))
-    node.store('label', r.user, specificTimeRange)
+    node.set('label', r.user)
     nodes.add(node)
 }
 return nodes
