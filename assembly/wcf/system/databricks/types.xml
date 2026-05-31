@@ -266,7 +266,7 @@
         <set annotation="reloadable">false</set>
         <property name="id"        type="wcf:String"/>
         <property name="name"      type="wcf:String"/>
-        <property name="count"     type="wcf:String"/>
+        <property name="count"     type="wcf:Number"/>
         <property name="fillColor" type="wcf:Color"/>
     </type>
     <type name="DatabricksBubbleNode" extends="wcf:DataObject">

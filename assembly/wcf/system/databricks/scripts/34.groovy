@@ -37,7 +37,7 @@ sorted.eachWithIndex { r, i ->
     def node = functionHelper.createDataObject('databricks:DatabricksTreeMapNode', 'none', null)
     node.set('id',        r.product)
     node.set('name',      r.product)
-    node.set('count',     String.format("%.1f", r.dbu))
+    node.set('count',     r.dbu)
     node.set('fillColor', Color.decode(palette[i % palette.size()]))
     nodes.add(node)
 }
