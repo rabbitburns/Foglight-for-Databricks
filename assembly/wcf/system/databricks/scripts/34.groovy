@@ -1,4 +1,5 @@
 package system._databricks.scripts;
+import java.awt.Color;
 
 // Treemap data — DBU by Product, current month, colour-coded
 
@@ -34,10 +35,10 @@ sorted.sort { a, b -> Double.compare(b.dbu, a.dbu) }
 def nodes = new java.util.ArrayList()
 sorted.eachWithIndex { r, i ->
     def node = functionHelper.createDataObject('databricks:DatabricksTreeMapNode', 'none', null)
-    node.store('id',        r.product,                       specificTimeRange)
-    node.store('name',      r.product,                       specificTimeRange)
-    node.store('count',     String.format("%.1f", r.dbu),    specificTimeRange)
-    node.store('fillColor', palette[i % palette.size()],     specificTimeRange)
+    node.set('id',        r.product)
+    node.set('name',      r.product)
+    node.set('count',     String.format("%.1f", r.dbu))
+    node.set('fillColor', Color.decode(palette[i % palette.size()]))
     nodes.add(node)
 }
 return nodes

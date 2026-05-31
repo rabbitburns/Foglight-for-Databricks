@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="71"
+        last-entity-id="73"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -1224,7 +1224,18 @@
                 </function-rv>
             </entry>
         </context>
-        <flow/>
+        <flow>
+            <on action="dwell">
+                <generated-context output-key="selectedNode" custom-key="node"/>
+                <popup id="system:databricks.73" type="temporary">
+                    <context>
+                        <entry key="labelValue">
+                            <context-rv input-key="node" path="label"/>
+                        </entry>
+                    </context>
+                </popup>
+            </on>
+        </flow>
         <config>
             <property name="nodes">
                 <context-rv input-key="bubbleNodes"/>
@@ -1290,7 +1301,18 @@
                 </function-rv>
             </entry>
         </context>
-        <flow/>
+        <flow>
+            <on action="dwell">
+                <generated-context output-key="selectedNode" custom-key="node"/>
+                <popup id="system:databricks.73" type="temporary">
+                    <context>
+                        <entry key="labelValue">
+                            <context-rv input-key="node" path="label"/>
+                        </entry>
+                    </context>
+                </popup>
+            </on>
+        </flow>
         <config>
             <property name="nodes">
                 <context-rv input-key="bubbleNodes"/>
@@ -2293,6 +2315,12 @@
                     </object>
                 </list-value>
             </property>
+            <property name="sizing">
+                <component-sizing>
+                    <width preferred="0"/>
+                    <height preferred="0"/>
+                </component-sizing>
+            </property>
         </config>
     </view>
 
@@ -2483,6 +2511,19 @@
                         <property name="value"><context-rv input-key="currentRow" path="trend"/></property>
                     </object>
                 </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="73" display-name="Bubble Tooltip" public="false" component="wcf.label">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000073</uuid>
+        <inputs>
+            <entry key="labelValue" data-type="wcf:String"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="label">
+                <context-rv input-key="labelValue"/>
             </property>
         </config>
     </view>
