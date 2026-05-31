@@ -151,6 +151,7 @@
         <property name="avgDurationMs"     type="Metric" is-containment="true"/>
         <property name="minDurationMs"     type="Metric" is-containment="true"/>
         <property name="maxDurationMs"     type="Metric" is-containment="true"/>
+        <property name="lastRunDuration"   type="Metric" is-containment="true"/>
         <property name="runs"              type="DatabricksJobRun" is-many="true" is-containment="true"/>
     </type>
 

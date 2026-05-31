@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="73"
+        last-entity-id="76"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -2528,6 +2528,174 @@
         </config>
     </view>
 
+    <view id="74" display-name="Databricks Job Sparklines" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000074</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.74"/>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">jobName</string></property>
+                        <property name="header"><string xml:space="preserve">Job</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="jobName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">successRateSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Success Rate %</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="successRate/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="successRate" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">avgDurationSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Avg Duration (ms)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="avgDurationMs/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="avgDurationMs" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">lastRunDurationSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Last Run Duration (ms)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="lastRunDuration/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="lastRunDuration" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="75" display-name="Databricks Warehouse Sparklines" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000075</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.75"/>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">warehouseName</string></property>
+                        <property name="header"><string xml:space="preserve">Warehouse</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="warehouseName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">queryCountSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Query Count</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="queryCount/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="queryCount" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">numClustersSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Clusters</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="numClusters/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="numClusters" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="76" display-name="Databricks Cluster Sparklines" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000076</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.76"/>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">clusterName</string></property>
+                        <property name="header"><string xml:space="preserve">Cluster</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="clusterName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">numWorkersSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Workers</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="numWorkers/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="numWorkers" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -2787,6 +2955,24 @@
         <inputs>
             <input name="timeRange" type-name="wcf:TimeRange"/>
         </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="74" display-name="Get Jobs For Sparklines"
+                     output-type="foglight-5:DatabricksJob" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000074</uuid>
+    </script-function>
+
+    <script-function type="groovy" id="75" display-name="Get Warehouses For Sparklines"
+                     output-type="foglight-5:DatabricksWarehouse" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000075</uuid>
+    </script-function>
+
+    <script-function type="groovy" id="76" display-name="Get Clusters For Sparklines"
+                     output-type="foglight-5:DatabricksCluster" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-a012-900000000076</uuid>
     </script-function>
 
 </module>

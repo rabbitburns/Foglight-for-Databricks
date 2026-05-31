@@ -2,7 +2,7 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.135
+**Current version:** 1.0.136
 
 ## What It Monitors
 
@@ -101,6 +101,9 @@ All portlets are available individually in the Add View picker:
 | Databricks AI Gateway Endpoints | AI Gateway endpoint metrics — tokens, errors, latency |
 | Databricks AI Token Usage | Daily token usage by endpoint and model |
 | Databricks AI User Activity | Per-requester token and request counts |
+| Databricks Job Sparklines | Per-job success rate, avg duration, and last run duration as historical sparklines |
+| Databricks Warehouse Sparklines | Per-warehouse query count and cluster count as historical sparklines |
+| Databricks Cluster Sparklines | Per-cluster worker count as historical sparkline |
 
 ## Topology
 

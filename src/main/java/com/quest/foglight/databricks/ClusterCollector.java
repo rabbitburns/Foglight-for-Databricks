@@ -155,12 +155,13 @@ public class ClusterCollector {
                     JsonNode autoscale = cluster.path("autoscale");
                     if (autoscale.isObject()) {
                         clusterNode.createValue("autoscaleEnabled").setSampleValue(true);
-                        clusterNode.createValue("autoscaleMinWorkers")
-                                .setSampleValue(autoscale.path("min_workers").asInt(0));
-                        clusterNode.createValue("autoscaleMaxWorkers")
-                                .setSampleValue(autoscale.path("max_workers").asInt(0));
-                        clusterNode.createValue("autoscaleTargetWorkers")
-                                .setSampleValue(autoscale.path("target_workers").asInt(0));
+                        int minW   = autoscale.path("min_workers").asInt(0);
+                        int maxW   = autoscale.path("max_workers").asInt(0);
+                        int targetW = autoscale.path("target_workers").asInt(0);
+                        clusterNode.createValue("autoscaleMinWorkers").setSampleValue(minW);
+                        clusterNode.createValue("autoscaleMaxWorkers").setSampleValue(maxW);
+                        clusterNode.createValue("autoscaleTargetWorkers").setSampleValue(targetW);
+                        clusterNode.createValue("numWorkers").setSampleValue(targetW > 0 ? targetW : minW);
                     } else {
                         clusterNode.createValue("autoscaleEnabled").setSampleValue(false);
                         clusterNode.createValue("numWorkers")
@@ -245,6 +246,7 @@ public class ClusterCollector {
                             setValue(jobNode, "lastRunResult",      lastRun.path("state").path("result_state").asText(""), false);
                             setValue(jobNode, "lastRunStartStr",    fmtTs(lastStart), false);
                             setValue(jobNode, "lastRunDurationStr", fmtDur(Math.max(0, lastEnd - lastStart)), false);
+                            jobNode.createValue("lastRunDuration").setSampleValue(Math.max(0, lastEnd - lastStart));
 
                             // --- run stats across all fetched runs ---
                             int successCount = 0, failureCount = 0, durationCount = 0;
