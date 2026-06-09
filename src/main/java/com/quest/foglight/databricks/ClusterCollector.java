@@ -95,6 +95,47 @@ public class ClusterCollector {
             int jobDbuCount = 0;
             String billingWarehouseId = configuredBillingWarehouseId;
 
+            // Determine billing warehouse early so node_timeline query can run before cluster loop
+            if ((billingWarehouseId == null || billingWarehouseId.isBlank())
+                    && warehousesResponse != null && warehousesResponse.has("warehouses")
+                    && warehousesResponse.get("warehouses").isArray()) {
+                for (JsonNode wh : warehousesResponse.get("warehouses")) {
+                    String whId = wh.path("id").asText("");
+                    if (!whId.isBlank()) { billingWarehouseId = whId; break; }
+                }
+            }
+
+            // Query node_timeline for per-cluster CPU/mem utilization (last 5 minutes)
+            java.util.Map<String, double[]> clusterUtils = new java.util.HashMap<>();
+            if (billingWarehouseId != null && !billingWarehouseId.isBlank()) {
+                try {
+                    String utilSql = "SELECT cluster_id, "
+                            + "AVG(COALESCE(worker_cpu_util, driver_cpu_util)) AS avg_cpu, "
+                            + "AVG(COALESCE(worker_mem_util, driver_mem_util)) AS avg_mem "
+                            + "FROM system.compute.node_timeline "
+                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 5 MINUTES "
+                            + "GROUP BY cluster_id "
+                            + "LIMIT 500";
+                    JsonNode utilResult = client.executeSqlStatement(billingWarehouseId, utilSql);
+                    if ("SUCCEEDED".equals(utilResult.path("status").path("state").asText(""))) {
+                        JsonNode rows = utilResult.path("result").path("data_array");
+                        if (rows.isArray()) {
+                            for (JsonNode row : rows) {
+                                String cid = row.path(0).asText("");
+                                if (!cid.isBlank()) {
+                                    clusterUtils.put(cid, new double[]{
+                                        row.path(1).asDouble(0.0),
+                                        row.path(2).asDouble(0.0)
+                                    });
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: node_timeline query failed: " + e.getMessage());
+                }
+            }
+
             // Build poolId -> poolName lookup from pools response
             java.util.Map<String, String> poolIdToName = new java.util.HashMap<>();
             if (poolsResponse != null
@@ -179,6 +220,14 @@ public class ClusterCollector {
                             cluster.path("termination_reason").path("type").asText(""), false);
                     clusterNode.createValue("terminationInactivityMinutes")
                             .setSampleValue(cluster.path("autotermination_minutes").asInt(0));
+
+                    double[] utils = clusterUtils.getOrDefault(clusterId, new double[]{0.0, 0.0});
+                    clusterNode.createValue("cpuUtil").setSampleValue((long)(utils[0] * 100));
+                    clusterNode.createValue("memUtil").setSampleValue((long)(utils[1] * 100));
+                    setValue(clusterNode, "cpuUtilStr",
+                            utils[0] > 0 ? String.format("%.1f%%", utils[0] * 100) : "", false);
+                    setValue(clusterNode, "memUtilStr",
+                            utils[1] > 0 ? String.format("%.1f%%", utils[1] * 100) : "", false);
                 }
             }
 

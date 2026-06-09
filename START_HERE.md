@@ -11,7 +11,7 @@ Collects topology and metrics from the Databricks REST API and Unity Catalog sys
 Surfaced as WCF portlets inside Foglight dashboards.
 
 **Build:** `python build_cartridge.py X.X.X` → `target/DatabricksAgent-X.X.X.car`
-**Current version:** 1.0.113 (confirmed working and deployed)
+**Current version:** 1.0.139 (confirmed working and deployed)
 
 **Codebase:** `C:\Users\mark_\OneDrive\Claude\foglight-databricks\`
 
@@ -33,8 +33,11 @@ Surfaced as WCF portlets inside Foglight dashboards.
 | 4 | DBU consumption & cost (`system.billing.usage`), SKU list prices, treemap + bubble charts | ✓ Done |
 | 5 | DLT Pipeline Updates + Data Quality Expectations | ✓ Built, untested (no DLT in dev workspace) |
 | 7 | Model Serving Endpoints + Served Models | ✓ Done |
+| 8 | Lakebase Projects + Branches (2 portlets — views 55, 57) | ✓ Done |
+| 11 | AI Gateway Observability — Endpoints, Token Usage, User Activity (3 portlets — views 59, 61, 63) | ✓ Done |
+| Sparklines | Job, Warehouse, Cluster sparklines (views 74, 75, 76) | ✓ Done |
 
-27 WCF portlets. Next available view/script IDs: **55/55** (`last-entity-id="54"` on main module).
+27+ WCF portlets. Next available view/script IDs: **77/77** (`last-entity-id="76"` on main module).
 
 ---
 
@@ -42,7 +45,7 @@ Surfaced as WCF portlets inside Foglight dashboards.
 
 ```
 FglAM Java Agent (ClusterCollector.java, 60s polling)
-  → Databricks REST API + system.billing.* SQL
+  → Databricks REST API + system.billing.* + system.compute.* SQL
   → Foglight Topology Store (CDT transformation)
   → WCF Portlets (Groovy scripts)
 ```
@@ -51,9 +54,10 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 
 **Key files:**
 - `src/main/java/com/quest/foglight/databricks/ClusterCollector.java` — main Java collector
+- `src/main/java/com/quest/foglight/databricks/DatabricksClient.java` — REST API client
 - `assembly/topology/topology-types.xml` — all topology type definitions
 - `assembly/topology/cdt.xml` — CDT transformation (DOCTYPE line is REQUIRED — never remove it)
-- `assembly/wcf/system/databricks/wcf.xml` — main WCF module (views 1–54)
+- `assembly/wcf/system/databricks/wcf.xml` — main WCF module (views 1–76)
 - `assembly/wcf/system/databricks_*/wcf.xml` — sub-module nav entries
 
 ---
@@ -70,34 +74,33 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 
 ---
 
-## Current Work — Tier 8: Lakebase Platform Monitoring
+## Current Work — Tier 6: Cluster Runtime Metrics
 
-**Goal:** Surface Lakebase project/branch/endpoint inventory as Foglight topology. Complements the existing Foglight PostgreSQL cartridge (which handles per-branch query monitoring).
+**Goal:** Surface per-cluster CPU/memory/disk metrics from `system.compute.node_timeline` as Foglight time-plot portlets.
 
-**API endpoints:**
-- `GET /api/2.0/postgres/projects` → project list
-- `GET /api/2.0/postgres/projects/{id}/branches` → branch list per project
-- `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` → endpoints per branch
-- `GET /api/2.0/postgres/projects/{id}/operations` → in-flight ops (create/clone/restore)
+**SQL source:** `system.compute.node_timeline` (requires Unity Catalog + billing warehouse)
+- Key columns: `cluster_id`, `timestamp`, `driver_cpu_util`, `driver_mem_util`, `worker_cpu_util`, `worker_mem_util`
 
-**New topology types to add** (in `topology-types.xml`):
-- `DatabricksLakebaseProject` — under `DatabricksWorkspace.lakebaseProjects`
-- `DatabricksLakebaseBranch` — under `DatabricksLakebaseProject.branches`
+**New topology properties to add** on `DatabricksCluster`:
+- `cpuUtil`, `memUtil` — `Metric` (is-containment="true") — rolling averages from node_timeline
 
-**New portlets** (~4, views 55+):
-- Lakebase Projects (project name, state, timestamps)
-- Lakebase Branches (branch name, state, parent branch, created time)
-- Lakebase Endpoints (endpoint state, size, URL)
-- Lakebase Operations (in-flight op type, state, duration — surfaces stuck provisioning)
+**New portlets** (views 77+):
+- Cluster CPU Utilization — time-plot of `cpuUtil` across clusters
+- Cluster Memory Utilization — time-plot of `memUtil` across clusters
+- (optionally) per-cluster detail row with sparkline columns
 
-**Note:** `tools/lakebase-branch-discovery/branch_to_foglight.py` already exists — it's a standalone agent-onboarding script (writes foglight_agents.csv). Tier 8 is the FMS topology layer that complements it.
+**Approach:** Query `node_timeline` in ClusterCollector via SQL warehouse (same pattern as billing queries). Aggregate per cluster_id, write as Metrics onto the existing `DatabricksCluster` topology nodes.
 
 ---
 
-## Next After Tier 8
+## Backlog (priority order)
 
-- **Tier 11** — AI Gateway Observability (`system.ai_gateway.usage`); new types `DatabricksAiEndpoint`, `DatabricksAiUsage`, `DatabricksAiUserActivity`; 7 portlets; requires account-admin access
-- **Tier 6** — Cluster runtime metrics (`system.compute.node_timeline`)
+1. **Tier 6** — Cluster runtime metrics (see Current Work above) — **next**
+2. **Tier 11 fast-follow** — Token → dollar cost: join `system.ai_gateway.usage` to billing SKU records
+3. **Tier 10** — Lakehouse Monitoring (monitor inventory + drift metrics)
+4. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
+5. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
+6. **AUI nav icon** — verify custom.svg approach or await Quest platform team guidance
 
 ---
 

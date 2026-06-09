@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="76"
+        last-entity-id="77"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -2684,6 +2684,77 @@
                         <property name="header"><string xml:space="preserve">Workers</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="numWorkers/period/average"/></property>
                         <property name="renderValue"><context-rv input-key="currentRow" path="numWorkers" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="77" display-name="Databricks Cluster Utilization" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000077</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.76"/>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">clusterName</string></property>
+                        <property name="header"><string xml:space="preserve">Cluster</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="clusterName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">state</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="stateStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cpuUtilStr</string></property>
+                        <property name="header"><string xml:space="preserve">CPU %</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cpuUtilStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">memUtilStr</string></property>
+                        <property name="header"><string xml:space="preserve">Mem %</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="memUtilStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cpuUtilSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">CPU Trend</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cpuUtil/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="cpuUtil" renderer-id="system:oscommon.86"/></property>
+                        <property name="width">
+                            <object>
+                                <property name="sizing"><enum value="specified"/></property>
+                                <property name="value"><integer value="80"/></property>
+                            </object>
+                        </property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">memUtilSparkline</string></property>
+                        <property name="header"><string xml:space="preserve">Mem Trend</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="memUtil/period/average"/></property>
+                        <property name="renderValue"><context-rv input-key="currentRow" path="memUtil" renderer-id="system:oscommon.86"/></property>
                         <property name="width">
                             <object>
                                 <property name="sizing"><enum value="specified"/></property>

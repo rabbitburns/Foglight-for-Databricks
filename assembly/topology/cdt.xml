@@ -131,6 +131,18 @@
                 <node pattern="terminationInactivityMinutes">
                   <value><metric type="terminationInactivityMinutes"/></value>
                 </node>
+                <node pattern="cpuUtil">
+                  <value><metric type="cpuUtil"/></value>
+                </node>
+                <node pattern="memUtil">
+                  <value><metric type="memUtil"/></value>
+                </node>
+                <node pattern="cpuUtilStr">
+                  <value var="$v"><attr name="cpuUtilStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="memUtilStr">
+                  <value var="$v"><attr name="memUtilStr" target="{{$clusterVar}}" val="{$v}"/></value>
+                </node>
 
               </node>
             </node>

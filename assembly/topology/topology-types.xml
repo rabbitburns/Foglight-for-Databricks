@@ -211,6 +211,10 @@
         <property name="terminationCode"              type="String"/>
         <property name="terminationType"              type="String"/>
         <property name="terminationInactivityMinutes" type="Metric"  is-containment="true"/>
+        <property name="cpuUtil"                      type="Metric"  is-containment="true"/>
+        <property name="memUtil"                      type="Metric"  is-containment="true"/>
+        <property name="cpuUtilStr"                   type="String"/>
+        <property name="memUtilStr"                   type="String"/>
     </type>
 
     <type name="DatabricksUsage" extends="TopologyObject">
