@@ -36,6 +36,17 @@
 
 ## Backlog
 
+### Near-term / Carry-forward
+
+| Item | Notes |
+|---|---|
+| **AUI nav icon** | Icons are keyed by WCF module ID in a hardcoded lookup map inside the AUI Angular bundle (`main.*.js`). No cartridge mechanism exists — workaround is replacing `custom.svg` at `C:\Quest\Foglight\state\tomcat\webapps\aui\assets\images\icons\custom.svg`. Seeking guidance from platform team. |
+| **Sparkline verification** | New sparkline portlets (74–76) need at least 2+ collection cycles of history before the mini-charts populate. Verify after agent restart with 1.0.136+. |
+| **Sparkline: workspace totalDailyDbu** | `DatabricksWorkspace.totalDailyDbu` is already a Metric sampled each cycle. Consider adding a single-row view or embedding it in the Overview composite rather than a table (only 1 workspace). |
+| **Cluster runtime metrics (Tier 6)** | `system.compute.node_timeline` via SQL warehouse — per-node CPU/memory at 1-min granularity. Unblocked since Unity Catalog is confirmed enabled. |
+
+---
+
 ### Tier 1 — Job & Cluster Depth (remaining)
 
 | Gap | API Source | Effort | Notes |
@@ -259,3 +270,9 @@
 | 1.0.124 | Instance Pool API fields: `pendingIdleCount`, `pendingUsedCount`, `idleTerminationMinutes` (Metric), `preloadedSparkVersions` (String). New columns in Instance Pools portlet. |
 | 1.0.125 | Cost & Usage dashboard redesign: `scroll:true` on all composite-views; intra-day DBU accumulation time-plot (`totalDailyDbu` Metric sampled each cycle, view 67); SKU 7-day spend trend table (view 65, script 66, `DatabricksSkuSparkRow` type); bubble chart `showLabels:true`. All 8 sub-nav dashboards made scrollable. |
 | 1.0.126 | `totalQueryCount` workspace Metric (sum of per-warehouse queryCount each collection cycle); Query Volume Trend time-plot (view 69) added to SQL Warehouses and Queries sub-navs; Job Success Rate by Day table (view 71, script 70, `DatabricksJobTrendRow` type) added to Jobs sub-nav — per-job daily success rate for last 7 days sorted worst-first. |
+| 1.0.127–1.0.132 | WCF structural fixes and validate_wcf tooling; AUI nav icon investigation (hardcoded in Angular bundle keyed by module ID — no cartridge mechanism; fallback is `custom.svg`). |
+| 1.0.133 | Fix bubble chart labels: all `store()` calls on `wcf:String`/`wcf:Number`/`wcf:Color` DataObject properties changed to `set()` — `store()` is only valid for `wcf:Metric` time-series. Affected: 34.groovy (treemap), 36.groovy (cost bubble), 40.groovy (user activity bubble), 66.groovy (SKU trend). |
+| 1.0.134 | Fix treemap `fillColor`: `DatabricksTreeMapNode.fillColor` changed from `wcf:String` → `wcf:Color`; 34.groovy now uses `Color.decode()`. Fix bubble chart mouseover: added `<on action="dwell">` popup handler (view 73) to both bubble views (35, 39) — `wcf.html-chart.scatter.bubble` tooltips require a dwell popup, not `label` property. DBU Spend Trend table made full-width. |
+| 1.0.135 | Fix treemap blank: `DatabricksTreeMapNode.count` changed from `wcf:String` → `wcf:Number` — `wcf.treemap`'s `displayNumber` must be numeric for cell sizing. 34.groovy passes raw double. |
+| 1.0.136 | Metric-backed sparkline portlets: `DatabricksJob.lastRunDuration` Metric added to topology; autoscaling clusters now write `numWorkers` metric; 3 new portlets using `system:oscommon.86` sparkline renderer — Job Sparklines (successRate, avgDurationMs, lastRunDuration), Warehouse Sparklines (queryCount, numClusters), Cluster Sparklines (numWorkers). |
+| 1.0.137 | Fix Cost & Usage treemap: `wcf.treemap` requires full-width container to compute cell sizes; separated treemap and bubble from shared two-column row into their own full-width rows in `databricks_cost` composite. |
