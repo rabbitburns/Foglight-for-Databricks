@@ -13,7 +13,7 @@ workspaces?.each { ws ->
         double dbu  = 0.0
         double cost = 0.0
         try { dbu  = Double.parseDouble(u.get("dbuConsumedStr")  ?: "0") } catch (Exception ignore) {}
-        try { cost = Double.parseDouble(u.get("dollarCostStr")   ?: "0") } catch (Exception ignore) {}
+        try { cost = Double.parseDouble((u.get("dollarCostStr") ?: "0").replace('$','').replace(',','')) } catch (Exception ignore) {}
         if (!skuData.containsKey(sku)) {
             skuData[sku] = [product: product, dbu: 0.0, cost: 0.0]
         }
@@ -30,7 +30,7 @@ skuData.each { sku, data ->
         dbu    : data.dbu,
         dbuStr : String.format("%.2f", data.dbu),
         cost   : data.cost,
-        costStr: String.format('$%.4f', data.cost)
+        costStr: String.format('$%,.2f', data.cost)
     ]
 }
 rawRows.sort { a, b -> Double.compare(b.cost, a.cost) }

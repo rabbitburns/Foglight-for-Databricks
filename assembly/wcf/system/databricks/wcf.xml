@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="79"
+        last-entity-id="80"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -605,6 +605,11 @@
                         <property name="id"><string xml:space="preserve">queryCount</string></property>
                         <property name="header"><string xml:space="preserve">Queries</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="queryCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">efficiency</string></property>
+                        <property name="header"><string xml:space="preserve">Efficiency</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="efficiency"/></property>
                     </object>
                 </list-value>
             </property>
@@ -1366,7 +1371,7 @@
         </config>
     </view>
 
-    <view id="33" display-name="Databricks DBU by Product (Treemap)" public="true" component="wcf.treemap">
+    <view id="33" display-name="Databricks Cost by Product (Treemap)" public="true" component="wcf.treemap">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000033</uuid>
         <purpose name="page"/>
         <purpose name="pagelet"/>
@@ -2901,6 +2906,55 @@
         </config>
     </view>
 
+    <view id="80" display-name="Databricks User Compute Spend" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000080</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.80">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">runAsUser</string></property>
+                        <property name="header"><string xml:space="preserve">User</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="runAsUser"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">billingProduct</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="billingProduct"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dbu</string></property>
+                        <property name="header"><string xml:space="preserve">DBUs (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dollarCost</string></property>
+                        <property name="header"><string xml:space="preserve">Cost (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -3178,6 +3232,15 @@
                      output-type="foglight-5:DatabricksCluster" output-list="true"
                      cache-results="false">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000076</uuid>
+    </script-function>
+
+    <script-function type="groovy" id="80" display-name="Get User Compute Spend"
+                     output-type="databricks:DatabricksUserSpendRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000080</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
     </script-function>
 
     <script-function type="groovy" id="78" display-name="Get Idle Clusters"

@@ -882,7 +882,7 @@ public class ClusterCollector {
                                 setValue(usageNode, "region",               workspaceRegion, false);
                                 usageNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
                                 setValue(usageNode, "dbuConsumedStr",  String.format("%.2f", dbu),  false);
-                                setValue(usageNode, "dollarCostStr",   String.format("%.4f", cost), false);
+                                setValue(usageNode, "dollarCostStr",   String.format("$%,.2f", cost), false);
                                 if (usageDate.equals(todayStr)) todayDbuTotal += dbu;
                             }
                         }
@@ -984,6 +984,56 @@ public class ClusterCollector {
                     }
                 } catch (Exception e) {
                     log.log("ClusterCollector: SKU price collection failed: " + e.getMessage());
+                }
+
+                // userSpends -> DatabricksUserSpend (spend by run_as user + product, last 30 days)
+                // -----------------------------------------------------------------
+                TopologyNode userSpendsNode = workspaceNode.createNode("userSpends");
+                try {
+                    String userSpendSql = "SELECT u.usage_metadata.run_as, "
+                            + "u.billing_origin_product, "
+                            + "CAST(SUM(u.usage_quantity) AS DOUBLE) AS dbu_total, "
+                            + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
+                            + "FROM system.billing.usage u "
+                            + "LEFT JOIN system.billing.list_prices lp "
+                            + "  ON lp.sku_name = u.sku_name "
+                            + "  AND u.usage_end_time >= lp.price_start_time "
+                            + "  AND (lp.price_end_time IS NULL OR u.usage_end_time < lp.price_end_time) "
+                            + "WHERE u.usage_metadata.run_as IS NOT NULL "
+                            + "  AND u.usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                            + "GROUP BY u.usage_metadata.run_as, u.billing_origin_product "
+                            + "ORDER BY dollar_cost DESC "
+                            + "LIMIT 500";
+
+                    JsonNode usResult = client.executeSqlStatement(billingWarehouseId, userSpendSql);
+                    if ("SUCCEEDED".equals(usResult.path("status").path("state").asText(""))) {
+                        JsonNode usData = usResult.path("result").path("data_array");
+                        if (usData.isArray()) {
+                            for (JsonNode row : usData) {
+                                String user    = row.path(0).asText("");
+                                String product = row.path(1).asText("");
+                                if (user.isBlank()) continue;
+                                double dbu  = row.path(2).asDouble(0.0);
+                                double cost = row.path(3).asDouble(0.0);
+                                String key  = user + "|" + product;
+
+                                TopologyNode usNode = userSpendsNode.createNode(key);
+                                usNode.setId(key);
+                                setValue(usNode, "userSpendKey",   key,                               true);
+                                setValue(usNode, "runAsUser",      user,                              false);
+                                setValue(usNode, "billingProduct", product,                           false);
+                                setValue(usNode, "dbuConsumedStr", String.format("%.2f", dbu),        false);
+                                setValue(usNode, "dollarCostStr",
+                                        cost > 0 ? String.format("$%,.2f", cost) : "",               false);
+                                usNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: user spend query state="
+                                + usResult.path("status").path("state").asText(""));
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: user spend collection failed: " + e.getMessage());
                 }
 
             } else {

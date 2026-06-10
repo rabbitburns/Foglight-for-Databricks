@@ -4,7 +4,7 @@
         display-name="Cost &amp; Usage"
         parent="system:databricks"
         main-view="1"
-        last-entity-id="1">
+        last-entity-id="12">
     <relevant-role name="Administrator"/>
     <relevant-role name="Operator"/>
     <relevant-role name="Advanced Operator"/>
@@ -149,6 +149,17 @@
             <size/>
             <config>
                 <property name="row"><integer value="10"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+
+        <!-- Row 11: User Compute Spend -->
+        <window id="11" view="system:databricks.80">
+            <size/>
+            <config>
+                <property name="row"><integer value="11"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>

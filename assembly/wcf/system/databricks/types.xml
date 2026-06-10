@@ -83,6 +83,7 @@
         <property name="autoResume"    type="wcf:String"/>
         <property name="creator"       type="wcf:String"/>
         <property name="queryCount"    type="wcf:String"/>
+        <property name="efficiency"    type="wcf:String"/>
     </type>
     <type name="DatabricksJobRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -158,6 +159,13 @@
         <property name="product"    type="wcf:String"/>
         <property name="totalDbu"   type="wcf:String"/>
         <property name="dollarCost" type="wcf:String"/>
+    </type>
+    <type name="DatabricksUserSpendRow" extends="wcf:DataObject">
+        <set annotation="reloadable">false</set>
+        <property name="runAsUser"      type="wcf:String"/>
+        <property name="billingProduct" type="wcf:String"/>
+        <property name="dbu"            type="wcf:String"/>
+        <property name="dollarCost"     type="wcf:String"/>
     </type>
     <type name="DatabricksUsageRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>

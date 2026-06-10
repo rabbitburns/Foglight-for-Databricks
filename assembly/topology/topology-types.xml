@@ -31,6 +31,7 @@
         <property name="aiEndpoints"          type="DatabricksAiEndpoint"      is-many="true" is-containment="true"/>
         <property name="aiUsages"             type="DatabricksAiUsage"         is-many="true" is-containment="true"/>
         <property name="aiUserActivities"     type="DatabricksAiUserActivity"  is-many="true" is-containment="true"/>
+        <property name="userSpends"            type="DatabricksUserSpend"        is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -329,6 +330,15 @@
         <property name="requestCount"    type="Metric" is-containment="true"/>
         <property name="totalTokens"     type="Metric" is-containment="true"/>
         <property name="errorCount"      type="Metric" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksUserSpend" extends="TopologyObject">
+        <property name="userSpendKey"    type="String" is-identity="true"/>
+        <property name="runAsUser"       type="String"/>
+        <property name="billingProduct"  type="String"/>
+        <property name="dbuConsumedStr"  type="String"/>
+        <property name="dollarCostStr"   type="String"/>
+        <property name="dbuConsumed"     type="Metric" is-containment="true"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">
