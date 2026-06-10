@@ -20,6 +20,7 @@ ts.getObjectsOfType(ts.getType("DatabricksAiEndpoint"))?.each { ep ->
         errorRate    : ep.get("errorRateStr")    ?: "",
         avgLatency   : ep.get("avgLatencyStr")   ?: "",
         p95Latency   : ep.get("p95LatencyStr")   ?: "",
+        dollarCost   : ep.get("dollarCostStr")   ?: "",
         totRaw       : tot
     ]
 }
@@ -38,6 +39,7 @@ rawRows.each { r ->
     row.store('errorRate',     r.errorRate,     specificTimeRange)
     row.store('avgLatency',    r.avgLatency,    specificTimeRange)
     row.store('p95Latency',    r.p95Latency,    specificTimeRange)
+    row.store('dollarCost',    r.dollarCost,    specificTimeRange)
     rows.add(row)
 }
 

@@ -20,7 +20,8 @@ workspaces?.each { ws ->
             jobId  : jobId,
             jobName: jobNames[jobId] ?: jobId,
             dbu    : dbu,
-            dbuStr : jd.get("dbuConsumedStr") ?: ""
+            dbuStr : jd.get("dbuConsumedStr") ?: "",
+            cost   : jd.get("dollarCostStr")  ?: ""
         ]
     }
 }
@@ -29,9 +30,10 @@ rawRows.sort { a, b -> Double.compare(b.dbu, a.dbu) }
 def rows = new java.util.ArrayList()
 rawRows.each { r ->
     def row = functionHelper.createDataObject('databricks:DatabricksJobDbuRow', 'none', null)
-    row.store('jobName', r.jobName, specificTimeRange)
-    row.store('jobId',   r.jobId,   specificTimeRange)
-    row.store('dbu',     r.dbuStr,  specificTimeRange)
+    row.store('jobName',    r.jobName, specificTimeRange)
+    row.store('jobId',      r.jobId,   specificTimeRange)
+    row.store('dbu',        r.dbuStr,  specificTimeRange)
+    row.store('dollarCost', r.cost,    specificTimeRange)
     rows.add(row)
 }
 return rows

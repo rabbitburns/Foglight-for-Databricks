@@ -13,7 +13,8 @@ workspaces?.each { ws ->
             state        : p.get("state")           ?: "",
             creator      : p.get("creatorUserName") ?: "",
             runAs        : p.get("runAsUserName")   ?: "",
-            pipelineId   : p.get("pipelineId")      ?: ""
+            pipelineId   : p.get("pipelineId")      ?: "",
+            dollarCost   : p.get("dollarCostStr")   ?: ""
         ]
     }
 }
@@ -32,6 +33,7 @@ rawRows.each { r ->
     row.store('creator',      r.creator,      specificTimeRange)
     row.store('runAs',        r.runAs,        specificTimeRange)
     row.store('pipelineId',   r.pipelineId,   specificTimeRange)
+    row.store('dollarCost',   r.dollarCost,   specificTimeRange)
     rows.add(row)
 }
 return rows

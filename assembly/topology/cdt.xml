@@ -279,6 +279,9 @@
                 <node pattern="runAsUserName">
                   <value var="$v"><attr name="runAsUserName" target="{{$plVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="dollarCostStr">
+                  <value var="$v"><attr name="dollarCostStr" target="{{$plVar}}" val="{$v}"/></value>
+                </node>
 
                 <node pattern="updates">
                   <node>
@@ -430,6 +433,9 @@
                 <node pattern="dbuConsumed"><value><metric type="dbuConsumed"/></value></node>
                 <node pattern="dbuConsumedStr">
                   <value var="$v"><attr name="dbuConsumedStr" target="{{$jdVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="dollarCostStr">
+                  <value var="$v"><attr name="dollarCostStr" target="{{$jdVar}}" val="{$v}"/></value>
                 </node>
 
               </node>
@@ -622,6 +628,9 @@
                 <node pattern="errorCount"><value><metric type="errorCount"/></value></node>
                 <node pattern="avgLatencyMs"><value><metric type="avgLatencyMs"/></value></node>
                 <node pattern="p95LatencyMs"><value><metric type="p95LatencyMs"/></value></node>
+                <node pattern="dollarCostStr">
+                  <value var="$v"><attr name="dollarCostStr" target="{{$aiepVar}}" val="{$v}"/></value>
+                </node>
 
               </node>
             </node>

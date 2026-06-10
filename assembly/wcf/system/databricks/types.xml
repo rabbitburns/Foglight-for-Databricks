@@ -109,6 +109,7 @@
         <property name="creator"      type="wcf:String"/>
         <property name="runAs"        type="wcf:String"/>
         <property name="pipelineId"   type="wcf:String"/>
+        <property name="dollarCost"   type="wcf:String"/>
     </type>
     <type name="DatabricksInstancePoolRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -146,9 +147,10 @@
     </type>
     <type name="DatabricksJobDbuRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
-        <property name="jobName" type="wcf:String"/>
-        <property name="jobId"   type="wcf:String"/>
-        <property name="dbu"     type="wcf:String"/>
+        <property name="jobName"    type="wcf:String"/>
+        <property name="jobId"      type="wcf:String"/>
+        <property name="dbu"        type="wcf:String"/>
+        <property name="dollarCost" type="wcf:String"/>
     </type>
     <type name="DatabricksSkuCostRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -243,6 +245,7 @@
         <property name="errorRate"     type="wcf:String"/>
         <property name="avgLatency"    type="wcf:String"/>
         <property name="p95Latency"    type="wcf:String"/>
+        <property name="dollarCost"    type="wcf:String"/>
     </type>
     <type name="DatabricksAiUsageRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>

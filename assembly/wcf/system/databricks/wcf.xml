@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="77"
+        last-entity-id="79"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -764,6 +764,11 @@
                         <property name="header"><string xml:space="preserve">Pipeline ID</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="pipelineId"/></property>
                     </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dollarCost</string></property>
+                        <property name="header"><string xml:space="preserve">Cost (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
+                    </object>
                 </list-value>
             </property>
         </config>
@@ -1090,8 +1095,13 @@
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">dbu</string></property>
-                        <property name="header"><string xml:space="preserve">DBUs (Last 30 Days)</string></property>
+                        <property name="header"><string xml:space="preserve">DBUs (30d)</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="dbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dollarCost</string></property>
+                        <property name="header"><string xml:space="preserve">Cost (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
                     </object>
                 </list-value>
             </property>
@@ -2028,6 +2038,11 @@
                         <property name="header"><string xml:space="preserve">p95 Latency</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="p95Latency"/></property>
                     </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dollarCost</string></property>
+                        <property name="header"><string xml:space="preserve">Cost (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
+                    </object>
                 </list-value>
             </property>
         </config>
@@ -2767,6 +2782,125 @@
         </config>
     </view>
 
+    <view id="78" display-name="Databricks Idle / Underutilized Clusters" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000078</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.78"/>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">clusterName</string></property>
+                        <property name="header"><string xml:space="preserve">Cluster</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="clusterName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">state</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="stateStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">nodeTypeId</string></property>
+                        <property name="header"><string xml:space="preserve">Node Type</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="nodeTypeId"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cpuUtilStr</string></property>
+                        <property name="header"><string xml:space="preserve">CPU %</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cpuUtilStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">memUtilStr</string></property>
+                        <property name="header"><string xml:space="preserve">Mem %</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="memUtilStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">creatorUserName</string></property>
+                        <property name="header"><string xml:space="preserve">Creator</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="creatorUserName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">lastActivityTimeStr</string></property>
+                        <property name="header"><string xml:space="preserve">Last Activity</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="lastActivityTimeStr"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="79" display-name="Databricks Untagged Clusters" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000079</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.79"/>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">clusterName</string></property>
+                        <property name="header"><string xml:space="preserve">Cluster</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="clusterName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">state</string></property>
+                        <property name="header"><string xml:space="preserve">State</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="stateStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">nodeTypeId</string></property>
+                        <property name="header"><string xml:space="preserve">Node Type</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="nodeTypeId"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">creatorUserName</string></property>
+                        <property name="header"><string xml:space="preserve">Creator</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="creatorUserName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">startTimeStr</string></property>
+                        <property name="header"><string xml:space="preserve">Started</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="startTimeStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">lastActivityTimeStr</string></property>
+                        <property name="header"><string xml:space="preserve">Last Activity</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="lastActivityTimeStr"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -3044,6 +3178,18 @@
                      output-type="foglight-5:DatabricksCluster" output-list="true"
                      cache-results="false">
         <uuid>a3b4c5d6-e7f8-9012-a012-900000000076</uuid>
+    </script-function>
+
+    <script-function type="groovy" id="78" display-name="Get Idle Clusters"
+                     output-type="foglight-5:DatabricksCluster" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000078</uuid>
+    </script-function>
+
+    <script-function type="groovy" id="79" display-name="Get Untagged Clusters"
+                     output-type="foglight-5:DatabricksCluster" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000079</uuid>
     </script-function>
 
 </module>

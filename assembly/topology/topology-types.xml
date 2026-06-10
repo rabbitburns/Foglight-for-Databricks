@@ -83,6 +83,7 @@
         <property name="stateStr"         type="String"/>
         <property name="creatorUserName"  type="String"/>
         <property name="runAsUserName"    type="String"/>
+        <property name="dollarCostStr"    type="String"/>
         <property name="updates"          type="DatabricksPipelineUpdate" is-many="true" is-containment="true"/>
     </type>
 
@@ -230,9 +231,10 @@
     </type>
 
     <type name="DatabricksJobDbu" extends="TopologyObject">
-        <property name="jobId"         type="String" is-identity="true"/>
-        <property name="dbuConsumed"   type="Metric" is-containment="true"/>
+        <property name="jobId"          type="String" is-identity="true"/>
+        <property name="dbuConsumed"    type="Metric" is-containment="true"/>
         <property name="dbuConsumedStr" type="String"/>
+        <property name="dollarCostStr"  type="String"/>
     </type>
 
     <type name="DatabricksSkuPrice" extends="TopologyObject">
@@ -285,6 +287,7 @@
     <type name="DatabricksAiEndpoint" extends="TopologyObject">
         <property name="endpointName"    type="String" is-identity="true"/>
         <property name="endpointType"    type="String"/>
+        <property name="dollarCostStr"   type="String"/>
         <property name="requestCountStr" type="String"/>
         <property name="totalTokensStr"  type="String"/>
         <property name="inputTokensStr"  type="String"/>

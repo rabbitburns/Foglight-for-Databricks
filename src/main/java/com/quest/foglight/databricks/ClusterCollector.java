@@ -508,6 +508,37 @@ public class ClusterCollector {
             // ---------------------------------------------------------------------
             TopologyNode pipelinesNode = workspaceNode.createNode("pipelines");
 
+            // Pre-query pipeline dollar cost from billing (requires billingWarehouseId)
+            java.util.Map<String, Double> pipelineDollarCost = new java.util.HashMap<>();
+            if (billingWarehouseId != null && !billingWarehouseId.isBlank()) {
+                try {
+                    String plCostSql = "SELECT u.usage_metadata.pipeline_id, "
+                            + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
+                            + "FROM system.billing.usage u "
+                            + "LEFT JOIN system.billing.list_prices lp "
+                            + "  ON lp.sku_name = u.sku_name "
+                            + "  AND u.usage_end_time >= lp.price_start_time "
+                            + "  AND (lp.price_end_time IS NULL OR u.usage_end_time < lp.price_end_time) "
+                            + "WHERE u.usage_metadata.pipeline_id IS NOT NULL "
+                            + "  AND u.usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                            + "GROUP BY u.usage_metadata.pipeline_id "
+                            + "ORDER BY dollar_cost DESC "
+                            + "LIMIT 200";
+                    JsonNode plCostResult = client.executeSqlStatement(billingWarehouseId, plCostSql);
+                    if ("SUCCEEDED".equals(plCostResult.path("status").path("state").asText(""))) {
+                        JsonNode plCostData = plCostResult.path("result").path("data_array");
+                        if (plCostData.isArray()) {
+                            for (JsonNode row : plCostData) {
+                                String pid = row.path(0).asText("");
+                                if (!pid.isBlank()) pipelineDollarCost.put(pid, row.path(1).asDouble(0.0));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: pipeline cost query failed: " + e.getMessage());
+                }
+            }
+
             if (pipelinesResponse != null
                     && pipelinesResponse.has("statuses")
                     && pipelinesResponse.get("statuses").isArray()) {
@@ -527,6 +558,9 @@ public class ClusterCollector {
                     setValue(plNode, "stateStr", pl.path("state").asText(""), false);
                     setValue(plNode, "creatorUserName", pl.path("creator_user_name").asText(""), false);
                     setValue(plNode, "runAsUserName", pl.path("run_as_user_name").asText(""), false);
+                    double plCost = pipelineDollarCost.getOrDefault(plId, 0.0);
+                    setValue(plNode, "dollarCostStr",
+                            plCost > 0 ? String.format("$%,.2f",plCost) : "", false);
 
                     // Fetch update history + expectations (last 5 updates)
                     try {
@@ -867,12 +901,17 @@ public class ClusterCollector {
                 // -----------------------------------------------------------------
                 TopologyNode jobDbusNode = workspaceNode.createNode("jobDbus");
                 try {
-                    String jobSql = "SELECT usage_metadata.job_id, "
-                            + "CAST(SUM(usage_quantity) AS DOUBLE) AS dbu_total "
-                            + "FROM system.billing.usage "
-                            + "WHERE usage_metadata.job_id IS NOT NULL "
-                            + "AND usage_date >= DATE_ADD(CURRENT_DATE, -30) "
-                            + "GROUP BY usage_metadata.job_id "
+                    String jobSql = "SELECT u.usage_metadata.job_id, "
+                            + "CAST(SUM(u.usage_quantity) AS DOUBLE) AS dbu_total, "
+                            + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
+                            + "FROM system.billing.usage u "
+                            + "LEFT JOIN system.billing.list_prices lp "
+                            + "  ON lp.sku_name = u.sku_name "
+                            + "  AND u.usage_end_time >= lp.price_start_time "
+                            + "  AND (lp.price_end_time IS NULL OR u.usage_end_time < lp.price_end_time) "
+                            + "WHERE u.usage_metadata.job_id IS NOT NULL "
+                            + "AND u.usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                            + "GROUP BY u.usage_metadata.job_id "
                             + "ORDER BY dbu_total DESC "
                             + "LIMIT 100";
 
@@ -885,7 +924,8 @@ public class ClusterCollector {
                             for (JsonNode row : jobData) {
                                 String jobId = row.path(0).asText("");
                                 if (jobId.isBlank()) continue;
-                                double dbu = row.path(1).asDouble(0.0);
+                                double dbu  = row.path(1).asDouble(0.0);
+                                double cost = row.path(2).asDouble(0.0);
 
                                 jobDbuCount++;
                                 TopologyNode jobDbuNode = jobDbusNode.createNode(jobId);
@@ -893,6 +933,8 @@ public class ClusterCollector {
                                 setValue(jobDbuNode, "jobId", jobId, true);
                                 jobDbuNode.createValue("dbuConsumed").setSampleValue((long)(dbu * 1000));
                                 setValue(jobDbuNode, "dbuConsumedStr", String.format("%.2f", dbu), false);
+                                setValue(jobDbuNode, "dollarCostStr",
+                                        cost > 0 ? String.format("$%,.2f",cost) : "", false);
                             }
                         }
                     } else {
@@ -957,6 +999,36 @@ public class ClusterCollector {
                 TopologyNode aiUsagesNode         = workspaceNode.createNode("aiUsages");
                 TopologyNode aiUserActivitiesNode = workspaceNode.createNode("aiUserActivities");
                 try {
+                    // --- billing cost by endpoint (30-day, join to list_prices) ---
+                    java.util.Map<String, Double> epDollarCost = new java.util.HashMap<>();
+                    try {
+                        String costSql = "SELECT b.usage_metadata.endpoint_name, "
+                                + "CAST(SUM(b.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
+                                + "FROM system.billing.usage b "
+                                + "LEFT JOIN system.billing.list_prices lp "
+                                + "  ON lp.sku_name = b.sku_name "
+                                + "  AND b.usage_end_time >= lp.price_start_time "
+                                + "  AND (lp.price_end_time IS NULL OR b.usage_end_time < lp.price_end_time) "
+                                + "WHERE b.billing_origin_product = 'FOUNDATION_MODEL_API' "
+                                + "  AND b.usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                                + "  AND b.usage_metadata.endpoint_name IS NOT NULL "
+                                + "GROUP BY b.usage_metadata.endpoint_name "
+                                + "ORDER BY dollar_cost DESC "
+                                + "LIMIT 200";
+                        JsonNode costResult = client.executeSqlStatement(billingWarehouseId, costSql);
+                        if ("SUCCEEDED".equals(costResult.path("status").path("state").asText(""))) {
+                            JsonNode costData = costResult.path("result").path("data_array");
+                            if (costData.isArray()) {
+                                for (JsonNode row : costData) {
+                                    String ep = row.path(0).asText("");
+                                    if (!ep.isBlank()) epDollarCost.put(ep, row.path(1).asDouble(0.0));
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.log("ClusterCollector: AI Gateway cost query failed: " + e.getMessage());
+                    }
+
                     // --- endpoint rollup (30-day window) ---
                     String epSql = "SELECT endpoint_name, MIN(api_type) AS api_type, "
                             + "COUNT(*) AS request_count, "
@@ -1003,6 +1075,9 @@ public class ClusterCollector {
                                 setValue(epNode, "errorRateStr",    errRate,                   false);
                                 setValue(epNode, "avgLatencyStr",   avgLat + " ms",            false);
                                 setValue(epNode, "p95LatencyStr",   p95Lat + " ms",            false);
+                                double cost = epDollarCost.getOrDefault(epName, 0.0);
+                                setValue(epNode, "dollarCostStr",
+                                        cost > 0 ? String.format("$%,.2f",cost) : "", false);
                                 epNode.createValue("requestCount").setSampleValue(reqCount);
                                 epNode.createValue("totalTokens").setSampleValue(totTok);
                                 epNode.createValue("inputTokens").setSampleValue(inTok);

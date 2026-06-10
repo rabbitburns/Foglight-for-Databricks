@@ -4,7 +4,7 @@
         display-name="Clusters"
         parent="system:databricks"
         main-view="1"
-        last-entity-id="3">
+        last-entity-id="5">
     <relevant-role name="Administrator"/>
     <relevant-role name="Operator"/>
     <relevant-role name="Advanced Operator"/>
@@ -55,6 +55,24 @@
             <size/>
             <config>
                 <property name="row"><integer value="2"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+        <window id="3" view="system:databricks.78">
+            <size/>
+            <config>
+                <property name="row"><integer value="3"/></property>
+                <property name="hweight"><integer value="1"/></property>
+                <property name="align"><enum value="stretch"/></property>
+                <property name="showTitle"><boolean value="true"/></property>
+            </config>
+        </window>
+        <window id="4" view="system:databricks.79">
+            <size/>
+            <config>
+                <property name="row"><integer value="4"/></property>
                 <property name="hweight"><integer value="1"/></property>
                 <property name="align"><enum value="stretch"/></property>
                 <property name="showTitle"><boolean value="true"/></property>
