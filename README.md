@@ -2,21 +2,21 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.139
+**Current version:** 1.0.150
 
 
 ## What It Monitors
 
 | Object | Data Collected |
 |---|---|
-| **Clusters** | State, node types, Spark version, autoscale config, worker/core/memory counts, termination reason, creator, timestamps, custom tags |
+| **Clusters** | State, node types, Spark version, autoscale config, worker/core/memory counts, termination reason, creator, timestamps, custom tags; CPU/memory utilisation from `system.compute.node_timeline` |
 | **Jobs** | Name, creator, schedule (cron + status), trigger type, tags, last run state/result/start/duration, success rate, avg/min/max duration, success/failure counts |
 | **Job Runs** | Per-job run history (up to 10 most recent), lifecycle state, result, duration breakdown (queue/setup/execution/cleanup), task count, retry info |
 | **SQL Warehouses** | State, type, size, cluster counts, Photon, auto-resume/stop settings, creator, query count |
 | **SQL Queries** | Per-warehouse query history (up to 25 most recent), user, statement type, status, duration, compilation/execution/fetch times, bytes read, rows produced, cache hit, error message, query text |
 | **DLT Pipelines** | State, name, creator, run-as user, update history (last 5), data quality expectations (pass/fail/dropped per update) |
 | **Instance Pools** | State, node type, idle/used/pending counts, max capacity, idle termination minutes, preloaded Spark versions |
-| **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; estimated dollar cost via `system.billing.list_prices`; top jobs by DBU; SKU price reference; daily per-SKU trend (7 days) |
+| **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; dollar cost via `system.billing.list_prices`; cost per job; cost per pipeline; cost per AI endpoint; user compute spend by product; warehouse efficiency score; top jobs by DBU; SKU price reference; daily per-SKU trend (7 days) |
 | **Model Serving** | Serving endpoint inventory (state, creator, config update state); per-endpoint served model detail (version, workload size, traffic %, scale-to-zero) |
 | **Lakebase** | Project and branch inventory, endpoint host, endpoint state |
 | **AI Gateway** | Endpoint inventory (request count, total/input/output tokens, error rate, avg/p95 latency); daily token usage by endpoint and model; per-requester activity |
@@ -51,12 +51,12 @@ The cartridge installs a **Databricks** top-level navigation entry with eight su
 | Sub-nav | Contents |
 |---|---|
 | **Overview** | Resource summary counts + DBU this month; cluster/warehouse trend; job/pipeline trend; DBU treemap; cost vs DBU bubble |
-| **Clusters** | Cluster inventory table |
-| **SQL Warehouses** | Warehouse inventory table; query volume trend (time-plot) |
+| **Clusters** | Cluster inventory table; cluster sparklines; idle/underutilized cluster report; untagged cluster report |
+| **SQL Warehouses** | Warehouse inventory table with efficiency score; query volume trend (time-plot) |
 | **Jobs** | Jobs list; job runs list; top jobs by DBU; job success rate by day |
 | **Queries** | Query history; slow queries leaderboard; user activity; query volume trend (time-plot) |
 | **DLT Pipelines** | Pipeline inventory |
-| **Cost & Usage** | DBU treemap; cost vs DBU bubble; cost by SKU; MoM growth; daily DBU accumulation (time-plot); SKU daily trend table; top jobs by DBU; daily DBU trend; DBU by product; DBU usage; SKU list prices |
+| **Cost & Usage** | Cost by product treemap; cost vs DBU bubble; cost by SKU; MoM growth; daily DBU accumulation (time-plot); SKU daily trend table; top jobs by DBU (with cost); daily DBU trend; DBU by product; DBU usage; SKU list prices; user compute spend |
 | **Lakebase** | Lakebase project and branch inventory |
 | **AI Gateway** | AI endpoint metrics; daily token usage; per-requester activity |
 
@@ -105,6 +105,10 @@ All portlets are available individually in the Add View picker:
 | Databricks Job Sparklines | Per-job success rate, avg duration, and last run duration as historical sparklines |
 | Databricks Warehouse Sparklines | Per-warehouse query count and cluster count as historical sparklines |
 | Databricks Cluster Sparklines | Per-cluster worker count as historical sparkline |
+| Databricks Cluster Utilization | Per-cluster CPU% and memory% with trend sparklines |
+| Databricks Idle Clusters | RUNNING clusters sorted by CPU utilisation (lowest first) — idle/underutilised cluster report |
+| Databricks Untagged Clusters | Clusters with no custom tags — untagged resource report |
+| Databricks User Compute Spend | Per-user, per-product DBU and dollar cost for last 30 days |
 
 ## Topology
 
@@ -130,7 +134,8 @@ DatabricksModelRoot
         │   └── DatabricksLakebaseBranch (many)
         ├── DatabricksAiEndpoint (many)        ← AI Gateway endpoints
         ├── DatabricksAiUsage (many)           ← AI Gateway daily token usage
-        └── DatabricksAiUserActivity (many)    ← AI Gateway per-requester activity
+        ├── DatabricksAiUserActivity (many)    ← AI Gateway per-requester activity
+        └── DatabricksUserSpend (many)         ← per-user, per-product compute spend
 ```
 
 Workspace-level time-series metrics (sampled at every collection cycle):
@@ -215,7 +220,7 @@ Or trigger on-demand via **Actions → Lakebase Branch to Foglight Discovery →
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for planned features including Tier 6 (cluster runtime metrics via `system.compute.node_timeline`), Tier 10 (Lakehouse Monitoring), and the v2 AUI dashboard layer.
+See [ROADMAP.md](ROADMAP.md) for planned features including Tier 10 (Lakehouse Monitoring), Model Serving metrics, and the v2 AUI dashboard layer.
 
 ## License
 

@@ -31,6 +31,15 @@
 | All sub-nav dashboards scrollable | 1.0.125 |
 | Query Volume Trend time-plot (`totalQueryCount` workspace metric, sum of per-warehouse counts each cycle) | 1.0.126 |
 | Job Success Rate by Day table — per-job daily success %, 7d totals, trend vs prior 7 days | 1.0.126 |
+| Tier 6: Cluster runtime metrics — CPU/memory utilisation from `system.compute.node_timeline`; cpuUtil/memUtil Metrics + percentage strings on DatabricksCluster | 1.0.140 |
+| Cluster Utilization portlet (view 77) with CPU%/Mem% columns and sparklines | 1.0.140 |
+| Job, Warehouse, Cluster sparkline portlets (views 74, 75, 76) | 1.0.136 |
+| Cost columns added to Top Jobs by DBU (view 29), DLT Pipelines (view 17), AI Gateway Endpoints (view 59) | 1.0.143 |
+| Cluster hygiene: Idle Clusters (view 78) + Untagged Clusters (view 79) | 1.0.143 |
+| Dollar cost formatting fixed: `$%,.2f` ($ prefix, comma thousands, 2 decimal places) throughout | 1.0.147–1.0.148 |
+| Cost by Product Treemap: treemap now shows dollar cost (not DBU) for cell area and hover | 1.0.148 |
+| SQL Warehouse efficiency score: queryCount / sizeWeight, "Idle" if no queries | 1.0.149 |
+| User Compute Spend: `DatabricksUserSpend` topology type; per-user per-product DBU+cost portlet (view 80) | 1.0.150 |
 
 ---
 
@@ -43,7 +52,7 @@
 | **AUI nav icon** | Icons are keyed by WCF module ID in a hardcoded lookup map inside the AUI Angular bundle (`main.*.js`). No cartridge mechanism exists — workaround is replacing `custom.svg` at `C:\Quest\Foglight\state\tomcat\webapps\aui\assets\images\icons\custom.svg`. Seeking guidance from platform team. |
 | **Sparkline verification** | New sparkline portlets (74–76) need at least 2+ collection cycles of history before the mini-charts populate. Verify after agent restart with 1.0.136+. |
 | **Sparkline: workspace totalDailyDbu** | `DatabricksWorkspace.totalDailyDbu` is already a Metric sampled each cycle. Consider adding a single-row view or embedding it in the Overview composite rather than a table (only 1 workspace). |
-| **Cluster runtime metrics (Tier 6)** | `system.compute.node_timeline` via SQL warehouse — per-node CPU/memory at 1-min granularity. Unblocked since Unity Catalog is confirmed enabled. |
+| **Cluster runtime metrics (Tier 6)** | ✓ Done 1.0.140 — cpuUtil/memUtil Metrics on DatabricksCluster; Cluster Utilization portlet (view 77). |
 
 ---
 
@@ -83,7 +92,7 @@
 | DBU usage by SKU | `system.billing.usage` table via SQL warehouse query | Medium | ✓ Done 1.0.48 — 30-day window, grouped by date/SKU/product/cloud/region. DatabricksUsage topology type. DBU Usage portlet. |
 | DBU by product, daily trend, MoM growth, cost by SKU | Derived from DatabricksUsage topology | Low | ✓ Done 1.0.54 — 5 table portlets; DBU summary row in Overview (1.0.58). |
 | Graphical DBU widgets | WCF treemap + bubble components | Low | ✓ Done 1.0.62 — DBU by Product treemap, Cost vs DBU bubble, User Activity treemap + bubble. |
-| Cost per job / per run | Join `system.billing.usage` with job run data | High | Requires matching cluster IDs to billing records. Very high value for FinOps use cases but complex to implement correctly. |
+| Cost per job / per run | Join `system.billing.usage` with job run data | High | ✓ Done 1.0.143 — dollar cost column in Top Jobs by DBU; also added to DLT Pipelines and AI Gateway Endpoints portlets. |
 | SKU pricing table | `system.billing.list_prices` table | Low | ✓ Done 1.0.63 — DatabricksSkuPrice topology type, SKU List Prices WCF portlet (view 41/script 42). |
 
 ### Tier 5 — DLT Pipeline Depth
@@ -94,15 +103,15 @@
 | Data quality expectations | Same events endpoint — expectation results | Medium | ✓ Done 1.0.64 — DatabricksPipelineExpectation type, Pipeline Data Quality WCF portlet (view 45/script 46). **Untested: DLT not enabled in dev workspace.** |
 | Pipeline flow metrics | Same events endpoint — per-flow stats | Medium | Deferred — backlog bytes, file counts, output rows per flow stage. Lower priority than expectations. |
 
-### Tier 6 — Cluster Runtime Metrics
+### Tier 6 — Cluster Runtime Metrics ✓ Done 1.0.140
 
 > **Revised approach:** The Databricks UI cluster metrics page (CPU, memory, network) is sourced from Ganglia on port 8652 inside the cluster — not reachable by an external FglAM agent. However, `system.compute.node_timeline` (Unity Catalog, GA) exposes the same per-node CPU/memory data via SQL warehouse at 1-minute granularity with 30-day retention. We already use this pattern for billing data. Unity Catalog is confirmed enabled.
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Per-node CPU & memory utilisation | `system.compute.node_timeline` via SQL warehouse | Medium | 1-min granularity, 30-day retention. Queryable via same warehouse we use for billing. New topology type `DatabricksNodeMetric`. Driver vs worker breakdown available. |
-| Cluster-level CPU/memory summary | Aggregated from `node_timeline` (AVG/MAX per cluster_id) | Low | Rolled up from per-node data — avg CPU %, peak memory % per cluster over configurable window. |
-| Cluster config & state history | `system.compute.clusters` via SQL warehouse | Low | Historical record of cluster state transitions, config changes, creator, cloud provider attrs. Complements current snapshot-only cluster topology. |
+| Per-node CPU & memory utilisation | `system.compute.node_timeline` via SQL warehouse | Medium | ✓ Done 1.0.140 — aggregated per cluster_id; cpuUtil/memUtil Metrics + percentage string on DatabricksCluster. |
+| Cluster-level CPU/memory summary | Aggregated from `node_timeline` (AVG/MAX per cluster_id) | Low | ✓ Done 1.0.140 — Cluster Utilization portlet (view 77) with CPU%/Mem% columns and sparklines. |
+| Cluster config & state history | `system.compute.clusters` via SQL warehouse | Low | Deferred — historical state transitions. Lower priority vs other work. |
 | Spark executor / task metrics | Spark REST API on running cluster (`/api/v1/applications`) | Very High | Requires network access to cluster driver on port 4040. Out of scope — not reachable by FglAM agent in standard deployments. |
 | Streaming metrics | Spark Streaming REST API | Very High | Same access constraints as executor metrics. Deferred. |
 
@@ -181,7 +190,7 @@
 6. **Tier 7** — Model Serving ✓ (1.0.65)
 7. **Tier 8** — Lakebase platform monitoring ✓ (1.0.118, CONFIRMED: 3 projects, 5 branches)
 8. **Tier 11** — AI Gateway Observability ✓ Done 1.0.119 (3 portlets, sub-nav page; deferred items: tag attribution, overview row, dollar cost join)
-9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` — **unblocked** (UC confirmed; revised from Ganglia approach)
+9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` ✓ Done 1.0.140
 10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
 11. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**on hold**)
 12. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
@@ -276,3 +285,11 @@
 | 1.0.135 | Fix treemap blank: `DatabricksTreeMapNode.count` changed from `wcf:String` → `wcf:Number` — `wcf.treemap`'s `displayNumber` must be numeric for cell sizing. 34.groovy passes raw double. |
 | 1.0.136 | Metric-backed sparkline portlets: `DatabricksJob.lastRunDuration` Metric added to topology; autoscaling clusters now write `numWorkers` metric; 3 new portlets using `system:oscommon.86` sparkline renderer — Job Sparklines (successRate, avgDurationMs, lastRunDuration), Warehouse Sparklines (queryCount, numClusters), Cluster Sparklines (numWorkers). |
 | 1.0.137 | Fix Cost & Usage treemap: `wcf.treemap` requires full-width container to compute cell sizes; separated treemap and bubble from shared two-column row into their own full-width rows in `databricks_cost` composite. |
+| 1.0.138–1.0.139 | Fix treemap blank on Cost & Usage page; full-width layout fix. |
+| 1.0.140 | Tier 6: Cluster runtime metrics — `system.compute.node_timeline` SQL query; cpuUtil/memUtil Metrics + cpuUtilStr/memUtilStr percentage strings on DatabricksCluster; Cluster Utilization portlet (view 77) with CPU%/Mem% columns and sparklines. |
+| 1.0.141–1.0.142 | Cluster Sparklines (view 76) added to Clusters sub-nav; wcf.grid2 row property fix (`<property name="row">` in config, not XML attribute). |
+| 1.0.143 | Cost attribution fast-follows: dollar cost column on Top Jobs by DBU (view 29), DLT Pipelines (view 17), AI Gateway Endpoints (view 59); Idle Clusters report (view 78); Untagged Clusters report (view 79); DatabricksUserSpend topology type; cluster hygiene views added to Clusters sub-nav. |
+| 1.0.144–1.0.146 | Dollar cost formatting: all costs now `$%,.2f` ($ prefix, comma thousands, 2 decimal places). Fix ClusterCollector line 885 (`$%.4f` → `$%,.2f`). |
+| 1.0.147–1.0.148 | Fix Cost by SKU view (script 32): parse with `.replace('$','').replace(',','')` before `parseDouble`; format with `$%,.2f`. Cost by Product Treemap (script 34): switch from DBU to dollar cost for cell area + hover value; renamed "Databricks Cost by Product (Treemap)". |
+| 1.0.149 | SQL Warehouse efficiency column: `queryCount / sizeWeight` (2X-Small=1 … 4X-Large=256); "Idle" if 0 queries. |
+| 1.0.150 | User Compute Spend: `DatabricksUserSpend` topology type + CDT pattern; per-user per-product DBU+cost query in ClusterCollector; User Compute Spend portlet (view 80, script 80) added to Cost & Usage sub-nav. |

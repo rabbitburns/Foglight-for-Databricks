@@ -11,7 +11,7 @@ Collects topology and metrics from the Databricks REST API and Unity Catalog sys
 Surfaced as WCF portlets inside Foglight dashboards.
 
 **Build:** `python build_cartridge.py X.X.X` → `target/DatabricksAgent-X.X.X.car`
-**Current version:** 1.0.139 (confirmed working and deployed)
+**Current version:** 1.0.150 (confirmed working and deployed)
 
 **Codebase:** `C:\Users\mark_\OneDrive\Claude\foglight-databricks\`
 
@@ -36,8 +36,10 @@ Surfaced as WCF portlets inside Foglight dashboards.
 | 8 | Lakebase Projects + Branches (2 portlets — views 55, 57) | ✓ Done |
 | 11 | AI Gateway Observability — Endpoints, Token Usage, User Activity (3 portlets — views 59, 61, 63) | ✓ Done |
 | Sparklines | Job, Warehouse, Cluster sparklines (views 74, 75, 76) | ✓ Done |
+| 6 | Cluster runtime metrics from `system.compute.node_timeline` — cpuUtil/memUtil Metrics; Cluster Utilization portlet (view 77) | ✓ Done |
+| FinOps | Cost columns on Jobs, Pipelines, AI Endpoints; Idle + Untagged cluster reports (78, 79); User Compute Spend (80); Warehouse Efficiency; Cost treemap; `$%,.2f` formatting | ✓ Done |
 
-27+ WCF portlets. Next available view/script IDs: **77/77** (`last-entity-id="76"` on main module).
+35+ WCF portlets. Next available view/script IDs: **81/81** (`last-entity-id="80"` on main module).
 
 ---
 
@@ -57,7 +59,7 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 - `src/main/java/com/quest/foglight/databricks/DatabricksClient.java` — REST API client
 - `assembly/topology/topology-types.xml` — all topology type definitions
 - `assembly/topology/cdt.xml` — CDT transformation (DOCTYPE line is REQUIRED — never remove it)
-- `assembly/wcf/system/databricks/wcf.xml` — main WCF module (views 1–76)
+- `assembly/wcf/system/databricks/wcf.xml` — main WCF module (views 1–80)
 - `assembly/wcf/system/databricks_*/wcf.xml` — sub-module nav entries
 
 ---
@@ -74,33 +76,24 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 
 ---
 
-## Current Work — Tier 6: Cluster Runtime Metrics
+## Current Work — Storage Costs
 
-**Goal:** Surface per-cluster CPU/memory/disk metrics from `system.compute.node_timeline` as Foglight time-plot portlets.
+**Goal:** Surface storage costs from `system.storage.usage` — per-table/schema/catalog byte counts with estimated cost.
 
-**SQL source:** `system.compute.node_timeline` (requires Unity Catalog + billing warehouse)
-- Key columns: `cluster_id`, `timestamp`, `driver_cpu_util`, `driver_mem_util`, `worker_cpu_util`, `worker_mem_util`
+**SQL source:** `system.storage.usage` (requires Unity Catalog + billing warehouse)
+- Key columns: `table_name`, `schema_name`, `catalog_name`, `storage_gb`, `billing_origin_product`
 
-**New topology properties to add** on `DatabricksCluster`:
-- `cpuUtil`, `memUtil` — `Metric` (is-containment="true") — rolling averages from node_timeline
-
-**New portlets** (views 77+):
-- Cluster CPU Utilization — time-plot of `cpuUtil` across clusters
-- Cluster Memory Utilization — time-plot of `memUtil` across clusters
-- (optionally) per-cluster detail row with sparkline columns
-
-**Approach:** Query `node_timeline` in ClusterCollector via SQL warehouse (same pattern as billing queries). Aggregate per cluster_id, write as Metrics onto the existing `DatabricksCluster` topology nodes.
+**Approach:** New topology type `DatabricksStorageUsage`; query in ClusterCollector billing section; new portlet in Cost & Usage sub-nav.
 
 ---
 
 ## Backlog (priority order)
 
-1. **Tier 6** — Cluster runtime metrics (see Current Work above) — **next**
-2. **Tier 11 fast-follow** — Token → dollar cost: join `system.ai_gateway.usage` to billing SKU records
-3. **Tier 10** — Lakehouse Monitoring (monitor inventory + drift metrics)
-4. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
-5. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
-6. **AUI nav icon** — verify custom.svg approach or await Quest platform team guidance
+1. **Storage costs** — `system.storage.usage` (see Current Work above) — **next**
+2. **Tier 10** — Lakehouse Monitoring (monitor inventory + drift metrics)
+3. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
+4. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
+5. **AUI nav icon** — verify custom.svg approach or await Quest platform team guidance
 
 ---
 
