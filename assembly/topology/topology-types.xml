@@ -32,6 +32,8 @@
         <property name="aiUsages"             type="DatabricksAiUsage"         is-many="true" is-containment="true"/>
         <property name="aiUserActivities"     type="DatabricksAiUserActivity"  is-many="true" is-containment="true"/>
         <property name="userSpends"            type="DatabricksUserSpend"        is-many="true" is-containment="true"/>
+        <property name="optimizationOps"       type="DatabricksOptimizationOp"   is-many="true" is-containment="true"/>
+        <property name="storageCosts"          type="DatabricksStorageCost"      is-many="true" is-containment="true"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">
@@ -339,6 +341,26 @@
         <property name="dbuConsumedStr"  type="String"/>
         <property name="dollarCostStr"   type="String"/>
         <property name="dbuConsumed"     type="Metric" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksStorageCost" extends="TopologyObject">
+        <property name="storageCostKey"  type="String" is-identity="true"/>
+        <property name="storageProduct"  type="String"/>
+        <property name="skuName"         type="String"/>
+        <property name="usageUnit"       type="String"/>
+        <property name="usageStr"        type="String"/>
+        <property name="dollarCostStr"   type="String"/>
+    </type>
+
+    <type name="DatabricksOptimizationOp" extends="TopologyObject">
+        <property name="operationId"     type="String" is-identity="true"/>
+        <property name="tableCatalog"    type="String"/>
+        <property name="tableSchema"     type="String"/>
+        <property name="tableName"       type="String"/>
+        <property name="operationType"   type="String"/>
+        <property name="operationStatus" type="String"/>
+        <property name="startTime"       type="String"/>
+        <property name="usageStr"        type="String"/>
     </type>
 
     <type name="DatabricksModelRoot" extends="ModelRoot">

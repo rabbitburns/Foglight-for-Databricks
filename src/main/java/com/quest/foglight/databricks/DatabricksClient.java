@@ -91,7 +91,7 @@ public class DatabricksClient {
         String state = result.path("status").path("state").asText("");
         String statementId = result.path("statement_id").asText("");
         int attempts = 0;
-        while (!state.equals("SUCCEEDED") && !state.equals("FAILED") && !state.equals("CANCELED") && attempts < 15) {
+        while (!state.equals("SUCCEEDED") && !state.equals("FAILED") && !state.equals("CANCELED") && attempts < 60) {
             Thread.sleep(2000);
             result = get("/api/2.0/sql/statements/" + statementId);
             state = result.path("status").path("state").asText("");

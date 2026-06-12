@@ -2,7 +2,7 @@
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         version="3-027"
         display-name="Databricks"
-        last-entity-id="80"
+        last-entity-id="83"
         main-view="51">
 
     <!-- Query: select DatabricksWorkspace from topology for metric trend views -->
@@ -2955,6 +2955,168 @@
         </config>
     </view>
 
+    <view id="82" display-name="Databricks Storage Costs" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000082</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.82">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">storageProduct</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="storageProduct"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">skuName</string></property>
+                        <property name="header"><string xml:space="preserve">SKU</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="skuName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">usageStr</string></property>
+                        <property name="header"><string xml:space="preserve">Usage (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="usageStr"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">dollarCost</string></property>
+                        <property name="header"><string xml:space="preserve">Cost (30d)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="81" display-name="Databricks Table Optimization History" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000081</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.81">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">startTime</string></property>
+                        <property name="header"><string xml:space="preserve">Start Time</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="startTime"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">tableCatalog</string></property>
+                        <property name="header"><string xml:space="preserve">Catalog</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="tableCatalog"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">tableSchema</string></property>
+                        <property name="header"><string xml:space="preserve">Schema</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="tableSchema"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">tableName</string></property>
+                        <property name="header"><string xml:space="preserve">Table</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="tableName"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">operationType</string></property>
+                        <property name="header"><string xml:space="preserve">Operation</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="operationType"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">operationStatus</string></property>
+                        <property name="header"><string xml:space="preserve">Status</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="operationStatus"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">usageStr</string></property>
+                        <property name="header"><string xml:space="preserve">Usage</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="usageStr"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
+    <view id="83" display-name="Databricks Cost MoM Slopegraph" public="true" component="wcf.table.row-table">
+        <uuid>a3b4c5d6-e7f8-9012-c012-900000000083</uuid>
+        <purpose name="page"/>
+        <purpose name="pagelet"/>
+        <purpose name="portlet"/>
+        <purpose name="reportlet"/>
+        <relevant-role name="Administrator"/>
+        <relevant-role name="Operator"/>
+        <relevant-role name="Advanced Operator"/>
+        <relevant-role name="Dashboard Designer"/>
+        <relevant-role name="Dashboard User"/>
+        <relevant-role name="General Access"/>
+        <inputs>
+            <entry key="timeRange" data-type="wcf:TimeRange"/>
+        </inputs>
+        <flow/>
+        <config>
+            <property name="rows">
+                <function-rv id="system:databricks.83">
+                    <context-rv input-key="timeRange"/>
+                </function-rv>
+            </property>
+            <property name="columns">
+                <list-value>
+                    <object>
+                        <property name="id"><string xml:space="preserve">product</string></property>
+                        <property name="header"><string xml:space="preserve">Product</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="product"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">prevCost</string></property>
+                        <property name="header"><string xml:space="preserve">Prev Month</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="prevCost"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">trend</string></property>
+                        <property name="header"><string xml:space="preserve">Trend</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="trend"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">currCost</string></property>
+                        <property name="header"><string xml:space="preserve">This Month</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="currCost"/></property>
+                    </object>
+                </list-value>
+            </property>
+        </config>
+    </view>
+
     <script-function type="groovy" id="2" display-name="Get Job Runs"
                      output-type="databricks:DatabricksRunRow" output-list="true"
                      cache-results="false">
@@ -3254,5 +3416,33 @@
                      cache-results="false">
         <uuid>a3b4c5d6-e7f8-9012-b012-900000000079</uuid>
     </script-function>
+
+    <script-function type="groovy" id="82" display-name="Get Storage Costs"
+                     output-type="databricks:DatabricksStorageCostRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000082</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="81" display-name="Get Table Optimization History"
+                     output-type="databricks:DatabricksOptimizationOpRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000081</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
+    <script-function type="groovy" id="83" display-name="Get Cost MoM Slopegraph"
+                     output-type="databricks:DatabricksSlopegraphRow" output-list="true"
+                     cache-results="false">
+        <uuid>a3b4c5d6-e7f8-9012-b012-900000000083</uuid>
+        <inputs>
+            <input name="timeRange" type-name="wcf:TimeRange"/>
+        </inputs>
+    </script-function>
+
 
 </module>

@@ -1036,6 +1036,105 @@ public class ClusterCollector {
                     log.log("ClusterCollector: user spend collection failed: " + e.getMessage());
                 }
 
+                // optimizationOps -> DatabricksOptimizationOp (predictive optimization history, last 7 days)
+                // -----------------------------------------------------------------
+                TopologyNode optimizationOpsNode = workspaceNode.createNode("optimizationOps");
+                try {
+                    String optSql = "SELECT operation_id, catalog_name, schema_name, table_name, "
+                            + "operation_type, operation_status, "
+                            + "DATE_FORMAT(start_time, 'yyyy-MM-dd HH:mm') AS start_fmt, "
+                            + "CAST(usage_quantity AS DOUBLE) AS qty, usage_unit "
+                            + "FROM system.storage.predictive_optimization_operations_history "
+                            + "WHERE start_time >= CURRENT_TIMESTAMP - INTERVAL 7 DAYS "
+                            + "ORDER BY start_time DESC "
+                            + "LIMIT 500";
+
+                    JsonNode optResult = client.executeSqlStatement(billingWarehouseId, optSql);
+                    if ("SUCCEEDED".equals(optResult.path("status").path("state").asText(""))) {
+                        JsonNode optData = optResult.path("result").path("data_array");
+                        if (optData.isArray()) {
+                            for (JsonNode row : optData) {
+                                String opId     = row.path(0).asText("");
+                                String catalog  = row.path(1).asText("");
+                                String schema   = row.path(2).asText("");
+                                String table    = row.path(3).asText("");
+                                String opType   = row.path(4).asText("");
+                                String opStatus = row.path(5).asText("");
+                                String start    = row.path(6).asText("");
+                                double qty      = row.path(7).asDouble(0.0);
+                                String unit     = row.path(8).asText("");
+                                String usage    = qty > 0 ? String.format("%.3f %s", qty, unit) : "";
+                                if (opId.isBlank()) continue;
+
+                                TopologyNode opNode = optimizationOpsNode.createNode(opId);
+                                opNode.setId(opId);
+                                setValue(opNode, "operationId",     opId,     true);
+                                setValue(opNode, "tableCatalog",    catalog,  false);
+                                setValue(opNode, "tableSchema",     schema,   false);
+                                setValue(opNode, "tableName",       table,    false);
+                                setValue(opNode, "operationType",   opType,   false);
+                                setValue(opNode, "operationStatus", opStatus, false);
+                                setValue(opNode, "startTime",       start,    false);
+                                setValue(opNode, "usageStr",        usage,    false);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: optimization ops query state="
+                                + optResult.path("status").path("state").asText(""));
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: optimization ops collection failed: " + e.getMessage());
+                }
+
+                // storageCosts -> DatabricksStorageCost (storage spend from billing, last 30 days)
+                // -----------------------------------------------------------------
+                TopologyNode storageCostsNode = workspaceNode.createNode("storageCosts");
+                try {
+                    String storageCostSql = "SELECT u.billing_origin_product, u.sku_name, u.usage_unit, "
+                            + "CAST(SUM(u.usage_quantity) AS DOUBLE) AS total_usage, "
+                            + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
+                            + "FROM system.billing.usage u "
+                            + "LEFT JOIN system.billing.list_prices lp "
+                            + "  ON lp.sku_name = u.sku_name "
+                            + "  AND u.usage_end_time >= lp.price_start_time "
+                            + "  AND (lp.price_end_time IS NULL OR u.usage_end_time < lp.price_end_time) "
+                            + "WHERE u.usage_type = 'STORAGE_SPACE' "
+                            + "  AND u.usage_date >= DATE_ADD(CURRENT_DATE, -30) "
+                            + "GROUP BY u.billing_origin_product, u.sku_name, u.usage_unit "
+                            + "ORDER BY dollar_cost DESC "
+                            + "LIMIT 200";
+
+                    JsonNode scResult = client.executeSqlStatement(billingWarehouseId, storageCostSql);
+                    if ("SUCCEEDED".equals(scResult.path("status").path("state").asText(""))) {
+                        JsonNode scData = scResult.path("result").path("data_array");
+                        if (scData.isArray()) {
+                            for (JsonNode row : scData) {
+                                String product = row.path(0).asText("");
+                                String sku     = row.path(1).asText("");
+                                String unit    = row.path(2).asText("");
+                                double usage   = row.path(3).asDouble(0.0);
+                                double cost    = row.path(4).asDouble(0.0);
+                                String key     = product + "|" + sku;
+
+                                TopologyNode scNode = storageCostsNode.createNode(key);
+                                scNode.setId(key);
+                                setValue(scNode, "storageCostKey", key,                                  true);
+                                setValue(scNode, "storageProduct", product,                              false);
+                                setValue(scNode, "skuName",        sku,                                  false);
+                                setValue(scNode, "usageUnit",      unit,                                 false);
+                                setValue(scNode, "usageStr",       String.format("%.4f %s", usage, unit), false);
+                                setValue(scNode, "dollarCostStr",
+                                        cost > 0 ? String.format("$%,.2f", cost) : "",                  false);
+                            }
+                        }
+                    } else {
+                        log.log("ClusterCollector: storage cost query state="
+                                + scResult.path("status").path("state").asText(""));
+                    }
+                } catch (Exception e) {
+                    log.log("ClusterCollector: storage cost collection failed: " + e.getMessage());
+                }
+
             } else {
                 log.log("ClusterCollector: no billing warehouse configured, skipping billing collection");
             }
@@ -1303,6 +1402,14 @@ public class ClusterCollector {
     private static String fmtTs(long epochMs) {
         if (epochMs <= 0) return "";
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(epochMs));
+    }
+
+    private static String formatBytes(long bytes) {
+        if (bytes < 1024L) return bytes + " B";
+        if (bytes < 1024L * 1024) return String.format("%.1f KB", bytes / 1024.0);
+        if (bytes < 1024L * 1024 * 1024) return String.format("%.1f MB", bytes / (1024.0 * 1024));
+        if (bytes < 1024L * 1024 * 1024 * 1024) return String.format("%.2f GB", bytes / (1024.0 * 1024 * 1024));
+        return String.format("%.2f TB", bytes / (1024.0 * 1024 * 1024 * 1024));
     }
 
     private void setValue(TopologyNode node, String name, String value, boolean isIdentity) {

@@ -318,4 +318,30 @@
         <property name="prevWeekTotal" type="wcf:String"/>
         <property name="trend"         type="wcf:String"/>
     </type>
+
+    <type name="DatabricksStorageCostRow" extends="wcf:DataObject">
+        <property name="storageProduct"  type="wcf:String"/>
+        <property name="skuName"         type="wcf:String"/>
+        <property name="usageUnit"       type="wcf:String"/>
+        <property name="usageStr"        type="wcf:String"/>
+        <property name="dollarCost"      type="wcf:String"/>
+    </type>
+
+    <type name="DatabricksOptimizationOpRow" extends="wcf:DataObject">
+        <property name="tableCatalog"    type="wcf:String"/>
+        <property name="tableSchema"     type="wcf:String"/>
+        <property name="tableName"       type="wcf:String"/>
+        <property name="operationType"   type="wcf:String"/>
+        <property name="operationStatus" type="wcf:String"/>
+        <property name="startTime"       type="wcf:String"/>
+        <property name="usageStr"        type="wcf:String"/>
+    </type>
+
+    <type name="DatabricksSlopegraphRow" extends="wcf:DataObject">
+        <property name="product"    type="wcf:String"/>
+        <property name="prevCost"   type="wcf:String"/>
+        <property name="trend"      type="wcf:String"/>
+        <property name="currCost"   type="wcf:String"/>
+        <property name="changePct"  type="wcf:String"/>
+    </type>
 </types>
