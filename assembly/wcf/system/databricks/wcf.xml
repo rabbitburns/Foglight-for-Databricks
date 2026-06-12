@@ -1006,6 +1006,11 @@
                         <property name="value"><context-rv input-key="currentRow" path="usageDate"/></property>
                     </object>
                     <object>
+                        <property name="id"><string xml:space="preserve">dbuBar</string></property>
+                        <property name="header"><string xml:space="preserve">Volume</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="dbuBar"/></property>
+                    </object>
+                    <object>
                         <property name="id"><string xml:space="preserve">totalDbu</string></property>
                         <property name="header"><string xml:space="preserve">Total DBUs</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="totalDbu"/></property>
@@ -1107,6 +1112,11 @@
                         <property name="id"><string xml:space="preserve">dollarCost</string></property>
                         <property name="header"><string xml:space="preserve">Cost (30d)</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="dollarCost"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">durationRange</string></property>
+                        <property name="header"><string xml:space="preserve">Duration (min – avg – max)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="durationRange"/></property>
                     </object>
                 </list-value>
             </property>
@@ -2284,39 +2294,9 @@
                         <property name="value"><context-rv input-key="currentRow" path="product"/></property>
                     </object>
                     <object>
-                        <property name="id"><string xml:space="preserve">d1</string></property>
-                        <property name="header"><string xml:space="preserve">Today</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d1"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d2</string></property>
-                        <property name="header"><string xml:space="preserve">Yesterday</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d2"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d3</string></property>
-                        <property name="header"><string xml:space="preserve">D-3</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d3"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d4</string></property>
-                        <property name="header"><string xml:space="preserve">D-4</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d4"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d5</string></property>
-                        <property name="header"><string xml:space="preserve">D-5</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d5"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d6</string></property>
-                        <property name="header"><string xml:space="preserve">D-6</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d6"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d7</string></property>
-                        <property name="header"><string xml:space="preserve">D-7</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d7"/></property>
+                        <property name="id"><string xml:space="preserve">spark</string></property>
+                        <property name="header"><string xml:space="preserve">7d Shape (old→new)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="spark"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">weekTotal</string></property>
@@ -2476,39 +2456,9 @@
                         <property name="value"><context-rv input-key="currentRow" path="jobName"/></property>
                     </object>
                     <object>
-                        <property name="id"><string xml:space="preserve">d1</string></property>
-                        <property name="header"><string xml:space="preserve">Today</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d1"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d2</string></property>
-                        <property name="header"><string xml:space="preserve">Yesterday</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d2"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d3</string></property>
-                        <property name="header"><string xml:space="preserve">D-3</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d3"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d4</string></property>
-                        <property name="header"><string xml:space="preserve">D-4</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d4"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d5</string></property>
-                        <property name="header"><string xml:space="preserve">D-5</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d5"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d6</string></property>
-                        <property name="header"><string xml:space="preserve">D-6</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d6"/></property>
-                    </object>
-                    <object>
-                        <property name="id"><string xml:space="preserve">d7</string></property>
-                        <property name="header"><string xml:space="preserve">D-7</string></property>
-                        <property name="value"><context-rv input-key="currentRow" path="d7"/></property>
+                        <property name="id"><string xml:space="preserve">spark</string></property>
+                        <property name="header"><string xml:space="preserve">7d Trend (old→new)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="spark"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">weekRuns</string></property>
@@ -2750,12 +2700,12 @@
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">cpuUtilStr</string></property>
-                        <property name="header"><string xml:space="preserve">CPU %</string></property>
+                        <property name="header"><string xml:space="preserve">CPU</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="cpuUtilStr"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">memUtilStr</string></property>
-                        <property name="header"><string xml:space="preserve">Mem %</string></property>
+                        <property name="header"><string xml:space="preserve">Mem</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="memUtilStr"/></property>
                     </object>
                     <object>
@@ -2944,6 +2894,11 @@
                         <property name="id"><string xml:space="preserve">dbu</string></property>
                         <property name="header"><string xml:space="preserve">DBUs (30d)</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="dbu"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">costBar</string></property>
+                        <property name="header"><string xml:space="preserve">Spend</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="costBar"/></property>
                     </object>
                     <object>
                         <property name="id"><string xml:space="preserve">dollarCost</string></property>

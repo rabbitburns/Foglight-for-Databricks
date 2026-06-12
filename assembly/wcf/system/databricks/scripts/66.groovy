@@ -34,6 +34,17 @@ def prior7 = sortedDates.drop(7).take(7)
 
 def fmt = { double v -> v > 0 ? String.format("%.1f", v) : "-" }
 
+def SPARKS = "▁▂▃▄▅▆▇█"
+def dbuSpark = { List<Double> vals ->
+    double mx = vals.max() ?: 0.0
+    if (mx <= 0) return "·······"
+    vals.collect { v ->
+        if (v <= 0) return '·'
+        int idx = (int)(v / mx * 7.99)
+        SPARKS[Math.max(0, Math.min(7, idx))]
+    }.join('')
+}
+
 def rawRows = []
 skuDateMap.each { sku, dateMap ->
     def dayVals = last7.collect { d -> (dateMap[d] ?: 0.0) as double }
@@ -44,16 +55,14 @@ skuDateMap.each { sku, dateMap ->
         ? (wk1 >= wk2 ? "+" : "") + String.format("%.1f", ((wk1 - wk2) / wk2) * 100.0) + "%"
         : (wk1 > 0 ? "New" : "-")
 
+    def paddedVals = (0..6).collect { i -> i < dayVals.size() ? dayVals[i] : 0.0 }
     rawRows << [
         sku          : sku,
         product      : skuProduct[sku] ?: "",
-        d1           : fmt(dayVals.size() > 0 ? dayVals[0] : 0.0),
-        d2           : fmt(dayVals.size() > 1 ? dayVals[1] : 0.0),
-        d3           : fmt(dayVals.size() > 2 ? dayVals[2] : 0.0),
-        d4           : fmt(dayVals.size() > 3 ? dayVals[3] : 0.0),
-        d5           : fmt(dayVals.size() > 4 ? dayVals[4] : 0.0),
-        d6           : fmt(dayVals.size() > 5 ? dayVals[5] : 0.0),
-        d7           : fmt(dayVals.size() > 6 ? dayVals[6] : 0.0),
+        d1           : fmt(paddedVals[0]), d2: fmt(paddedVals[1]), d3: fmt(paddedVals[2]),
+        d4           : fmt(paddedVals[3]), d5: fmt(paddedVals[4]), d6: fmt(paddedVals[5]),
+        d7           : fmt(paddedVals[6]),
+        spark        : dbuSpark(paddedVals.reverse()),  // oldest→newest
         weekTotal    : fmt(wk1),
         prevWeekTotal: fmt(wk2),
         trend        : trendStr,
@@ -75,6 +84,7 @@ rawRows.each { r ->
     row.set('d5',            r.d5)
     row.set('d6',            r.d6)
     row.set('d7',            r.d7)
+    row.set('spark',         r.spark)
     row.set('weekTotal',     r.weekTotal)
     row.set('prevWeekTotal', r.prevWeekTotal)
     row.set('trend',         r.trend)

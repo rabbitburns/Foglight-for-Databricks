@@ -18,15 +18,24 @@ workspaces?.each { ws ->
 
 def rawRows = []
 dailyDbu.each { date, dbu ->
-    rawRows << [date: date, dbu: dbu, dbuStr: String.format("%.2f", dbu)]
+    rawRows << [date: date, dbu: dbu, dbuStr: String.format("%.1f", dbu)]
 }
 rawRows.sort { a, b -> b.date.compareTo(a.date) }
+
+double maxDbu = rawRows.collect { it.dbu as double }.max() ?: 1.0
+def dbuBar = { double v ->
+    if (v <= 0) return ""
+    int filled = (int)Math.round(v / maxDbu * 8)
+    filled = Math.max(1, Math.min(8, filled))
+    "████████".substring(0, filled) + "░░░░░░░░".substring(0, 8 - filled)
+}
 
 def rows = new java.util.ArrayList()
 rawRows.each { r ->
     def row = functionHelper.createDataObject('databricks:DatabricksDailyDbuRow', 'none', null)
-    row.store('usageDate', r.date,   specificTimeRange)
-    row.store('totalDbu',  r.dbuStr, specificTimeRange)
+    row.store('usageDate', r.date,          specificTimeRange)
+    row.store('totalDbu',  r.dbuStr,        specificTimeRange)
+    row.store('dbuBar',    dbuBar(r.dbu),   specificTimeRange)
     rows.add(row)
 }
 return rows

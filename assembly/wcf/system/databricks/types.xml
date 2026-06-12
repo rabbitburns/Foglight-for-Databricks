@@ -138,6 +138,7 @@
         <set annotation="reloadable">false</set>
         <property name="usageDate" type="wcf:String"/>
         <property name="totalDbu"  type="wcf:String"/>
+        <property name="dbuBar"    type="wcf:String"/>
     </type>
     <type name="DatabricksMomGrowthRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -148,10 +149,11 @@
     </type>
     <type name="DatabricksJobDbuRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
-        <property name="jobName"    type="wcf:String"/>
-        <property name="jobId"      type="wcf:String"/>
-        <property name="dbu"        type="wcf:String"/>
-        <property name="dollarCost" type="wcf:String"/>
+        <property name="jobName"       type="wcf:String"/>
+        <property name="jobId"         type="wcf:String"/>
+        <property name="dbu"           type="wcf:String"/>
+        <property name="dollarCost"    type="wcf:String"/>
+        <property name="durationRange" type="wcf:String"/>
     </type>
     <type name="DatabricksSkuCostRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -166,6 +168,7 @@
         <property name="billingProduct" type="wcf:String"/>
         <property name="dbu"            type="wcf:String"/>
         <property name="dollarCost"     type="wcf:String"/>
+        <property name="costBar"        type="wcf:String"/>
     </type>
     <type name="DatabricksUsageRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -302,6 +305,7 @@
         <property name="weekSucc" type="wcf:String"/>
         <property name="weekRate" type="wcf:String"/>
         <property name="trend"    type="wcf:String"/>
+        <property name="spark"    type="wcf:String"/>
     </type>
     <type name="DatabricksSkuSparkRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>
@@ -317,6 +321,7 @@
         <property name="weekTotal"     type="wcf:String"/>
         <property name="prevWeekTotal" type="wcf:String"/>
         <property name="trend"         type="wcf:String"/>
+        <property name="spark"         type="wcf:String"/>
     </type>
 
     <type name="DatabricksStorageCostRow" extends="wcf:DataObject">

@@ -22,13 +22,22 @@ workspaces?.each { ws ->
 
 rawRows.sort { a, b -> Double.compare(b.costRaw, a.costRaw) }
 
+double maxCost = rawRows.collect { it.costRaw as double }.max() ?: 1.0
+def costBar = { double v ->
+    if (v <= 0) return ""
+    int filled = (int)Math.round(v / maxCost * 8)
+    filled = Math.max(1, Math.min(8, filled))
+    "████████".substring(0, filled) + "░░░░░░░░".substring(0, 8 - filled)
+}
+
 def rows = new java.util.ArrayList()
 rawRows.each { r ->
     def row = functionHelper.createDataObject('databricks:DatabricksUserSpendRow', 'none', null)
-    row.store('runAsUser',      r.runAsUser,      specificTimeRange)
-    row.store('billingProduct', r.billingProduct, specificTimeRange)
-    row.store('dbu',            r.dbu,            specificTimeRange)
-    row.store('dollarCost',     r.dollarCost,     specificTimeRange)
+    row.store('runAsUser',      r.runAsUser,            specificTimeRange)
+    row.store('billingProduct', r.billingProduct,       specificTimeRange)
+    row.store('dbu',            r.dbu,                  specificTimeRange)
+    row.store('dollarCost',     r.dollarCost,           specificTimeRange)
+    row.store('costBar',        costBar(r.costRaw),     specificTimeRange)
     rows.add(row)
 }
 return rows

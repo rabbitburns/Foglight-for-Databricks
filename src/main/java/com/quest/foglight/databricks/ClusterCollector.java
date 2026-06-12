@@ -113,7 +113,7 @@ public class ClusterCollector {
                             + "AVG(COALESCE(worker_cpu_util, driver_cpu_util)) AS avg_cpu, "
                             + "AVG(COALESCE(worker_mem_util, driver_mem_util)) AS avg_mem "
                             + "FROM system.compute.node_timeline "
-                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 5 MINUTES "
+                            + "WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL 1 HOUR "
                             + "GROUP BY cluster_id "
                             + "LIMIT 500";
                     JsonNode utilResult = client.executeSqlStatement(billingWarehouseId, utilSql);
@@ -221,13 +221,11 @@ public class ClusterCollector {
                     clusterNode.createValue("terminationInactivityMinutes")
                             .setSampleValue(cluster.path("autotermination_minutes").asInt(0));
 
-                    double[] utils = clusterUtils.getOrDefault(clusterId, new double[]{0.0, 0.0});
-                    clusterNode.createValue("cpuUtil").setSampleValue((long)(utils[0] * 100));
-                    clusterNode.createValue("memUtil").setSampleValue((long)(utils[1] * 100));
-                    setValue(clusterNode, "cpuUtilStr",
-                            utils[0] > 0 ? String.format("%.1f%%", utils[0] * 100) : "", false);
-                    setValue(clusterNode, "memUtilStr",
-                            utils[1] > 0 ? String.format("%.1f%%", utils[1] * 100) : "", false);
+                    double[] utils = clusterUtils.getOrDefault(clusterId, new double[]{-1.0, -1.0});
+                    clusterNode.createValue("cpuUtil").setSampleValue(utils[0] >= 0 ? (long)(utils[0] * 100) : 0L);
+                    clusterNode.createValue("memUtil").setSampleValue(utils[1] >= 0 ? (long)(utils[1] * 100) : 0L);
+                    setValue(clusterNode, "cpuUtilStr", utilBar(utils[0]), false);
+                    setValue(clusterNode, "memUtilStr", utilBar(utils[1]), false);
                 }
             }
 
@@ -1402,6 +1400,14 @@ public class ClusterCollector {
     private static String fmtTs(long epochMs) {
         if (epochMs <= 0) return "";
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(epochMs));
+    }
+
+    private static String utilBar(double ratio) {
+        if (ratio < 0) return "";  // no data available for this cluster
+        int filled = (int) Math.round(ratio * 8);
+        filled = Math.max(0, Math.min(8, filled));
+        String bar = "████████".substring(0, filled) + "░░░░░░░░".substring(0, 8 - filled);
+        return bar + " " + (int) Math.round(ratio * 100) + "%";
     }
 
     private static String formatBytes(long bytes) {

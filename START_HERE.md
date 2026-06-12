@@ -11,7 +11,7 @@ Collects topology and metrics from the Databricks REST API and Unity Catalog sys
 Surfaced as WCF portlets inside Foglight dashboards.
 
 **Build:** `python build_cartridge.py X.X.X` → `target/DatabricksAgent-X.X.X.car`
-**Current version:** 1.0.150 (confirmed working and deployed)
+**Current version:** 1.0.158 (confirmed working and deployed)
 
 **Codebase:** `C:\Users\mark_\OneDrive\Claude\foglight-databricks\`
 
@@ -38,8 +38,10 @@ Surfaced as WCF portlets inside Foglight dashboards.
 | Sparklines | Job, Warehouse, Cluster sparklines (views 74, 75, 76) | ✓ Done |
 | 6 | Cluster runtime metrics from `system.compute.node_timeline` — cpuUtil/memUtil Metrics; Cluster Utilization portlet (view 77) | ✓ Done |
 | FinOps | Cost columns on Jobs, Pipelines, AI Endpoints; Idle + Untagged cluster reports (78, 79); User Compute Spend (80); Warehouse Efficiency; Cost treemap; `$%,.2f` formatting | ✓ Done |
+| Storage | Table Optimization History (view 81); Storage Costs by product/SKU (view 82) | ✓ Done |
+| Tufte | Cost MoM Slopegraph — prev vs current month cost, ▲/▼/→ trend (view 83) | ✓ Done |
 
-35+ WCF portlets. Next available view/script IDs: **81/81** (`last-entity-id="80"` on main module).
+38 WCF portlets. Next available view/script IDs: **84/84** (`last-entity-id="83"` on main module).
 
 ---
 
@@ -59,7 +61,7 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 - `src/main/java/com/quest/foglight/databricks/DatabricksClient.java` — REST API client
 - `assembly/topology/topology-types.xml` — all topology type definitions
 - `assembly/topology/cdt.xml` — CDT transformation (DOCTYPE line is REQUIRED — never remove it)
-- `assembly/wcf/system/databricks/wcf.xml` — main WCF module (views 1–80)
+- `assembly/wcf/system/databricks/wcf.xml` — main WCF module (views 1–83)
 - `assembly/wcf/system/databricks_*/wcf.xml` — sub-module nav entries
 
 ---
@@ -76,20 +78,18 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 
 ---
 
-## Current Work — Storage Costs
+## Current Work — Tufte visualization improvements
 
-**Goal:** Surface storage costs from `system.storage.usage` — per-table/schema/catalog byte counts with estimated cost.
-
-**SQL source:** `system.storage.usage` (requires Unity Catalog + billing warehouse)
-- Key columns: `table_name`, `schema_name`, `catalog_name`, `storage_gb`, `billing_origin_product`
-
-**Approach:** New topology type `DatabricksStorageUsage`; query in ClusterCollector billing section; new portlet in Cost & Usage sub-nav.
+Views 81–83 landed in 1.0.158. Next options:
+- **Tufte table upgrades** — see "What's next / Tufte" section below
+- **Tier 10** — Lakehouse Monitoring
+- **Model serving metrics** — latency/throughput from Databricks metrics API
 
 ---
 
 ## Backlog (priority order)
 
-1. **Storage costs** — `system.storage.usage` (see Current Work above) — **next**
+1. **Tufte upgrades** — Job Duration range plot (min/avg/max per job); User Spend dot plot; small multiples daily cost by product
 2. **Tier 10** — Lakehouse Monitoring (monitor inventory + drift metrics)
 3. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
 4. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)

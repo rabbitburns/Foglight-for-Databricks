@@ -39,6 +39,17 @@ def fmtRate = { int succ, int total ->
     total > 0 ? "${(succ * 100 / total)}%" : "-"
 }
 
+def SPARKS = "▁▂▃▄▅▆▇█"
+def toSpark = { List<String> days ->
+    days.collect { s ->
+        if (!s || s == "-") return '·'
+        double v = 0.0
+        try { v = Double.parseDouble(s.replace('%','')) } catch (Exception ignore) {}
+        int idx = (int)(v / 100.0 * 7.99)
+        SPARKS[Math.max(0, Math.min(7, idx))]
+    }.join('')
+}
+
 def rawRows = []
 jobDateMap.each { jobName, dateMap ->
     int wk1Total = 0, wk1Succ = 0, wk2Total = 0, wk2Succ = 0
@@ -68,15 +79,12 @@ jobDateMap.each { jobName, dateMap ->
         ? (wk1Rate >= wk2Rate ? "+" : "") + String.format("%.1f", wk1Rate - wk2Rate) + "pp"
         : (wk1Rate >= 0 ? "New" : "-")
 
+    def days7 = (0..6).collect { i -> dayStrs.size() > i ? dayStrs[i] : "-" }
     rawRows << [
         jobName  : jobName,
-        d1       : dayStrs.size() > 0 ? dayStrs[0] : "-",
-        d2       : dayStrs.size() > 1 ? dayStrs[1] : "-",
-        d3       : dayStrs.size() > 2 ? dayStrs[2] : "-",
-        d4       : dayStrs.size() > 3 ? dayStrs[3] : "-",
-        d5       : dayStrs.size() > 4 ? dayStrs[4] : "-",
-        d6       : dayStrs.size() > 5 ? dayStrs[5] : "-",
-        d7       : dayStrs.size() > 6 ? dayStrs[6] : "-",
+        d1       : days7[0], d2: days7[1], d3: days7[2], d4: days7[3],
+        d5       : days7[4], d6: days7[5], d7: days7[6],
+        spark    : toSpark(days7.reverse()),  // oldest→newest left to right
         weekRuns : String.valueOf(wk1Total),
         weekSucc : String.valueOf(wk1Succ),
         weekRate : wk1Total > 0 ? fmtRate(wk1Succ, wk1Total) : "-",
@@ -106,6 +114,7 @@ rawRows.each { r ->
     row.store('d5',       r.d5,       specificTimeRange)
     row.store('d6',       r.d6,       specificTimeRange)
     row.store('d7',       r.d7,       specificTimeRange)
+    row.store('spark',    r.spark,    specificTimeRange)
     row.store('weekRuns', r.weekRuns, specificTimeRange)
     row.store('weekSucc', r.weekSucc, specificTimeRange)
     row.store('weekRate', r.weekRate, specificTimeRange)

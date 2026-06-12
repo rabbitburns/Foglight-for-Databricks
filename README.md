@@ -2,7 +2,7 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.150
+**Current version:** 1.0.158
 
 
 ## What It Monitors
@@ -16,7 +16,8 @@ A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent fo
 | **SQL Queries** | Per-warehouse query history (up to 25 most recent), user, statement type, status, duration, compilation/execution/fetch times, bytes read, rows produced, cache hit, error message, query text |
 | **DLT Pipelines** | State, name, creator, run-as user, update history (last 5), data quality expectations (pass/fail/dropped per update) |
 | **Instance Pools** | State, node type, idle/used/pending counts, max capacity, idle termination minutes, preloaded Spark versions |
-| **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; dollar cost via `system.billing.list_prices`; cost per job; cost per pipeline; cost per AI endpoint; user compute spend by product; warehouse efficiency score; top jobs by DBU; SKU price reference; daily per-SKU trend (7 days) |
+| **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; dollar cost via `system.billing.list_prices`; cost per job; cost per pipeline; cost per AI endpoint; user compute spend by product; warehouse efficiency score; top jobs by DBU; SKU price reference; daily per-SKU trend (7 days); MoM cost slopegraph (prev vs current month by product) |
+| **Storage** | Table Optimization History (Delta ANALYZE/COMPACTION operations, 7 days, from `system.storage.predictive_optimization_operations_history`); Storage Costs by product/SKU (30 days, from `system.billing.usage`) |
 | **Model Serving** | Serving endpoint inventory (state, creator, config update state); per-endpoint served model detail (version, workload size, traffic %, scale-to-zero) |
 | **Lakebase** | Project and branch inventory, endpoint host, endpoint state |
 | **AI Gateway** | Endpoint inventory (request count, total/input/output tokens, error rate, avg/p95 latency); daily token usage by endpoint and model; per-requester activity |

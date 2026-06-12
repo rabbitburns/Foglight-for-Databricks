@@ -40,6 +40,10 @@
 | Cost by Product Treemap: treemap now shows dollar cost (not DBU) for cell area and hover | 1.0.148 |
 | SQL Warehouse efficiency score: queryCount / sizeWeight, "Idle" if no queries | 1.0.149 |
 | User Compute Spend: `DatabricksUserSpend` topology type; per-user per-product DBU+cost portlet (view 80) | 1.0.150 |
+| Table Optimization History: `DatabricksOptimizationOp` type; Delta ANALYZE/COMPACTION ops, 7d (view 81) | 1.0.158 |
+| Storage Costs: `DatabricksStorageCost` type; STORAGE_SPACE billing by product/SKU, 30d (view 82) | 1.0.158 |
+| Cost MoM Slopegraph: prev vs current month cost by product, ranked, with ▲/▼/→ trend indicators (view 83) | 1.0.158 |
+| Warehouse cold-start fix: SQL poll timeout increased from 30s to ~140s (15→60 poll attempts) | 1.0.154 |
 
 ---
 
