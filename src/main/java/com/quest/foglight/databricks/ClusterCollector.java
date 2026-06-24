@@ -1213,11 +1213,11 @@ public class ClusterCollector {
                             String fullQ = full.replace("'", "''");
                             if (driftSql.length() > 0) driftSql.append(" UNION ALL ");
                             driftSql.append("SELECT '").append(fullQ).append("' AS full_name, ")
-                                    .append("COUNT(DISTINCT CASE WHEN (chi_square_test.p_value < 0.05 OR ks_test.p_value < 0.05) THEN column_name END) AS drifted_cols, ")
+                                    .append("COUNT(DISTINCT CASE WHEN (chi_square_test.pvalue < 0.05 OR ks_test.pvalue < 0.05) THEN column_name END) AS drifted_cols, ")
                                     .append("COUNT(DISTINCT column_name) AS total_cols ")
                                     .append("FROM ").append(fqd)
                                     .append(" WHERE column_name <> ':table' ")
-                                    .append("AND window.start >= DATE_ADD(CURRENT_DATE,-7) ")
+                                    .append("AND window.start >= DATE_ADD(CURRENT_DATE,-14) ")
                                     .append("HAVING COUNT(DISTINCT column_name) > 0");
                         }
 
@@ -1231,7 +1231,10 @@ public class ClusterCollector {
                         // Execute drift query if any drift tables exist
                         if (driftSql.length() > 0) {
                             JsonNode driftResult = client.executeSqlStatement(billingWarehouseId, driftSql.toString());
-                            if ("SUCCEEDED".equals(driftResult.path("status").path("state").asText(""))) {
+                            String driftState = driftResult.path("status").path("state").asText("");
+                            System.out.println("ClusterCollector: drift state=" + driftState
+                                    + (driftState.equals("FAILED") ? " error=" + driftResult.path("status").path("error").path("message").asText("") : ""));
+                            if ("SUCCEEDED".equals(driftState)) {
                                 JsonNode driftRows = driftResult.path("result").path("data_array");
                                 if (driftRows.isArray()) {
                                     for (JsonNode dr : driftRows) {
