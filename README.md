@@ -2,7 +2,7 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.158
+**Current version:** 1.0.180
 
 
 ## What It Monitors
@@ -22,6 +22,7 @@ A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent fo
 | **Lakebase** | Project and branch inventory, endpoint host, endpoint state |
 | **AI Gateway** | Endpoint inventory (request count, total/input/output tokens, error rate, avg/p95 latency); daily token usage by endpoint and model; per-requester activity |
 | **Workspace Metrics** | Time-series at each collection cycle: cluster counts, warehouse counts, job/pipeline counts, today's total DBU accumulation, total query volume |
+| **Lakehouse Monitors** | Monitored Delta table inventory via REST API (`/api/2.1/lakehouse-monitoring/monitors`); per-table row count and drifted column count from `_profile_metrics` and `_drift_metrics` output tables |
 
 ## Requirements
 
@@ -60,6 +61,7 @@ The cartridge installs a **Databricks** top-level navigation entry with eight su
 | **Cost & Usage** | Cost by product treemap; cost vs DBU bubble; cost by SKU; MoM growth; daily DBU accumulation (time-plot); SKU daily trend table; top jobs by DBU (with cost); daily DBU trend; DBU by product; DBU usage; SKU list prices; user compute spend |
 | **Lakebase** | Lakebase project and branch inventory |
 | **AI Gateway** | AI endpoint metrics; daily token usage; per-requester activity |
+| **Data Quality** | Lakehouse Monitor inventory: monitored tables, last run timestamp, row count, column drift summary |
 
 ## Portlets
 
@@ -110,6 +112,7 @@ All portlets are available individually in the Add View picker:
 | Databricks Idle Clusters | RUNNING clusters sorted by CPU utilisation (lowest first) — idle/underutilised cluster report |
 | Databricks Untagged Clusters | Clusters with no custom tags — untagged resource report |
 | Databricks User Compute Spend | Per-user, per-product DBU and dollar cost for last 30 days |
+| Databricks Data Quality | One row per monitored table — last run time, row count, drifted column count |
 
 ## Topology
 
@@ -136,7 +139,8 @@ DatabricksModelRoot
         ├── DatabricksAiEndpoint (many)        ← AI Gateway endpoints
         ├── DatabricksAiUsage (many)           ← AI Gateway daily token usage
         ├── DatabricksAiUserActivity (many)    ← AI Gateway per-requester activity
-        └── DatabricksUserSpend (many)         ← per-user, per-product compute spend
+        ├── DatabricksUserSpend (many)         ← per-user, per-product compute spend
+        └── DatabricksMonitor (many)           ← Lakehouse Monitor inventory + DQ metrics
 ```
 
 Workspace-level time-series metrics (sampled at every collection cycle):
@@ -169,10 +173,12 @@ $env:PATH = "C:\Quest\Foglight\jre\bin;" + $env:PATH
 python build_cartridge.py 1.0.126 --deploy
 ```
 
-The `--deploy` flag copies the compiled JAR directly to the FglAM agent cache at `C:\Quest\Foglight\fglam\agents\DatabricksAgent\`. After deploying:
+The `--deploy` flag copies the compiled JAR directly to the FglAM agent cache at `C:\Quest\Foglight\fglam\agents\DatabricksAgent\`. After deploying, a **full FglAM process restart** is required for the new JAR to load — FglAM caches agent classloaders, so agent stop/start alone is not sufficient. Kill the FglAM Java process; Quest Watchdog restarts it automatically. Then:
 
 1. Install the `.car` via Administration → Cartridges
-2. Stop and restart the agent in Administration → Agents — no FglAM restart needed
+2. Start the agent in Administration → Agents
+
+Each build also copies the `.car` to `cartridges/` for version tracking in git.
 
 ## Repository Structure
 
@@ -189,6 +195,7 @@ assembly/         Cartridge sources (WCF, topology, CDT, monitoring policy)
     databricks_pipelines/ DLT Pipelines sub-nav composite
     databricks_lakebase/  Lakebase sub-nav composite
     databricks_ai_gateway/ AI Gateway sub-nav composite
+    databricks_quality/    Data Quality sub-nav composite
 src/              Java agent source (FglAM collectors)
 docs/             Enablement deck (HTML + PPTX) and Lakebase executive summary
 tools/

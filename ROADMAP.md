@@ -44,6 +44,11 @@
 | Storage Costs: `DatabricksStorageCost` type; STORAGE_SPACE billing by product/SKU, 30d (view 82) | 1.0.158 |
 | Cost MoM Slopegraph: prev vs current month cost by product, ranked, with ▲/▼/→ trend indicators (view 83) | 1.0.158 |
 | Warehouse cold-start fix: SQL poll timeout increased from 30s to ~140s (15→60 poll attempts) | 1.0.154 |
+| Tufte Unicode bars/sparklines: cluster util bars (▉░), job success sparklines (▁▂▃▄▅▆▇█), duration range, SKU spend shape, daily DBU bar, user cost bar | 1.0.159 |
+| Cluster utilization fix: node_timeline lookback 5min→1hr; -1.0 sentinel for no-data clusters | 1.0.160 |
+| Lakehouse Monitor Inventory: `DatabricksMonitor` type; `system.quality.monitor_run_timeline` query; Data Quality sub-nav (view 84) | 1.0.161 |
+| Fix user spend SQL: `usage_metadata.run_as` → `identity_metadata.run_as_user`; add error detail logging to all FAILED SQL states | 1.0.162 |
+| Fix monitor collection: `system.quality.monitor_run_timeline` does not exist; replaced SQL with REST API (`/api/2.1/lakehouse-monitoring/monitors` + `/refreshes`) | 1.0.163 |
 
 ---
 
@@ -160,11 +165,12 @@
 
 | Gap | API Source | Effort | Notes |
 |---|---|---|---|
-| Monitor inventory | `GET /api/2.1/lakehouse-monitoring/monitors` | Low | Which tables are monitored, monitor type (snapshot/timeseries/inference), schedule, last refresh time, output table locations. New type `DatabricksLakehouseMonitor`. |
-| Monitor refresh status | Same API — `status` field per monitor | Low | Surfaces monitors that are failing or have stale refreshes. |
-| Profile metrics | SQL query against `profile_metrics` output table via warehouse | Medium | Column-level stats: null %, distinct count, min/max/mean. Surfaces tables with data quality issues. |
-| Drift metrics | SQL query against `drift_metrics` output table via warehouse | Medium | Statistical drift vs baseline (JS divergence, distribution % change). Surfaces columns where data has shifted unexpectedly. |
-| Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | Correlate job run failures or anomalies with downstream drift detection. Differentiator vs Datadog/New Relic. |
+| Monitor inventory | `GET /api/2.1/lakehouse-monitoring/monitors` | Low | ✓ Done 1.0.163 — replaced broken SQL approach; REST API `listMonitors()` + `listMonitorRefreshes()` per monitor. New type `DatabricksMonitor`. |
+| Monitor refresh status | Same API — `status` field per monitor | Low | ✓ Done 1.0.163 — last refresh time and run count stored on `DatabricksMonitor`. |
+| Profile metrics (row count) | SQL against `_profile_metrics` output table | Medium | ✓ Done 1.0.180 — `MAX(window.start)` per table, `MAX(count)` where `column_name=':table'`; `rowCount` field on `DatabricksMonitor`; CDT transform added. |
+| Drift metrics (column drift) | SQL against `_drift_metrics` output table | Medium | **In progress** — SQL built (chi-square + KS test p-value < 0.05); `driftColumnCount` field defined; diagnosing 0-row result (1.0.180 adds state logging). |
+| Row count delta (change) | Derived — compare consecutive `_profile_metrics` runs | Low | **Backlog** — `rowCountDelta` field defined, currently always empty; needs prev-run comparison logic in collector. |
+| Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | **Deferred** — correlate job run failures with downstream drift detection. Differentiator vs Datadog/New Relic. |
 
 ### Tier 11 — AI Gateway Observability (Token & GenAI Usage) ✓ Done 1.0.119
 
@@ -195,8 +201,8 @@
 7. **Tier 8** — Lakebase platform monitoring ✓ (1.0.118, CONFIRMED: 3 projects, 5 branches)
 8. **Tier 11** — AI Gateway Observability ✓ Done 1.0.119 (3 portlets, sub-nav page; deferred items: tag attribution, overview row, dollar cost join)
 9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` ✓ Done 1.0.140
-10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory + drift metrics (**on hold**)
-11. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**on hold**)
+10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory ✓ 1.0.163; DQ portlet row count ✓ 1.0.180; drift column count in progress
+11. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**deferred**)
 12. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
 
 ---
@@ -297,3 +303,13 @@
 | 1.0.147–1.0.148 | Fix Cost by SKU view (script 32): parse with `.replace('$','').replace(',','')` before `parseDouble`; format with `$%,.2f`. Cost by Product Treemap (script 34): switch from DBU to dollar cost for cell area + hover value; renamed "Databricks Cost by Product (Treemap)". |
 | 1.0.149 | SQL Warehouse efficiency column: `queryCount / sizeWeight` (2X-Small=1 … 4X-Large=256); "Idle" if 0 queries. |
 | 1.0.150 | User Compute Spend: `DatabricksUserSpend` topology type + CDT pattern; per-user per-product DBU+cost query in ClusterCollector; User Compute Spend portlet (view 80, script 80) added to Cost & Usage sub-nav. |
+| 1.0.151–1.0.157 | Table Optimization History (view 81) + Storage Costs (view 82) added to Cost & Usage; Cost MoM Slopegraph (view 83) with ▲/▼/→ trend indicators. Bug fixes: wcf.html SVG escaping (reverted to row-table); view ordering violation; missing `<flow/>` and role entries causing menu collapse. |
+| 1.0.158 | Stable commit: storage portlets (81, 82), slopegraph (83), poll timeout fix. |
+| 1.0.159 | Tufte Unicode visualization pass: cluster utilization bars (████░░░░ + %), job success rate sparklines (▁▂▃▄▅▆▇█), duration range column (min – avg – max), SKU spend shape sparkline, daily DBU proportional bar, user cost proportional bar. View column headers cleaned up. |
+| 1.0.160 | Cluster utilization data fix: `node_timeline` lookback widened 5min → 1hr; -1.0 sentinel distinguishes no-data from 0% utilization; metric guard prevents negative long cast. |
+| 1.0.161 | Tier 10 Lakehouse Monitoring: `DatabricksMonitor` topology type + CDT pattern; `system.quality.monitor_run_timeline` collection in ClusterCollector; Data Quality sub-nav module (`databricks_quality`); Monitor Inventory portlet (view 84, script 84). |
+| 1.0.162 | Fix user spend SQL: `u.usage_metadata.run_as` → `u.identity_metadata.run_as_user` (field was failing every cycle); add error detail (`.status.error.message`) to all FAILED-state log lines; add failure logging to monitor query non-SUCCEEDED path. |
+| 1.0.163 | Fix monitor collection: `system.quality.monitor_run_timeline` does not exist in Databricks. Replaced SQL approach with REST API — `listMonitors()` + `listMonitorRefreshes(tableName)` per monitor. Collection no longer requires a billing warehouse. |
+| 1.0.164–1.0.178 | Iterative fixes: `MAX(run_time)` → `MAX(window.start)` in profile UNION SQL; async agent activation (`scheduleWithFixedDelay` with `initialDelay=0`, removes synchronous `collect()` call that caused activation timeout); CDT missing transforms for `rowCount`/`rowCountDelta`/`driftColumnCount` (root cause of blank DQ columns); drift window widened 7→14 days. |
+| 1.0.179 | CDT transform fix confirmed working — Row Count column now populates in Data Quality portlet (view 84). |
+| 1.0.180 | Drift diagnostic logging: `drift state=` logged after SQL poll to diagnose 0-row result. `cartridges/` folder added to repo — `.car` committed to git after each build for distribution without GitHub-hosted runners. |
