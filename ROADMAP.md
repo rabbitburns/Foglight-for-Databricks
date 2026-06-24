@@ -168,7 +168,7 @@
 | Monitor inventory | `GET /api/2.1/lakehouse-monitoring/monitors` | Low | ✓ Done 1.0.163 — replaced broken SQL approach; REST API `listMonitors()` + `listMonitorRefreshes()` per monitor. New type `DatabricksMonitor`. |
 | Monitor refresh status | Same API — `status` field per monitor | Low | ✓ Done 1.0.163 — last refresh time and run count stored on `DatabricksMonitor`. |
 | Profile metrics (row count) | SQL against `_profile_metrics` output table | Medium | ✓ Done 1.0.180 — `MAX(window.start)` per table, `MAX(count)` where `column_name=':table'`; `rowCount` field on `DatabricksMonitor`; CDT transform added. |
-| Drift metrics (column drift) | SQL against `_drift_metrics` output table | Medium | **In progress** — SQL built (chi-square + KS test p-value < 0.05); `driftColumnCount` field defined; diagnosing 0-row result (1.0.180 adds state logging). |
+| Drift metrics (column drift) | SQL against `_drift_metrics` output table | Medium | ✓ Done 1.0.181 — chi-square + KS test (`pvalue < 0.05`); `driftColumnCount` field on `DatabricksMonitor`; fix: field name is `pvalue` not `p_value` in Databricks schema. |
 | Row count delta (change) | Derived — compare consecutive `_profile_metrics` runs | Low | **Backlog** — `rowCountDelta` field defined, currently always empty; needs prev-run comparison logic in collector. |
 | Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | **Deferred** — correlate job run failures with downstream drift detection. Differentiator vs Datadog/New Relic. |
 
@@ -201,7 +201,7 @@
 7. **Tier 8** — Lakebase platform monitoring ✓ (1.0.118, CONFIRMED: 3 projects, 5 branches)
 8. **Tier 11** — AI Gateway Observability ✓ Done 1.0.119 (3 portlets, sub-nav page; deferred items: tag attribution, overview row, dollar cost join)
 9. **Tier 6** — Cluster runtime metrics via `system.compute.node_timeline` ✓ Done 1.0.140
-10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory ✓ 1.0.163; DQ portlet row count ✓ 1.0.180; drift column count in progress
+10. **Tier 10 Phase 1** — Lakehouse Monitoring: monitor inventory ✓ 1.0.163; DQ portlet row count ✓ 1.0.180; drift column count ✓ 1.0.181; row count delta (Change column) backlog
 11. **Tier 10 Phase 2** — Lakehouse Monitoring: job → data quality correlation (**deferred**)
 12. **Tier 9** — Lakewatch SIEM (**blocked: Private Preview, no public API**)
 
@@ -313,3 +313,4 @@
 | 1.0.164–1.0.178 | Iterative fixes: `MAX(run_time)` → `MAX(window.start)` in profile UNION SQL; async agent activation (`scheduleWithFixedDelay` with `initialDelay=0`, removes synchronous `collect()` call that caused activation timeout); CDT missing transforms for `rowCount`/`rowCountDelta`/`driftColumnCount` (root cause of blank DQ columns); drift window widened 7→14 days. |
 | 1.0.179 | CDT transform fix confirmed working — Row Count column now populates in Data Quality portlet (view 84). |
 | 1.0.180 | Drift diagnostic logging: `drift state=` logged after SQL poll to diagnose 0-row result. `cartridges/` folder added to repo — `.car` committed to git after each build for distribution without GitHub-hosted runners. |
+| 1.0.181 | Fix drift metrics field name: `chi_square_test.p_value` / `ks_test.p_value` → `chi_square_test.pvalue` / `ks_test.pvalue`. Databricks `_drift_metrics` schema uses `pvalue` (no underscore); query was failing BAD_REQUEST every cycle, silently leaving Drifted Cols blank. |
