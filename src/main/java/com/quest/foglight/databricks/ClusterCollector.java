@@ -1230,10 +1230,19 @@ public class ClusterCollector {
 
                         // Execute drift query if any drift tables exist
                         if (driftSql.length() > 0) {
-                            JsonNode driftResult = client.executeSqlStatement(billingWarehouseId, driftSql.toString());
+                            String driftSqlStr = driftSql.toString();
+                            JsonNode driftResult = client.executeSqlStatement(billingWarehouseId, driftSqlStr);
                             String driftState = driftResult.path("status").path("state").asText("");
+                            String driftError = driftResult.path("status").path("error").path("message").asText("");
+                            // chi_square_test column only exists for categorical columns; retry with ks_test only if absent
+                            if ("FAILED".equals(driftState) && driftError.contains("chi_square_test")) {
+                                driftSqlStr = driftSqlStr.replace("chi_square_test.pvalue < 0.05 OR ", "");
+                                driftResult = client.executeSqlStatement(billingWarehouseId, driftSqlStr);
+                                driftState = driftResult.path("status").path("state").asText("");
+                                driftError = driftResult.path("status").path("error").path("message").asText("");
+                            }
                             System.out.println("ClusterCollector: drift state=" + driftState
-                                    + (driftState.equals("FAILED") ? " error=" + driftResult.path("status").path("error").path("message").asText("") : ""));
+                                    + ("FAILED".equals(driftState) ? " error=" + driftError : ""));
                             if ("SUCCEEDED".equals(driftState)) {
                                 JsonNode driftRows = driftResult.path("result").path("data_array");
                                 if (driftRows.isArray()) {
