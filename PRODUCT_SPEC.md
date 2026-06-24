@@ -1,6 +1,6 @@
 # Foglight for Databricks — Product Management Specification
 
-**Version:** 1.0.181  
+**Version:** 1.0.182  
 **Status:** POC / Active Development  
 **Owner:** Quest Software  
 **Last Updated:** 2026-06-24

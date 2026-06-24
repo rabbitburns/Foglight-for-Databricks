@@ -11,7 +11,7 @@ Collects topology and metrics from the Databricks REST API and Unity Catalog sys
 Surfaced as WCF portlets inside Foglight dashboards via a built-in top-level nav entry.
 
 **Build:** `python build_cartridge.py X.X.X --deploy` → `target/DatabricksAgent-X.X.X.car` + deployed to FglAM agent cache + copied to `cartridges/`  
-**Current version:** 1.0.181
+**Current version:** 1.0.182
 
 **Codebase:** `C:\Users\mark_\OneDrive\Claude\foglight-databricks\`
 
@@ -90,7 +90,7 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 - ✓ **Drifted Cols** — from `_drift_metrics` chi-square + KS test `pvalue < 0.05` (fix: field is `pvalue` not `p_value`)
 - ✗ **Change** — `rowCountDelta` hardcoded `""`, needs prev-run comparison logic
 
-**Pending verification:** confirm Drifted Cols populates after 1.0.181 install + FglAM restart.
+**1.0.182 confirmed working** — Row Count and Drifted Cols both populate.
 
 ---
 

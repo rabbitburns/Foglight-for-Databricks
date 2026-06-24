@@ -314,3 +314,4 @@
 | 1.0.179 | CDT transform fix confirmed working — Row Count column now populates in Data Quality portlet (view 84). |
 | 1.0.180 | Drift diagnostic logging: `drift state=` logged after SQL poll to diagnose 0-row result. `cartridges/` folder added to repo — `.car` committed to git after each build for distribution without GitHub-hosted runners. |
 | 1.0.181 | Fix drift metrics field name: `chi_square_test.p_value` / `ks_test.p_value` → `chi_square_test.pvalue` / `ks_test.pvalue`. Databricks `_drift_metrics` schema uses `pvalue` (no underscore); query was failing BAD_REQUEST every cycle, silently leaving Drifted Cols blank. |
+| 1.0.182 | Fix drift query for numeric-only monitors: `chi_square_test` column is absent from `_drift_metrics` tables where all monitored columns are numeric (only `ks_test` present). On UNRESOLVED_COLUMN failure mentioning `chi_square_test`, retry with `ks_test.pvalue` only. Drifted Cols confirmed populating. |
