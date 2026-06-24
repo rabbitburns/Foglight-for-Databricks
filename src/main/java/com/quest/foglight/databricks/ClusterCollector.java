@@ -23,6 +23,7 @@ public class ClusterCollector {
     private final String accountName;
     private final String configuredBillingWarehouseId;
     private final String workspaceRegion;
+    private final Map<String, Long> prevRowCounts = new HashMap<>();
 
     public ClusterCollector(DatabricksClient client,
                             TopologyDataSubmissionService3 topologyService,
@@ -1272,6 +1273,13 @@ public class ClusterCollector {
                                     String lastRun   = row.path(4).asText("").replace("T", " ").replaceAll("\\.\\d+Z?$", "");
                                     long   runs      = row.path(5).asLong(0);
                                     String lastCount = row.path(6).asText("");
+                                    long   curCount  = row.path(6).asLong(-1);
+                                    String delta     = "";
+                                    if (curCount >= 0 && prevRowCounts.containsKey(fullName)) {
+                                        long d = curCount - prevRowCounts.get(fullName);
+                                        delta = (d > 0 ? "+" : "") + d;
+                                    }
+                                    if (curCount >= 0) prevRowCounts.put(fullName, curCount);
                                     TopologyNode mNode = monitorsNode.createNode(fullName);
                                     setValue(mNode, "monitorKey",        fullName,                             true);
                                     setValue(mNode, "catalogName",       catalog,                              false);
@@ -1283,7 +1291,7 @@ public class ClusterCollector {
                                     setValue(mNode, "runCount30d",       runs > 0 ? String.valueOf(runs) : "", false);
                                     setValue(mNode, "failCount30d",      "",                                   false);
                                     setValue(mNode, "rowCount",          lastCount,                            false);
-                                    setValue(mNode, "rowCountDelta",     "",                                   false);
+                                    setValue(mNode, "rowCountDelta",     delta,                                false);
                                     setValue(mNode, "driftColumnCount",  driftMap.getOrDefault(fullName, ""),  false);
                                 }
                                 System.out.println("ClusterCollector: monitor collection succeeded, count=" + monRows.size());
