@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <installers>
-    <installer name="DatabricksAgent" version="1.0.6" filename="DatabricksAgent.gar" type="fglam-client-pkg">
+    <installer name="DatabricksAgent" version="1.0.7" filename="DatabricksAgent.gar" type="fglam-client-pkg">
         <agent-types>
             <agent-type name="DatabricksAgent"/>
         </agent-types>

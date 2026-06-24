@@ -79,6 +79,14 @@ public class DatabricksClient {
         return get("/api/2.0/sql/history/queries?max_results=25&filter_by.warehouse_ids=" + warehouseId);
     }
 
+    public JsonNode getMonitor(String fullTableName) throws Exception {
+        return get("/api/2.0/lakehouse-monitoring/monitors/" + fullTableName);
+    }
+
+    public JsonNode listMonitorRefreshes(String fullTableName) throws Exception {
+        return get("/api/2.0/lakehouse-monitoring/monitors/" + fullTableName + "/refreshes");
+    }
+
     public JsonNode executeSqlStatement(String warehouseId, String sql) throws Exception {
         ObjectNode body = MAPPER.createObjectNode();
         body.put("warehouse_id", warehouseId);

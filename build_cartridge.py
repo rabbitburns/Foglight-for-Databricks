@@ -319,7 +319,14 @@ def main():
         z.writestr(f"{idir}/installers.xml", installers_bytes)
         z.writestr(f"{idir}/{agent_zip_name}", agent_zip_bytes)
 
+    # Copy .car to cartridges/ so it's tracked in git
+    cartridges_dir = "cartridges"
+    os.makedirs(cartridges_dir, exist_ok=True)
+    import shutil
+    cart_dest = os.path.join(cartridges_dir, os.path.basename(out))
+    shutil.copy2(out, cart_dest)
     print(f"Built {out}  ({os.path.getsize(out):,} bytes)")
+    print(f"Copied to {cart_dest}")
     with zipfile.ZipFile(out) as z:
         for e in z.infolist():
             print(f"  {e.file_size:6d}  {e.filename}")
