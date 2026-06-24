@@ -7,3 +7,10 @@ build_cartridge.py_BKUP
 dashboard-probe*.groovy
 test.ps1
 delete-snapshot-jar.ps1
+
+# Credential files — never commit
+Access Key.txt
+github_PAT.txt
+Claude Code - Java Agent.txt
+*.pat
+*.token

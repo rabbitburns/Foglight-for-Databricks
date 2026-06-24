@@ -1,15 +1,15 @@
 # Foglight for Databricks — Product Management Specification
 
-**Version:** 1.0.118  
+**Version:** 1.0.181  
 **Status:** POC / Active Development  
 **Owner:** Quest Software  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-24
 
 ---
 
 ## 1. Executive Summary
 
-Foglight for Databricks is a native Quest Foglight monitoring cartridge that provides comprehensive observability for Databricks Lakehouse environments. It collects topology, operational metrics, cost intelligence, and data quality signals from the Databricks REST API and surfaces them as Foglight portlets and dashboards.
+Foglight for Databricks is a native Quest Foglight monitoring cartridge that provides comprehensive observability for Databricks Lakehouse environments. It collects topology, operational metrics, cost intelligence, and data quality signals from the Databricks REST API and Unity Catalog system tables, and surfaces them as Foglight portlets and dashboards.
 
 The product targets organisations running Databricks on Azure, AWS, or GCP who need unified monitoring of their Lakehouse platform within their existing Foglight investment — without deploying a separate monitoring tool or paying for add-on modules from cloud-native observability vendors.
 
@@ -26,7 +26,7 @@ Databricks environments generate rich operational data — job failures, query s
 - Databricks billing system tables (requires SQL query expertise to interrogate)
 - DLT pipeline event logs (requires navigating individual pipeline UIs)
 
-Organisations running Databricks alongside other monitored infrastructure (databases, servers, applications) have no single pane of glass. They are forced to context-switch between Foglight and the Databricks UI, or pay for a separate Databricks-specific monitoring product.
+Organisations running Databricks alongside other monitored infrastructure (databases, servers, applications) have no single pane of glass.
 
 ### 2.2 Cost of Alternatives
 
@@ -52,7 +52,7 @@ Organisations running Databricks alongside other monitored infrastructure (datab
 ### 3.1 Architecture
 
 ```
-Databricks REST API
+Databricks REST API + Unity Catalog System Tables
         │
         ▼
 FglAM Java Agent (DatabricksAgent)
@@ -73,27 +73,30 @@ Foglight Topology Store
           │   └── DatabricksPipelineUpdate (up to 5/pipeline)
           │       └── DatabricksPipelineExpectation (n)
           ├── DatabricksInstancePool (n)
-          ├── DatabricksUsage (n)          ← billing data
-          ├── DatabricksJobDbu (n)         ← per-job DBU
-          ├── DatabricksSkuPrice (n)       ← list prices
+          ├── DatabricksUsage (n)             ← billing/DBU data
+          ├── DatabricksJobDbu (n)            ← per-job DBU
+          ├── DatabricksSkuPrice (n)          ← list prices
           ├── DatabricksServingEndpoint (n)
           │   └── DatabricksServedModel (n)
-          ├── DatabricksLakebaseProject (n) ← Lakebase managed PostgreSQL
+          ├── DatabricksLakebaseProject (n)
           │   └── DatabricksLakebaseBranch (n)
-          ├── DatabricksAiEndpoint (n)     ← AI Gateway endpoints
-          │   └── DatabricksAiUsage (n)    ← daily token aggregates
-          └── DatabricksAiUserActivity (n) ← per-requester token rollup
+          ├── DatabricksAiEndpoint (n)        ← AI Gateway endpoints
+          ├── DatabricksAiUsage (n)           ← daily token aggregates
+          ├── DatabricksAiUserActivity (n)    ← per-requester token rollup
+          ├── DatabricksUserSpend (n)         ← per-user compute spend
+          └── DatabricksMonitor (n)           ← Lakehouse Monitor DQ
         │
         ▼
-WCF Portlets (27 views, Groovy scripts)
-Foglight Dashboards (user-configured)
+WCF Portlets (~45 views, Groovy scripts)
+Built-in nav entry: Databricks → 10 sub-pages
 ```
 
 ### 3.2 Data Sources
 
-| Source | API | Collection Interval |
+| Source | API / Table | Collection Interval |
 |---|---|---|
 | Clusters | `GET /api/2.0/clusters/list` | 60s |
+| Cluster runtime metrics | `system.compute.node_timeline` via SQL warehouse | 60s |
 | Jobs | `GET /api/2.1/jobs/list` | 60s |
 | Job Runs | `GET /api/2.1/jobs/runs/list` (per job) | 60s |
 | SQL Warehouses | `GET /api/2.0/sql/warehouses` | 60s |
@@ -103,15 +106,20 @@ Foglight Dashboards (user-configured)
 | Instance Pools | `GET /api/2.0/instance-pools/list` | 60s |
 | DBU Usage | `system.billing.usage` via SQL warehouse | 60s |
 | SKU List Prices | `system.billing.list_prices` via SQL warehouse | 60s |
+| Table Optimization History | `system.storage.predictive_optimization_operations_history` | 60s |
+| Storage Costs | `system.billing.usage` (STORAGE_SPACE SKUs) | 60s |
 | Model Serving Endpoints | `GET /api/2.0/serving-endpoints` | 60s |
 | Lakebase Projects | `GET /api/2.0/postgres/projects` | 60s |
 | Lakebase Branches | `GET /api/2.0/postgres/projects/{id}/branches` | 60s |
 | Lakebase Endpoints | `GET /api/2.0/postgres/projects/{id}/branches/{id}/endpoints` | 60s |
-| AI Gateway Usage | `system.ai_gateway.usage` via SQL warehouse (server-side aggregate) | 60s |
+| AI Gateway Usage | `system.ai_gateway.usage` via SQL warehouse | 60s |
+| Lakehouse Monitor Inventory | `GET /api/2.1/lakehouse-monitoring/monitors` + `/refreshes` | 60s |
+| Lakehouse Monitor Profile Metrics | `_profile_metrics` output tables via SQL warehouse | 60s |
+| Lakehouse Monitor Drift Metrics | `_drift_metrics` output tables via SQL warehouse | 60s |
 
 ### 3.3 Authentication
 
-Databricks Personal Access Token (PAT) with read-only permissions. Token stored in `databricks.properties` on the FglAM host. No write operations are performed against the Databricks API.
+Databricks Personal Access Token (PAT) with read-only permissions. Configured via agent properties (ASP) in the Foglight UI. No write operations are performed against the Databricks API.
 
 ### 3.4 Deployment Requirements
 
@@ -122,8 +130,8 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | JDK | 11+ (provided by FglAM) |
 | Databricks workspace | Any cloud (Azure, AWS, GCP) |
 | Databricks access token | Read permissions on workspace resources |
-| Billing SQL warehouse | Required for DBU/cost features (any running warehouse) |
-| Databricks plan | Standard for core features; Premium for system table access (billing) |
+| Billing SQL warehouse | Required for DBU/cost, AI Gateway, and Data Quality features |
+| Databricks plan | Standard for core features; Premium for system table access (billing, compute, quality) |
 
 ---
 
@@ -136,8 +144,9 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 - Node types (driver + worker), worker count, core count
 - Spark version, autoscale configuration (min/max workers)
 - Creator, start time, last activity, terminated time
-- Pinned-by user, custom tags
-- Termination reason
+- Pinned-by user, custom tags, termination reason
+- CPU and memory utilisation (%) from `system.compute.node_timeline` — sampled hourly lookback
+- Idle cluster and untagged cluster hygiene reports
 
 **SQL Warehouses**
 - State (RUNNING, STOPPED, STARTING)
@@ -145,9 +154,11 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 - Cluster count (current, min, max), Photon enabled
 - Auto-stop, auto-resume settings, creator
 - Query count (derived from query history)
+- Efficiency score: queryCount / sizeWeight; "Idle" if 0 queries
 
 **Instance Pools**
-- State, node type, idle/used/max capacity counts
+- State, node type, idle/used/pending counts
+- Max capacity, idle termination minutes, preloaded Spark versions
 
 ### 4.2 Job & Pipeline Monitoring
 
@@ -155,86 +166,83 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 - Name, creator, trigger type (PERIODIC, FILE_ARRIVAL, TABLE, etc.)
 - Cron schedule and status
 - Last run: state, result, start time, duration
-- Historical stats: success rate %, avg/min/max duration, success/failure counts over collected history
-- Custom tags
+- Historical stats: success rate %, avg/min/max duration, success/failure counts
+- Custom tags; dollar cost (current month via billing join)
 
 **Job Runs** (up to 10 per job)
-- Lifecycle state (RUNNING, TERMINATED, etc.), result (SUCCESS, FAILED, etc.)
-- Total duration, plus breakdown: queue / setup / execution / cleanup
+- Lifecycle state, result, total duration
+- Duration breakdown: queue / setup / execution / cleanup
 - Task count, retry attempt number, state message
 
 **DLT Pipelines**
-- State, creator, run-as user, pipeline ID
+- State, creator, run-as user, pipeline ID; dollar cost
 - Update history (last 5 updates): state, start time
-- Data quality expectations per update: expectation name, flow, dataset, passed/failed/dropped record counts, pass rate %
+- Data quality expectations per update: pass rate %, passed/failed/dropped record counts
 
 ### 4.3 SQL & Query Intelligence
 
 **Query History** (up to 25 per warehouse)
-- User, statement type, status
-- Total duration with breakdown: compilation / execution / fetch
-- Bytes read, rows produced, cache hit flag
-- Full query text
-- Error message (if failed)
+- User, statement type, status, total duration with breakdown
+- Bytes read, rows produced, cache hit flag, error message, query text
 
-**Slow Query Leaderboard**
-- Top 25 queries by duration, cross-warehouse
+**Slow Query Leaderboard** — top 25 queries by duration, cross-warehouse
 
-**User Activity**
-- Per-user aggregates: query count, avg duration, total bytes read, cache hit count, error count
-- Interactive treemap: query volume by user
-- Bubble chart: query count vs avg duration, coloured by error rate
+**User Activity** — per-user aggregates: query count, avg duration, bytes, cache hits, errors; treemap and bubble chart
+
+**Query Volume Trend** — time-series of total queries at each collection cycle
 
 ### 4.4 DBU Consumption & Cost Intelligence
 
-**DBU Usage** (60-day rolling window)
-- Raw usage by date, SKU, billing product, cloud, region
-- Derived aggregations: DBU by product (current month), daily DBU trend, month-over-month growth by product
+**DBU Usage** (60-day rolling window) — raw usage by date, SKU, product, cloud, region
 
 **Cost Intelligence**
-- Estimated dollar cost per SKU (DBU × list price, joined from `system.billing.list_prices`)
-- Top 10 jobs by DBU consumed (current month)
-- Cost by SKU table
-- SKU list price reference (price per DBU, effective date, currency)
-- Graphical: DBU by Product treemap, Cost vs DBU bubble chart by SKU
-- Overview summary: DBU this month, top product, estimated total cost
+- Estimated dollar cost per SKU (DBU × `system.billing.list_prices`)
+- Top jobs by DBU with dollar cost
+- Cost by SKU; cost by product treemap; cost vs DBU bubble chart by SKU
+- Month-over-month cost slopegraph (▲/▼/→ trend per product)
+- Daily DBU trend; daily DBU accumulation time-plot; SKU 7-day trend
+- User compute spend: per-user, per-product DBU and dollar cost (30 days)
+- Table Optimization History: Delta ANALYZE/COMPACTION ops (7 days)
+- Storage Costs by product/SKU (30 days)
 
-### 4.5 AI Gateway Observability (Tier 11 — Planned)
+### 4.5 AI Gateway Observability
 
-**AI Gateway Endpoints**
-- Per-endpoint current-window rollup: request count, total tokens consumed, error rate, p95 latency
-- Destination model(s), requester breakdown, endpoint tags
+**AI Gateway Endpoints** — per-endpoint current-window rollup: request count, total tokens, error rate, p95 latency
 
-**Token Usage** (daily aggregates, 60-day rolling)
-- Total, input, and output tokens by date × endpoint × model
-- Cache breakdown: `cache_read_input_tokens`, `cache_creation_input_tokens`, `output_reasoning_tokens`
-- Daily trend portlet — mirrors DBU Daily Trend pattern
+**Token Usage** (daily aggregates) — total, input, output tokens by date × endpoint × model
 
-**Per-Requester Activity**
-- Request count, total tokens, error count per requester/requester type
-- Treemap and bubble charts — reuses User Activity portlet pattern
-
-**Endpoint Performance**
-- p50/p90/p95/p99 latency and average time-to-first-byte (TTFB), pre-aggregated in SQL
-- 4xx/5xx error counts per endpoint
-
-**Overview summary row**: "AI Gateway (This Month)" — total tokens, top endpoint/model, request count. Mirrors DBU summary row.
+**Per-Requester Activity** — request count, total tokens, error count per requester/requester type
 
 **Prerequisites:** Unity AI Gateway V2 Preview enabled; account-admin access required for `system.ai_gateway.usage`.
 
 ### 4.6 Model Serving
 
-**Serving Endpoints**
-- Name, ready state (READY, NOT_READY, UPDATING), config update state
-- Creator, creation time, last updated time
-- Route optimised flag, served model count
+**Serving Endpoints** — name, ready state, config update state, creator, served model count
 
-**Served Models** (per endpoint)
-- Model name and version
-- Deployment state, workload size (Small/Medium/Large)
-- Traffic percentage, scale-to-zero enabled
+**Served Models** (per endpoint) — model name and version, workload size, traffic %, scale-to-zero, deployment state
 
-### 4.7 Portlet Reference
+### 4.7 Lakebase Platform Monitoring
+
+**Projects** — project ID/name, state, endpoint URL
+
+**Branches** — branch ID/name, state, parent project, endpoint state/URL
+
+### 4.8 Data Quality (Lakehouse Monitoring)
+
+**Monitor Inventory** (via REST API)
+- Which Delta tables are monitored; last refresh time; run count
+
+**Profile Metrics** (via `_profile_metrics` SQL)
+- Row count at last monitor run (`MAX(count)` where `column_name=':table'`)
+- Last run timestamp (`MAX(window.start)`)
+
+**Drift Metrics** (via `_drift_metrics` SQL)
+- Drifted column count: columns where chi-square test or KS test p-value < 0.05
+- Total monitored columns
+
+**Backlog:** Row count delta (Change column) — requires prev-run comparison logic.
+
+### 4.9 Portlet Reference
 
 | # | Portlet | Category |
 |---|---|---|
@@ -263,15 +271,28 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | 23 | Databricks SKU List Prices | Cost |
 | 24 | Databricks Model Serving Endpoints | Model Serving |
 | 25 | Databricks Served Models | Model Serving |
-| 26 | Databricks Active Resource Trend | Compute |
+| 26 | Databricks Active Resource Trend | Summary |
 | 27 | Databricks Job and Pipeline Count Trend | Jobs |
-| 28 | Databricks AI Gateway Endpoints | AI Gateway |
-| 29 | Databricks AI Token Usage | AI Gateway |
-| 30 | Databricks AI Tokens by Model (Treemap) | AI Gateway |
-| 31 | Databricks AI User Activity | AI Gateway |
-| 32 | Databricks AI User Activity (Treemap) | AI Gateway |
-| 33 | Databricks AI Endpoint Performance | AI Gateway |
-| 34 | Databricks AI Daily Token Trend | AI Gateway |
+| 28 | Databricks Lakebase Projects | Lakebase |
+| 29 | Databricks Lakebase Branches | Lakebase |
+| 30 | Databricks AI Gateway Endpoints | AI Gateway |
+| 31 | Databricks AI Token Usage | AI Gateway |
+| 32 | Databricks AI User Activity | AI Gateway |
+| 33 | Databricks Job Sparklines | Jobs |
+| 34 | Databricks Warehouse Sparklines | Compute |
+| 35 | Databricks Cluster Sparklines | Compute |
+| 36 | Databricks Cluster Utilization | Compute |
+| 37 | Databricks Idle Clusters | Compute |
+| 38 | Databricks Untagged Clusters | Compute |
+| 39 | Databricks User Compute Spend | Cost |
+| 40 | Databricks Table Optimization History | Storage |
+| 41 | Databricks Storage Costs | Storage |
+| 42 | Databricks Cost MoM Slopegraph | Cost |
+| 43 | Databricks Daily DBU Accumulation | Cost |
+| 44 | Databricks DBU Spend Trend by SKU | Cost |
+| 45 | Databricks Query Volume Trend | Queries |
+| 46 | Databricks Job Success Rate by Day | Jobs |
+| 47 | Databricks Data Quality | Data Quality |
 
 ---
 
@@ -282,6 +303,7 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | Capability | Foglight for Databricks | Datadog | New Relic |
 |---|---|---|---|
 | Cluster inventory & state | ✓ | ✓ | ✓ |
+| Cluster CPU/memory utilisation | ✓ (system.compute.node_timeline) | ✓ | ✓ |
 | Job run history & success rate | ✓ | ✓ | ✓ |
 | SQL warehouse monitoring | ✓ | ✓ | ✓ |
 | Query history with query text | ✓ | Partial | Partial |
@@ -289,8 +311,10 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 | Cost by SKU with list price | ✓ | ✗ | ✗ |
 | DLT pipeline update history | ✓ | ✗ | ✓ |
 | DLT data quality expectations | ✓ | ✗ | ✗ |
+| Lakehouse Monitor DQ (row count, drift) | ✓ | ✗ | ✗ |
 | Model serving endpoint monitoring | ✓ | ✓ | ✗ |
-| AI Gateway token & latency observability | ✓ Planned (Tier 11) | ✗ | ✗ |
+| AI Gateway token & latency observability | ✓ | ✗ | ✗ |
+| Lakebase platform monitoring | ✓ | ✗ | ✗ |
 | Graphical widgets (treemap/bubble) | ✓ | ✓ | ✓ |
 | Integrated with broader IT monitoring | ✓ (Foglight platform) | Partial | Partial |
 | On-premises deployment option | ✓ (FglAM) | ✗ | ✗ |
@@ -299,143 +323,79 @@ Databricks Personal Access Token (PAT) with read-only permissions. Token stored 
 
 **1. DBU Cost Intelligence — Included, Not Add-On**
 
-Datadog's Databricks cost visibility is part of their Cloud Cost Management product — a separately priced SKU that pulls from cloud provider billing APIs (AWS Cost Explorer, Azure Cost Management). It is not included in standard Databricks monitoring and requires additional commercial negotiation.
-
-Foglight for Databricks queries `system.billing.usage` and `system.billing.list_prices` directly — Databricks-native, more granular (DBU-denominated rather than cloud-dollar-estimated), and included in the base cartridge at no additional cost.
+Datadog's Databricks cost visibility is part of their Cloud Cost Management product — a separately priced SKU. Foglight for Databricks queries `system.billing.usage` and `system.billing.list_prices` directly — Databricks-native, more granular, included in the base cartridge.
 
 **2. DLT Data Quality Expectations**
 
-No other monitoring platform surfaces DLT data quality expectation pass/fail counts as a native monitoring signal. When a pipeline's `expect()` rules start failing, it means bad data is entering or passing through the Lakehouse. This is currently invisible to operations teams unless they manually inspect the DLT UI per pipeline.
+No other monitoring platform surfaces DLT data quality expectation pass/fail counts as a native monitoring signal. Foglight for Databricks collects expectation results from pipeline events — failures sorted first.
 
-Foglight for Databricks collects expectation results from pipeline events and surfaces them in a dedicated portlet — failures sorted first — giving data engineering teams an immediate view of data reliability across all pipelines.
+**3. Lakehouse Monitoring Data Quality**
 
-**3. Unified Monitoring — Foglight Platform Integration**
+Row count trend and statistical drift (chi-square + KS test) for all Lakehouse-monitored Delta tables, surfaced in a dedicated portlet. Neither Datadog nor New Relic surfaces this data natively.
 
-Datadog and New Relic are standalone SaaS products. For organisations running Foglight for databases, servers, and applications, adding Databricks monitoring to the same platform means:
-- Single alert console
-- Single dashboard environment
-- Single RBAC model
-- No additional SaaS contract or per-host pricing
+**4. Unified Monitoring — Foglight Platform Integration**
 
-**4. On-Premises / Private Cloud Deployment**
+Single alert console, single dashboard environment, single RBAC model, no additional SaaS contract.
 
-FglAM runs on-premises or in a private cloud. For organisations with data sovereignty requirements or private Databricks deployments (BYOC/VPC), this is a meaningful advantage over SaaS-only monitoring tools.
+**5. On-Premises / Private Cloud Deployment**
+
+FglAM runs on-premises or in a private cloud — advantage for data sovereignty or private Databricks deployments.
 
 ---
 
 ## 6. Roadmap
 
-### 6.1 In Progress / Complete (v1.0.113)
+See [ROADMAP.md](ROADMAP.md) for full tier-by-tier status and version history.
 
-All items in Tiers 1–5 and Tier 7 are complete. Time-plot trend views (Active Resource Trend, Job & Pipeline Count Trend) added in 1.0.74. Landing page composite-view finalized in 1.0.78. Versions 1.0.79–1.0.113 cover CDT stability fixes (DOCTYPE restoration, StringObservation → String type reversion for state fields). See ROADMAP.md for full version history.
+### Summary
 
-### 6.2 Next — Tier 8: Lakebase Platform Monitoring
+| Tier | Description | Status |
+|---|---|---|
+| 1–3 | Clusters, Jobs, Warehouses, Queries, Pipelines, Pools | ✓ Complete |
+| 4 | DBU consumption & cost intelligence | ✓ Complete |
+| 5 | DLT pipeline depth (updates + expectations) | ✓ Built; untested (no DLT in dev workspace) |
+| 6 | Cluster runtime metrics (CPU/memory) | ✓ Complete — 1.0.140 |
+| 7 | Model Serving endpoints + served models | ✓ Complete — 1.0.65 |
+| 8 | Lakebase platform monitoring | ✓ Complete — 1.0.118 |
+| 10 Phase 1 | Lakehouse Monitoring DQ (inventory + row count + drift) | ✓ Complete — 1.0.181 |
+| 10 Phase 2 | Job → data quality correlation | Deferred |
+| 11 | AI Gateway token & GenAI observability | ✓ Complete — 1.0.119 |
+| 9 | Lakewatch SIEM | Blocked — Private Preview, no public API |
+| v2 | AUI dashboard layer | Planned |
 
-Databricks Lakebase is a serverless managed PostgreSQL offering (GA 2025). The Foglight PostgreSQL cartridge handles per-branch query-level monitoring. Tier 8 adds platform-level visibility via the Lakebase REST API:
+### Near-term Backlog
 
-- Project and branch inventory (name, state, parent, created time)
-- Endpoint provisioning status (running, stopped, provisioning)
-- In-flight operation monitoring (create/clone/restore — detect stuck operations)
-
-**Value:** Gives platform teams visibility into the lifecycle of Lakebase resources without navigating the Databricks UI. Complements, rather than replaces, the existing PostgreSQL cartridge.
-
-### 6.3 Tier 9: Lakewatch Security SIEM
-
-Databricks Lakewatch is an agentic SIEM platform (Private Preview, March 2026). No public API available yet. Blocked pending GA.
-
-**Planned coverage (post-GA):** Security event ingestion status, detection inventory, incident summary (MTTD/MTTR).
-
-### 6.4 Tier 10: Lakehouse Monitoring (Data Quality)
-
-Requires Unity Catalog (confirmed enabled: `azure:eastus`). Two phases:
-
-**Phase 1** — Monitor inventory: which tables are monitored, monitor type, last refresh status, stale monitor detection. REST API: `/api/2.1/lakehouse-monitoring/monitors`.
-
-**Phase 2** — Job → data quality correlation: cross-reference job run failures with downstream table drift metrics. If Job X failed and Table Y shows drift shortly after, surface both in a single view. **This capability does not exist in Datadog or New Relic** and is the primary differentiator for this tier.
-
-### 6.6 Tier 11: AI Gateway Observability (Token & GenAI Usage)
-
-Queries the `system.ai_gateway.usage` Unity Catalog system table via the same SQL warehouse mechanism used for billing data (Tier 4). Server-side aggregate query — raw per-request rows are not pulled.
-
-**Topology additions:** `DatabricksAiEndpoint`, `DatabricksAiUsage` (daily token rollup), `DatabricksAiUserActivity` (per-requester aggregates).
-
-**Portlets (7 new, views 55+):**
-- AI Gateway Endpoints — current-window request count, tokens, error rate, p95 latency
-- AI Token Usage — daily aggregated table (input/output/cache/reasoning tokens)
-- AI Tokens by Model (Treemap) — visual token volume by model
-- AI User Activity (table + treemap) — per-requester token and request counts
-- AI Endpoint Performance — latency percentiles (p50/p90/p95/p99), TTFB, error rates
-- AI Daily Token Trend (time-plot) — rolling token consumption over time
-
-**Value:** GenAI cost and performance governance from the same platform as DBU cost monitoring. Tag-based attribution (project / team / cost-center) enables per-team GenAI consumption rollups for FinOps. Neither Datadog nor New Relic surfaces this data natively.
-
-**Prerequisites:** Unity AI Gateway V2 Preview enabled; account-admin access required for `system.ai_gateway.usage` (stricter than `system.billing.*`). Collector degrades gracefully if preview is disabled.
-
-**Deferred (fast-follow):** Token → dollar cost attribution via join to `system.billing.usage` model-serving SKU records. Same complexity class as Tier 4 cost-per-job.
-
-### 6.7 v2: AUI Dashboard Layer
-
-WCF portlets are the v1 foundation. v2 replaces or supplements them with Foglight's Angular UI (AUI) framework:
-
-| v1 (WCF) | v2 (AUI) |
-|---|---|
-| Static tables | Sortable, filterable, paginated tables |
-| Treemap / bubble (limited) | Line, bar, heatmap, Gantt, sparklines |
-| No drill-down navigation | Context-aware drill-down |
-| Fixed portlet grid | Flexible responsive layout |
-
-AUI dependency: internal platform team documentation required before implementation begins.
+- **rowCountDelta (Change column)**: compare consecutive `_profile_metrics` row counts per table
+- **Model serving metrics**: per-endpoint latency/throughput from Databricks metrics API
+- **Multi-workspace support**: numbered config pairs (`workspace.1.url`, etc.)
 
 ---
 
 ## 7. Installation & Configuration
 
-### 7.1 Installation Steps
+See [INSTALL.md](INSTALL.md) for step-by-step installation instructions.
 
-1. Download `DatabricksAgent-{VERSION}-dist.zip` from the GitHub releases page
-2. Extract and copy `agent-deploy/` contents to the FglAM agents directory
-3. Edit `config/databricks.properties` with workspace URL, access token, and (optional) billing warehouse ID
-4. Install `DatabricksAgent-{VERSION}.car` via Foglight UI → Administration → Cartridges
-5. Restart FglAM
-6. Navigate to the Databricks nav entry in Foglight — Overview portlet loads automatically
+### Configuration Reference
 
-### 7.2 Configuration Reference
+| Property | Required | Description |
+|---|---|---|
+| `workspaceUrl` | Yes | Databricks workspace URL, e.g. `https://adb-123.azuredatabricks.net/` |
+| `accessToken` | Yes | Personal access token with workspace read permissions |
+| `billingWarehouseId` | No* | Running SQL Warehouse ID — required for DBU/cost, AI Gateway, Data Quality |
+| `collectionIntervalSeconds` | No | Poll interval in seconds (default: 60) |
+| `accountId` | No | Account identifier string (default: `default`) |
+| `accountName` | No | Account display name (default: `Databricks`) |
 
-```properties
-# Required
-workspaceUrl=https://<workspace>.azuredatabricks.net/
-accessToken=<personal-access-token>
-
-# Optional — defaults shown
-collectionIntervalSeconds=60
-accountId=default
-accountName=Databricks
-
-# Optional — required for DBU/cost features
-billingWarehouseId=<warehouse-id>
-```
-
-### 7.3 Access Token Permissions
+### Access Token Permissions
 
 The token requires read access to:
 - Clusters, Jobs, Warehouses, Pipelines, Instance Pools, Serving Endpoints (standard workspace read)
-- `system.billing.usage` and `system.billing.list_prices` tables (requires Databricks Premium or system table access)
-- `system.ai_gateway.usage` table — **requires account-admin access** (Tier 11 only; stricter than billing tables)
+- `system.billing.*`, `system.compute.*`, `system.storage.*` tables (Databricks Premium)
+- `system.ai_gateway.usage` — **requires account-admin access** (stricter than billing tables)
+- Lakebase REST API endpoints (if Lakebase is deployed)
+- Lakehouse Monitoring REST API + `_profile_metrics`/`_drift_metrics` output tables
 
 No write permissions are required or used.
-
-### 7.4 Dashboard Setup
-
-The cartridge provides portlets but does not automatically create dashboards. Recommended setup (see DASHBOARDS.md):
-
-| Dashboard | Portlets |
-|---|---|
-| Databricks - Compute | Clusters, SQL Warehouses, Instance Pools |
-| Databricks - Jobs | Jobs, Job Runs |
-| Databricks - Queries | Query History, Slow Queries, User Activity |
-| Databricks - Pipelines | DLT Pipelines, Pipeline Updates, Pipeline Data Quality |
-| Databricks - DBU & Cost | DBU by Product (Treemap), Cost vs DBU (Bubble), Cost by SKU, MoM Growth, Top Jobs by DBU |
-| Databricks - Model Serving | Model Serving Endpoints, Served Models |
 
 ---
 
@@ -443,15 +403,14 @@ The cartridge provides portlets but does not automatically create dashboards. Re
 
 | Limitation | Notes |
 |---|---|
-| Single workspace per agent instance | Multi-workspace support is planned (numbered config pairs). Currently requires one FglAM agent deployment per workspace. |
-| DLT pipeline data quality untested | DLT not enabled in dev workspace. Code is complete; requires a DLT-enabled environment for validation. |
-| Model serving metrics | Endpoint inventory only (v1.0.65). Per-endpoint latency/throughput metrics deferred. |
+| Single workspace per agent instance | Multi-workspace support planned (numbered config pairs). One agent per workspace for now. |
+| DLT pipeline data quality untested | DLT not enabled in dev workspace. Code complete; needs validation in a DLT-enabled environment. |
+| Model serving metrics | Endpoint inventory only. Per-endpoint latency/throughput metrics deferred. |
 | DBU cost estimation | Based on list prices from `system.billing.list_prices`. Does not account for committed use discounts or negotiated rates. |
-| Query text retention | Query text stored in topology for up to 25 queries per warehouse per collection cycle. No historical retention beyond what Foglight retains in topology. |
+| Lakehouse Monitor row count delta | `rowCountDelta` (Change column) always blank — requires prev-run comparison logic. |
 | No packaged dashboards | Dashboards must be built manually by the Foglight administrator. Packaged dashboard export deferred to v2. |
-| AUI layer | Most portlets use WCF tables. Time-plot charts (wcf.chart.time-plot) added for resource and job/pipeline trends. No line/bar/Gantt until v2 AUI layer is implemented. |
-| AI Gateway — account-admin required | `system.ai_gateway.usage` is accessible only to account admins. Production deployments should use a dedicated account-admin-scoped service principal rather than a personal PAT. |
-| AI Gateway — Beta feature | Unity AI Gateway V2 Preview must be enabled via the account Previews toggle. If disabled or access is revoked, the collector degrades gracefully (no data, no errors). |
+| AUI layer | All portlets use WCF tables (v1). Sortable/filterable tables, Gantt charts, and rich drill-down deferred to v2 AUI layer. |
+| AI Gateway — account-admin required | `system.ai_gateway.usage` accessible only to account admins. Production should use a dedicated service principal rather than a personal PAT. |
 
 ---
 
@@ -459,21 +418,17 @@ The cartridge provides portlets but does not automatically create dashboards. Re
 
 | Question | Owner | Status |
 |---|---|---|
-| Is Unity Catalog fully enabled and accessible to the service token? | Customer | UC metastore confirmed: `azure:eastus`. Token access to monitoring tables TBC. |
-| Are DLT pipelines with `expect()` rules in use? | Customer | DLT not enabled in dev workspace — needs validation in a customer environment. |
-| Is Lakebase deployed? | Customer | TBC — determines Tier 8 priority. |
-| AUI component library documentation available? | Quest Dev Team | Requested. Blocks v2 work. |
+| DLT pipelines with `expect()` rules in use? | Customer | DLT not enabled in dev workspace — needs validation in customer environment |
+| AUI component library documentation? | Quest Dev Team | Requested — blocks v2 work |
 | Target GA version and release process | Quest PM | TBC |
-| AI Gateway region support for `azure:eastus`? | Customer | Verify Unity AI Gateway model-serving region availability for the target workspace. |
-| Account-admin grant for monitoring principal vs. personal PAT? | Quest Dev / Customer | Production should use a dedicated account-admin-scoped service principal, not a personal PAT. |
-| Token → dollar fast-follow priority relative to Tier 8 / Tier 6? | Quest PM | Slot after token-volume tier (Tier 11 Phase 1) proves out in a live gateway. |
+| Account-admin grant for monitoring principal vs. personal PAT? | Quest Dev / Customer | Production should use a dedicated account-admin-scoped service principal |
 
 ---
 
 ## 10. Success Metrics (POC)
 
 - Agent collects and displays data for all configured object types within one collection cycle (60s)
-- All 25 portlets render without errors in Foglight 8.2.0
+- All ~47 portlets render without errors in Foglight 8.2.0
 - DBU cost data matches values visible in the Databricks billing UI (within rounding)
 - Dashboard setup can be completed by a Foglight administrator in under 30 minutes
 - No write operations performed against the Databricks workspace
