@@ -1273,7 +1273,9 @@ public class ClusterCollector {
                                     String lastRun   = row.path(4).asText("").replace("T", " ").replaceAll("\\.\\d+Z?$", "");
                                     long   runs      = row.path(5).asLong(0);
                                     String lastCount = row.path(6).asText("");
-                                    long   curCount  = row.path(6).asLong(-1);
+                                    long   curCount  = -1L;
+                                    try { if (!lastCount.isEmpty()) curCount = Long.parseLong(lastCount); }
+                                    catch (NumberFormatException ignored) {}
                                     String delta     = "";
                                     if (curCount >= 0 && prevRowCounts.containsKey(fullName)) {
                                         long d = curCount - prevRowCounts.get(fullName);
