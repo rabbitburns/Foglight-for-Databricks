@@ -34,6 +34,22 @@
         <property name="userSpends"            type="DatabricksUserSpend"        is-many="true" is-containment="true"/>
         <property name="optimizationOps"       type="DatabricksOptimizationOp"   is-many="true" is-containment="true"/>
         <property name="storageCosts"          type="DatabricksStorageCost"      is-many="true" is-containment="true"/>
+        <property name="monitors"              type="DatabricksMonitor"          is-many="true" is-containment="true"/>
+    </type>
+
+    <type name="DatabricksMonitor" extends="TopologyObject">
+        <property name="monitorKey"       type="String" is-identity="true"/>
+        <property name="catalogName"      type="String"/>
+        <property name="schemaName"       type="String"/>
+        <property name="tableName"        type="String"/>
+        <property name="monitorType"      type="String"/>
+        <property name="lastRunStatus"    type="String"/>
+        <property name="lastRunTimeStr"   type="String"/>
+        <property name="runCount30d"      type="String"/>
+        <property name="failCount30d"     type="String"/>
+        <property name="rowCount"          type="String"/>
+        <property name="rowCountDelta"    type="String"/>
+        <property name="driftColumnCount" type="String"/>
     </type>
 
     <type name="DatabricksWarehouse" extends="TopologyObject">

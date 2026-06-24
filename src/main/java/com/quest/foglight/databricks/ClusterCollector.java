@@ -988,7 +988,7 @@ public class ClusterCollector {
                 // -----------------------------------------------------------------
                 TopologyNode userSpendsNode = workspaceNode.createNode("userSpends");
                 try {
-                    String userSpendSql = "SELECT u.usage_metadata.run_as, "
+                    String userSpendSql = "SELECT u.identity_metadata.run_as, "
                             + "u.billing_origin_product, "
                             + "CAST(SUM(u.usage_quantity) AS DOUBLE) AS dbu_total, "
                             + "CAST(SUM(u.usage_quantity * COALESCE(lp.pricing.effective_list.default, 0)) AS DOUBLE) AS dollar_cost "
@@ -997,9 +997,9 @@ public class ClusterCollector {
                             + "  ON lp.sku_name = u.sku_name "
                             + "  AND u.usage_end_time >= lp.price_start_time "
                             + "  AND (lp.price_end_time IS NULL OR u.usage_end_time < lp.price_end_time) "
-                            + "WHERE u.usage_metadata.run_as IS NOT NULL "
+                            + "WHERE u.identity_metadata.run_as IS NOT NULL "
                             + "  AND u.usage_date >= DATE_ADD(CURRENT_DATE, -30) "
-                            + "GROUP BY u.usage_metadata.run_as, u.billing_origin_product "
+                            + "GROUP BY u.identity_metadata.run_as, u.billing_origin_product "
                             + "ORDER BY dollar_cost DESC "
                             + "LIMIT 500";
 
@@ -1028,7 +1028,8 @@ public class ClusterCollector {
                         }
                     } else {
                         log.log("ClusterCollector: user spend query state="
-                                + usResult.path("status").path("state").asText(""));
+                                + usResult.path("status").path("state").asText("")
+                                + ", error=" + usResult.path("status").path("error").path("message").asText(""));
                     }
                 } catch (Exception e) {
                     log.log("ClusterCollector: user spend collection failed: " + e.getMessage());
@@ -1078,7 +1079,8 @@ public class ClusterCollector {
                         }
                     } else {
                         log.log("ClusterCollector: optimization ops query state="
-                                + optResult.path("status").path("state").asText(""));
+                                + optResult.path("status").path("state").asText("")
+                                + ", error=" + optResult.path("status").path("error").path("message").asText(""));
                     }
                 } catch (Exception e) {
                     log.log("ClusterCollector: optimization ops collection failed: " + e.getMessage());
@@ -1127,7 +1129,8 @@ public class ClusterCollector {
                         }
                     } else {
                         log.log("ClusterCollector: storage cost query state="
-                                + scResult.path("status").path("state").asText(""));
+                                + scResult.path("status").path("state").asText("")
+                                + ", error=" + scResult.path("status").path("error").path("message").asText(""));
                     }
                 } catch (Exception e) {
                     log.log("ClusterCollector: storage cost collection failed: " + e.getMessage());
@@ -1136,6 +1139,155 @@ public class ClusterCollector {
             } else {
                 log.log("ClusterCollector: no billing warehouse configured, skipping billing collection");
             }
+
+            // ---------------------------------------------------------------------
+            // Lakehouse Monitoring — pure SQL via _profile_metrics tables
+            // Avoids REST API permission issues; agent token only needs SQL warehouse access
+            // ---------------------------------------------------------------------
+            TopologyNode monitorsNode = workspaceNode.createNode("monitors");
+            if (billingWarehouseId != null && !billingWarehouseId.isBlank()) {
+            try {
+                // Step 1: discover both _profile_metrics and _drift_metrics tables
+                String discoverSql = "SELECT table_catalog, table_schema, table_name "
+                        + "FROM system.information_schema.tables "
+                        + "WHERE (table_name LIKE '%_profile_metrics' OR table_name LIKE '%_drift_metrics') "
+                        + "  AND LEFT(table_schema, 2) <> '__' "
+                        + "ORDER BY table_catalog, table_schema, table_name LIMIT 400";
+                JsonNode discoverResult = client.executeSqlStatement(billingWarehouseId, discoverSql);
+                String discoverState = discoverResult.path("status").path("state").asText("");
+                System.out.println("ClusterCollector: monitor discovery state=" + discoverState);
+                if (!"SUCCEEDED".equals(discoverState)) {
+                    System.out.println("ClusterCollector: monitor discovery query state="
+                            + discoverState
+                            + ", error=" + discoverResult.path("status").path("error").path("message").asText(""));
+                } else {
+                    JsonNode discoverRows = discoverResult.path("result").path("data_array");
+                    System.out.println("ClusterCollector: monitor discovery rows isArray=" + discoverRows.isArray()
+                            + " size=" + (discoverRows.isArray() ? discoverRows.size() : "n/a"));
+                    if (discoverRows.isArray() && discoverRows.size() > 0) {
+                        // Split into profile and drift table sets
+                        java.util.Set<String> driftKeys = new java.util.HashSet<>();
+                        java.util.List<String[]> profileTables = new java.util.ArrayList<>();
+                        for (JsonNode dr : discoverRows) {
+                            String cat  = dr.path(0).asText("");
+                            String sch  = dr.path(1).asText("");
+                            String name = dr.path(2).asText("");
+                            if (name.endsWith("_drift_metrics")) {
+                                String base = cat + "." + sch + "." + name.replaceAll("_drift_metrics$", "");
+                                driftKeys.add(base);
+                            } else if (name.endsWith("_profile_metrics")) {
+                                String tbl  = name.replaceAll("_profile_metrics$", "");
+                                String full = cat + "." + sch + "." + tbl;
+                                profileTables.add(new String[]{cat, sch, tbl, full,
+                                        cat + "." + sch + "." + name,
+                                        cat + "." + sch + "." + tbl + "_drift_metrics"});
+                            }
+                        }
+
+                        // Step 2: profile UNION ALL
+                        StringBuilder unionSql = new StringBuilder();
+                        for (String[] t : profileTables) {
+                            String cat = t[0], sch = t[1], tbl = t[2], full = t[3], fqm = t[4];
+                            String fullQ = full.replace("'", "''");
+                            String catQ  = cat.replace("'", "''");
+                            String schQ  = sch.replace("'", "''");
+                            String tblQ  = tbl.replace("'", "''");
+                            if (unionSql.length() > 0) unionSql.append(" UNION ALL ");
+                            unionSql.append("SELECT '").append(fullQ).append("' AS full_name, ")
+                                    .append("'").append(catQ).append("' AS catalog_name, ")
+                                    .append("'").append(schQ).append("' AS schema_name, ")
+                                    .append("'").append(tblQ).append("' AS table_name, ")
+                                    .append("MAX(window.start) AS last_run, COUNT(*) AS run_count, ")
+                                    .append("MAX(count) AS last_count ")
+                                    .append("FROM ").append(fqm)
+                                    .append(" WHERE column_name=':table' ")
+                                    .append("AND window.start >= DATE_ADD(CURRENT_DATE,-30) ")
+                                    .append("HAVING MAX(window.start) IS NOT NULL");
+                        }
+
+                        // Step 3: drift UNION ALL (only tables that have a _drift_metrics table)
+                        StringBuilder driftSql = new StringBuilder();
+                        for (String[] t : profileTables) {
+                            String full = t[3], fqd = t[5];
+                            if (!driftKeys.contains(full)) continue;
+                            String fullQ = full.replace("'", "''");
+                            if (driftSql.length() > 0) driftSql.append(" UNION ALL ");
+                            driftSql.append("SELECT '").append(fullQ).append("' AS full_name, ")
+                                    .append("COUNT(DISTINCT CASE WHEN (chi_square_test.p_value < 0.05 OR ks_test.p_value < 0.05) THEN column_name END) AS drifted_cols, ")
+                                    .append("COUNT(DISTINCT column_name) AS total_cols ")
+                                    .append("FROM ").append(fqd)
+                                    .append(" WHERE column_name <> ':table' ")
+                                    .append("AND window.start >= DATE_ADD(CURRENT_DATE,-7) ")
+                                    .append("HAVING COUNT(DISTINCT column_name) > 0");
+                        }
+
+                        // Execute profile query
+                        System.out.println("ClusterCollector: monitor SQL=" + unionSql.toString().substring(0, Math.min(500, unionSql.length())));
+                        java.util.Map<String, String> driftMap = new java.util.HashMap<>();
+                        JsonNode monResult = client.executeSqlStatement(billingWarehouseId, unionSql.toString());
+                        String monState = monResult.path("status").path("state").asText("");
+                        System.out.println("ClusterCollector: monitor union state=" + monState);
+
+                        // Execute drift query if any drift tables exist
+                        if (driftSql.length() > 0) {
+                            JsonNode driftResult = client.executeSqlStatement(billingWarehouseId, driftSql.toString());
+                            if ("SUCCEEDED".equals(driftResult.path("status").path("state").asText(""))) {
+                                JsonNode driftRows = driftResult.path("result").path("data_array");
+                                if (driftRows.isArray()) {
+                                    for (JsonNode dr : driftRows) {
+                                        String drifted = dr.path(1).asText("");
+                                        String total   = dr.path(2).asText("");
+                                        String label   = (!drifted.isEmpty() && !total.isEmpty())
+                                                ? drifted + " / " + total : "";
+                                        driftMap.put(dr.path(0).asText(""), label);
+                                    }
+                                }
+                            }
+                            System.out.println("ClusterCollector: drift map size=" + driftMap.size());
+                        }
+
+                        if ("SUCCEEDED".equals(monState)) {
+                            JsonNode monRows = monResult.path("result").path("data_array");
+                            System.out.println("ClusterCollector: monitor union rows isArray=" + monRows.isArray()
+                                    + " size=" + (monRows.isArray() ? monRows.size() : "n/a"));
+                            if (monRows.isArray()) {
+                                if (monRows.size() > 0) System.out.println("ClusterCollector: monitor row[0]=" + monRows.get(0).toString());
+                                for (JsonNode row : monRows) {
+                                    String fullName  = row.path(0).asText("");
+                                    String catalog   = row.path(1).asText("");
+                                    String schema    = row.path(2).asText("");
+                                    String table     = row.path(3).asText("");
+                                    String lastRun   = row.path(4).asText("").replace("T", " ").replaceAll("\\.\\d+Z?$", "");
+                                    long   runs      = row.path(5).asLong(0);
+                                    String lastCount = row.path(6).asText("");
+                                    TopologyNode mNode = monitorsNode.createNode(fullName);
+                                    setValue(mNode, "monitorKey",        fullName,                             true);
+                                    setValue(mNode, "catalogName",       catalog,                              false);
+                                    setValue(mNode, "schemaName",        schema,                               false);
+                                    setValue(mNode, "tableName",         table,                                false);
+                                    setValue(mNode, "monitorType",       "SNAPSHOT",                           false);
+                                    setValue(mNode, "lastRunStatus",     "SUCCESSFUL",                         false);
+                                    setValue(mNode, "lastRunTimeStr",    lastRun,                              false);
+                                    setValue(mNode, "runCount30d",       runs > 0 ? String.valueOf(runs) : "", false);
+                                    setValue(mNode, "failCount30d",      "",                                   false);
+                                    setValue(mNode, "rowCount",          lastCount,                            false);
+                                    setValue(mNode, "rowCountDelta",     "",                                   false);
+                                    setValue(mNode, "driftColumnCount",  driftMap.getOrDefault(fullName, ""),  false);
+                                }
+                                System.out.println("ClusterCollector: monitor collection succeeded, count=" + monRows.size());
+                            }
+                        } else {
+                            System.out.println("ClusterCollector: monitor union query state="
+                                    + monState
+                                    + ", error=" + monResult.path("status").path("error").path("message").asText(""));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("ClusterCollector: monitor collection failed: " + e.getMessage());
+                e.printStackTrace(System.out);
+            }
+            } // end if billingWarehouseId
 
             // ---------------------------------------------------------------------
             // AI Gateway Observability (system.ai_gateway.usage)
@@ -1324,7 +1476,8 @@ public class ClusterCollector {
                         }
                     } else {
                         log.log("ClusterCollector: AI Gateway user activity query state="
-                                + userResult.path("status").path("state").asText(""));
+                                + userResult.path("status").path("state").asText("")
+                                + ", error=" + userResult.path("status").path("error").path("message").asText(""));
                     }
 
                 } catch (Exception e) {

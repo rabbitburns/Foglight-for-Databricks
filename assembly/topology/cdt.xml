@@ -794,6 +794,53 @@
               </node>
             </node>
 
+            <node pattern="monitors">
+              <node>
+                <node_name var="$monVar"/>
+                <obj type="DatabricksMonitor" var="{$monVar}"/>
+                <metrics_group object="{{$monVar}}"/>
+                <attr name="monitors" target="{{$wsVar}}" val="{{$monVar}}" replace="false"/>
+
+                <node pattern="monitorKey">
+                  <value var="$v"><attr name="monitorKey" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="catalogName">
+                  <value var="$v"><attr name="catalogName" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="schemaName">
+                  <value var="$v"><attr name="schemaName" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="tableName">
+                  <value var="$v"><attr name="tableName" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="monitorType">
+                  <value var="$v"><attr name="monitorType" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastRunStatus">
+                  <value var="$v"><attr name="lastRunStatus" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="lastRunTimeStr">
+                  <value var="$v"><attr name="lastRunTimeStr" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="runCount30d">
+                  <value var="$v"><attr name="runCount30d" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="failCount30d">
+                  <value var="$v"><attr name="failCount30d" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="rowCount">
+                  <value var="$v"><attr name="rowCount" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="rowCountDelta">
+                  <value var="$v"><attr name="rowCountDelta" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="driftColumnCount">
+                  <value var="$v"><attr name="driftColumnCount" target="{{$monVar}}" val="{$v}"/></value>
+                </node>
+
+              </node>
+            </node>
+
             <node pattern="jobs">
               <node>
                 <node_name var="$jobVar"/>

@@ -342,6 +342,19 @@
         <property name="usageStr"        type="wcf:String"/>
     </type>
 
+    <type name="DatabricksMonitorRow" extends="wcf:DataObject">
+        <property name="monitorKey"     type="wcf:String"/>
+        <property name="tableName"      type="wcf:String"/>
+        <property name="monitorType"    type="wcf:String"/>
+        <property name="lastRunStatus"  type="wcf:String"/>
+        <property name="lastRunTime"    type="wcf:String"/>
+        <property name="runCount30d"    type="wcf:String"/>
+        <property name="failCount30d"   type="wcf:String"/>
+        <property name="rowCount"          type="wcf:String"/>
+        <property name="rowCountDelta"    type="wcf:String"/>
+        <property name="driftColumnCount" type="wcf:String"/>
+    </type>
+
     <type name="DatabricksSlopegraphRow" extends="wcf:DataObject">
         <property name="product"    type="wcf:String"/>
         <property name="prevCost"   type="wcf:String"/>

@@ -89,13 +89,10 @@ public class DatabricksAgent implements Agent {
                 workspaceRegion
             );
 
-            System.out.println("DatabricksAgent: running initial collection");
-            collector.collect();
-
             scheduler = Executors.newSingleThreadScheduledExecutor();
             collectionTask = scheduler.scheduleWithFixedDelay(
                 collector::collect,
-                intervalSeconds,
+                0,
                 intervalSeconds,
                 TimeUnit.SECONDS
             );
