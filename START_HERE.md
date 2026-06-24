@@ -11,7 +11,7 @@ Collects topology and metrics from the Databricks REST API and Unity Catalog sys
 Surfaced as WCF portlets inside Foglight dashboards via a built-in top-level nav entry.
 
 **Build:** `python build_cartridge.py X.X.X --deploy` → `target/DatabricksAgent-X.X.X.car` + deployed to FglAM agent cache + copied to `cartridges/`  
-**Current version:** 1.0.182
+**Current version:** 1.0.184
 
 **Codebase:** `C:\Users\mark_\OneDrive\Claude\foglight-databricks\`
 
@@ -90,14 +90,14 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 - ✓ **Drifted Cols** — from `_drift_metrics` chi-square + KS test `pvalue < 0.05` (fix: field is `pvalue` not `p_value`)
 - ✗ **Change** — `rowCountDelta` hardcoded `""`, needs prev-run comparison logic
 
-**1.0.182 confirmed working** — Row Count and Drifted Cols both populate.
+**1.0.184 confirmed working** — Row Count, Change (+N/-N/0), and Drifted Cols all populate.
 
 ---
 
 ## Backlog (priority order)
 
-1. **rowCountDelta (Change column)** — compare current vs previous `_profile_metrics` row count per table; needs in-memory prev-run state in collector
-2. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
+1. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
+2. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
 3. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
 4. **AUI nav icon** — custom.svg workaround or await Quest platform team guidance
 5. **Multi-workspace** — numbered config pairs (`workspace.1.url`, etc.)

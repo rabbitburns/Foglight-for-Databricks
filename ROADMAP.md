@@ -169,7 +169,7 @@
 | Monitor refresh status | Same API — `status` field per monitor | Low | ✓ Done 1.0.163 — last refresh time and run count stored on `DatabricksMonitor`. |
 | Profile metrics (row count) | SQL against `_profile_metrics` output table | Medium | ✓ Done 1.0.180 — `MAX(window.start)` per table, `MAX(count)` where `column_name=':table'`; `rowCount` field on `DatabricksMonitor`; CDT transform added. |
 | Drift metrics (column drift) | SQL against `_drift_metrics` output table | Medium | ✓ Done 1.0.181 — chi-square + KS test (`pvalue < 0.05`); `driftColumnCount` field on `DatabricksMonitor`; fix: field name is `pvalue` not `p_value` in Databricks schema. |
-| Row count delta (change) | Derived — compare consecutive `_profile_metrics` runs | Low | **Backlog** — `rowCountDelta` field defined, currently always empty; needs prev-run comparison logic in collector. |
+| Row count delta (change) | Derived — compare consecutive `_profile_metrics` runs | Low | ✓ Done 1.0.184 — `prevRowCounts` map on collector instance; delta shown as `+N`/`-N`/`0`; blank on first cycle after agent start. |
 | Job → data quality correlation | Cross-reference `DatabricksJob` with monitored table output | High | **Deferred** — correlate job run failures with downstream drift detection. Differentiator vs Datadog/New Relic. |
 
 ### Tier 11 — AI Gateway Observability (Token & GenAI Usage) ✓ Done 1.0.119
@@ -315,3 +315,5 @@
 | 1.0.180 | Drift diagnostic logging: `drift state=` logged after SQL poll to diagnose 0-row result. `cartridges/` folder added to repo — `.car` committed to git after each build for distribution without GitHub-hosted runners. |
 | 1.0.181 | Fix drift metrics field name: `chi_square_test.p_value` / `ks_test.p_value` → `chi_square_test.pvalue` / `ks_test.pvalue`. Databricks `_drift_metrics` schema uses `pvalue` (no underscore); query was failing BAD_REQUEST every cycle, silently leaving Drifted Cols blank. |
 | 1.0.182 | Fix drift query for numeric-only monitors: `chi_square_test` column is absent from `_drift_metrics` tables where all monitored columns are numeric (only `ks_test` present). On UNRESOLVED_COLUMN failure mentioning `chi_square_test`, retry with `ks_test.pvalue` only. Drifted Cols confirmed populating. |
+| 1.0.183 | Add row count delta (Change column): `prevRowCounts` map on `ClusterCollector` instance tracks last seen row count per table; delta computed each cycle as `+N`/`-N`/`0`. Blank on first cycle after agent start (seeding). |
+| 1.0.184 | Fix delta parsing: replace `asLong(-1)` with `Long.parseLong(lastCount)` — Jackson's `asLong()` on a TextNode (all Databricks SQL results are returned as strings) does not reliably parse the string value. Change column confirmed showing `0` for stable tables. |
