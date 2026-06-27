@@ -1495,6 +1495,36 @@
                         <property name="header"><string xml:space="preserve">Last Updated</string></property>
                         <property name="value"><context-rv input-key="currentRow" path="lastUpdatedTime"/></property>
                     </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">requestCount</string></property>
+                        <property name="header"><string xml:space="preserve">Requests</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="requestCount"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorCount4xx</string></property>
+                        <property name="header"><string xml:space="preserve">4xx Errors</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorCount4xx"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">errorCount5xx</string></property>
+                        <property name="header"><string xml:space="preserve">5xx Errors</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="errorCount5xx"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">avgLatencyMs</string></property>
+                        <property name="header"><string xml:space="preserve">Avg Latency (ms)</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="avgLatencyMs"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">cpuUsagePct</string></property>
+                        <property name="header"><string xml:space="preserve">CPU%</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="cpuUsagePct"/></property>
+                    </object>
+                    <object>
+                        <property name="id"><string xml:space="preserve">memUsagePct</string></property>
+                        <property name="header"><string xml:space="preserve">Mem%</string></property>
+                        <property name="value"><context-rv input-key="currentRow" path="memUsagePct"/></property>
+                    </object>
                 </list-value>
             </property>
         </config>

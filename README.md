@@ -2,7 +2,7 @@
 
 A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent for [Databricks](https://www.databricks.com/) workspaces. Collects topology and metrics from the Databricks REST API and Unity Catalog system tables, and surfaces them in Foglight dashboards.
 
-**Current version:** 1.0.184
+**Current version:** 1.0.185
 
 
 ## What It Monitors
@@ -18,7 +18,7 @@ A [Quest Foglight](https://www.quest.com/products/foglight/) monitoring agent fo
 | **Instance Pools** | State, node type, idle/used/pending counts, max capacity, idle termination minutes, preloaded Spark versions |
 | **DBU & Cost** | 60-day rolling DBU usage by date/SKU/product/cloud/region; dollar cost via `system.billing.list_prices`; cost per job; cost per pipeline; cost per AI endpoint; user compute spend by product; warehouse efficiency score; top jobs by DBU; SKU price reference; daily per-SKU trend (7 days); MoM cost slopegraph (prev vs current month by product) |
 | **Storage** | Table Optimization History (Delta ANALYZE/COMPACTION operations, 7 days, from `system.storage.predictive_optimization_operations_history`); Storage Costs by product/SKU (30 days, from `system.billing.usage`) |
-| **Model Serving** | Serving endpoint inventory (state, creator, config update state); per-endpoint served model detail (version, workload size, traffic %, scale-to-zero) |
+| **Model Serving** | Serving endpoint inventory (state, creator, config update state); per-endpoint served model detail (version, workload size, traffic %, scale-to-zero); runtime metrics per endpoint (request count, 4xx/5xx errors, avg latency, CPU%, Mem%) from Prometheus API |
 | **Lakebase** | Project and branch inventory, endpoint host, endpoint state |
 | **AI Gateway** | Endpoint inventory (request count, total/input/output tokens, error rate, avg/p95 latency); daily token usage by endpoint and model; per-requester activity |
 | **Workspace Metrics** | Time-series at each collection cycle: cluster counts, warehouse counts, job/pipeline counts, today's total DBU accumulation, total query volume |
@@ -98,7 +98,7 @@ All portlets are available individually in the Add View picker:
 | Databricks Cost by SKU | Total DBU and estimated dollar cost grouped by SKU |
 | Databricks Cost vs DBU by SKU (Bubble) | Cost vs DBU scatter bubble chart by SKU |
 | Databricks SKU List Prices | Current price per DBU by SKU, cloud, and region |
-| Databricks Model Serving Endpoints | Serving endpoint inventory — state, config, model count |
+| Databricks Model Serving Endpoints | Serving endpoint inventory — state, config, model count, requests, errors, latency, CPU%, Mem% |
 | Databricks Served Models | Per-served-model detail — version, size, traffic % |
 | Databricks Lakebase Projects | Lakebase project inventory with branch counts |
 | Databricks Lakebase Branches | Lakebase branch inventory with endpoint state |
@@ -228,7 +228,7 @@ Or trigger on-demand via **Actions → Lakebase Branch to Foglight Discovery →
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for planned features including Tier 10 (Lakehouse Monitoring), Model Serving metrics, and the v2 AUI dashboard layer.
+See [ROADMAP.md](ROADMAP.md) for planned features including Tier 9 (Lakewatch SIEM) and the v2 AUI dashboard layer.
 
 ## License
 

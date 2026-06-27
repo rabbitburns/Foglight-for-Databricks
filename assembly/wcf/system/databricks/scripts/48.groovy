@@ -19,6 +19,12 @@ ts.getObjectsOfType(ts.getType("DatabricksWorkspace"))?.each { ws ->
         row.store('lastUpdatedTime',   ep.get("lastUpdatedTime")   ?: "", specificTimeRange)
         row.store('routeOptimized',    ep.get("routeOptimized")    ?: "false", specificTimeRange)
         row.store('servedModelCount',  modelCount,                          specificTimeRange)
+        row.store('requestCount',      ep.get("requestCount")      ?: "",    specificTimeRange)
+        row.store('errorCount4xx',     ep.get("errorCount4xx")     ?: "",    specificTimeRange)
+        row.store('errorCount5xx',     ep.get("errorCount5xx")     ?: "",    specificTimeRange)
+        row.store('cpuUsagePct',       ep.get("cpuUsagePct")       ?: "",    specificTimeRange)
+        row.store('memUsagePct',       ep.get("memUsagePct")       ?: "",    specificTimeRange)
+        row.store('avgLatencyMs',      ep.get("avgLatencyMs")      ?: "",    specificTimeRange)
         rows.add(row)
     }
 }

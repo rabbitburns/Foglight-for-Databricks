@@ -730,6 +730,19 @@ public class ClusterCollector {
                         setValue(epNode, "lastUpdatedTime",   lastUpdated,       false);
                         setValue(epNode, "routeOptimized",    routeOptimized,    false);
 
+                        // Runtime metrics from Prometheus endpoint
+                        try {
+                            String metricsText = client.getServingEndpointMetrics(epName);
+                            setValue(epNode, "requestCount",  prometheusSum(metricsText, "request_count"),           false);
+                            setValue(epNode, "errorCount4xx", prometheusSum(metricsText, "request_4xx_count"),        false);
+                            setValue(epNode, "errorCount5xx", prometheusSum(metricsText, "request_5xx_count"),        false);
+                            setValue(epNode, "cpuUsagePct",   prometheusAvg(metricsText, "cpu_usage_percentage"),     false);
+                            setValue(epNode, "memUsagePct",   prometheusAvg(metricsText, "mem_usage_percentage"),     false);
+                            setValue(epNode, "avgLatencyMs",  prometheusAvg(metricsText, "avg_request_latency"),      false);
+                        } catch (Exception e) {
+                            System.out.println("ClusterCollector: metrics fetch failed for " + epName + ": " + e.getMessage());
+                        }
+
                         // Served models — check both served_models and served_entities (newer API)
                         TopologyNode servedModelsNode = epNode.createNode("servedModels");
                         JsonNode servedModels = ep.path("config").path("served_models");
@@ -1599,5 +1612,41 @@ public class ClusterCollector {
         if (isIdentity) {
             valueNode.setIsIdentity(true);
         }
+    }
+
+    private static String prometheusSum(String text, String metricName) {
+        double total = 0; boolean found = false;
+        for (String line : text.split("\n")) {
+            line = line.trim();
+            if (line.startsWith("#") || line.isEmpty()) continue;
+            int end = line.indexOf('{');
+            if (end < 0) end = line.indexOf(' ');
+            if (end < 0) continue;
+            if (!line.substring(0, end).equals(metricName)) continue;
+            String rest = line.contains("{")
+                ? line.substring(line.indexOf('}') + 1).trim()
+                : line.substring(end).trim();
+            try { total += Double.parseDouble(rest.split("\\s+")[0]); found = true; }
+            catch (NumberFormatException ignored) {}
+        }
+        return found ? String.valueOf((long) total) : "";
+    }
+
+    private static String prometheusAvg(String text, String metricName) {
+        double total = 0; int count = 0;
+        for (String line : text.split("\n")) {
+            line = line.trim();
+            if (line.startsWith("#") || line.isEmpty()) continue;
+            int end = line.indexOf('{');
+            if (end < 0) end = line.indexOf(' ');
+            if (end < 0) continue;
+            if (!line.substring(0, end).equals(metricName)) continue;
+            String rest = line.contains("{")
+                ? line.substring(line.indexOf('}') + 1).trim()
+                : line.substring(end).trim();
+            try { total += Double.parseDouble(rest.split("\\s+")[0]); count++; }
+            catch (NumberFormatException ignored) {}
+        }
+        return count > 0 ? String.format("%.1f", total / count) : "";
     }
 }

@@ -189,6 +189,12 @@
         <property name="lastUpdatedTime"   type="wcf:String"/>
         <property name="routeOptimized"    type="wcf:String"/>
         <property name="servedModelCount"  type="wcf:String"/>
+        <property name="requestCount"      type="wcf:String"/>
+        <property name="errorCount4xx"     type="wcf:String"/>
+        <property name="errorCount5xx"     type="wcf:String"/>
+        <property name="cpuUsagePct"       type="wcf:String"/>
+        <property name="memUsagePct"       type="wcf:String"/>
+        <property name="avgLatencyMs"      type="wcf:String"/>
     </type>
     <type name="DatabricksServedModelRow" extends="wcf:DataObject">
         <set annotation="reloadable">false</set>

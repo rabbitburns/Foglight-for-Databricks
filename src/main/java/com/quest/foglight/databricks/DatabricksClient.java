@@ -59,8 +59,8 @@ public class DatabricksClient {
         return get("/api/2.0/serving-endpoints");
     }
 
-    public JsonNode getServingEndpointMetrics(String endpointName) throws Exception {
-        return get("/api/2.0/serving-endpoints/" + endpointName + "/metrics");
+    public String getServingEndpointMetrics(String endpointName) throws Exception {
+        return getRaw("/api/2.0/serving-endpoints/" + endpointName + "/metrics");
     }
 
     public JsonNode listLakebaseProjects() throws Exception {
@@ -165,5 +165,22 @@ public class DatabricksClient {
         System.out.println(json.toPrettyString());
 
         return json;
+    }
+
+    private String getRaw(String path) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + path))
+                .header("Authorization", "Bearer " + token)
+                .timeout(Duration.ofSeconds(30))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Databricks API " + response.statusCode()
+                    + " for " + path + ": " + response.body());
+        }
+        return response.body();
     }
 }

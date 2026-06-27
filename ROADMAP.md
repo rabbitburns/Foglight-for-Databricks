@@ -49,6 +49,10 @@
 | Lakehouse Monitor Inventory: `DatabricksMonitor` type; `system.quality.monitor_run_timeline` query; Data Quality sub-nav (view 84) | 1.0.161 |
 | Fix user spend SQL: `usage_metadata.run_as` → `identity_metadata.run_as_user`; add error detail logging to all FAILED SQL states | 1.0.162 |
 | Fix monitor collection: `system.quality.monitor_run_timeline` does not exist; replaced SQL with REST API (`/api/2.1/lakehouse-monitoring/monitors` + `/refreshes`) | 1.0.163 |
+| Tier 10 Phase 1: profile metrics (row count from `_profile_metrics`) + drift metrics (drifted col count from `_drift_metrics` KS/chi-square test) | 1.0.180–1.0.182 |
+| Tier 10 Phase 2: row count delta (`rowCountDelta`) between collection cycles using `prevRowCounts` instance map; Long.parseLong fix for TextNode | 1.0.183–1.0.184 |
+| Tier 7 model serving metrics: runtime metrics (requests, 4xx/5xx errors, avg latency, CPU%, Mem%) from Prometheus endpoint per endpoint; added to view 47 | 1.0.185 |
+| Tier 9 Lakewatch SIEM: GA — implementation pending | — |
 
 ---
 

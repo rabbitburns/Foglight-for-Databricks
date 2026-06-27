@@ -272,6 +272,12 @@
         <property name="creationTime"      type="String"/>
         <property name="lastUpdatedTime"   type="String"/>
         <property name="routeOptimized"    type="String"/>
+        <property name="requestCount"      type="String"/>
+        <property name="errorCount4xx"     type="String"/>
+        <property name="errorCount5xx"     type="String"/>
+        <property name="cpuUsagePct"       type="String"/>
+        <property name="memUsagePct"       type="String"/>
+        <property name="avgLatencyMs"      type="String"/>
         <property name="servedModels"      type="DatabricksServedModel" is-many="true" is-containment="true"/>
     </type>
 

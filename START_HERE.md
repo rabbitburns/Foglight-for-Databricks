@@ -11,7 +11,7 @@ Collects topology and metrics from the Databricks REST API and Unity Catalog sys
 Surfaced as WCF portlets inside Foglight dashboards via a built-in top-level nav entry.
 
 **Build:** `python build_cartridge.py X.X.X --deploy` → `target/DatabricksAgent-X.X.X.car` + deployed to FglAM agent cache + copied to `cartridges/`  
-**Current version:** 1.0.184
+**Current version:** 1.0.185
 
 **Codebase:** `C:\Users\mark_\OneDrive\Claude\foglight-databricks\`
 
@@ -84,23 +84,21 @@ FglAM Java Agent (ClusterCollector.java, 60s polling)
 
 ## Current Work
 
-**1.0.181 deployed.** Data Quality portlet (view 84) now shows:
-- ✓ **Last Run** — from `_profile_metrics` `MAX(window.start)`
-- ✓ **Row Count** — from `_profile_metrics` `MAX(count)` where `column_name=':table'`
-- ✓ **Drifted Cols** — from `_drift_metrics` chi-square + KS test `pvalue < 0.05` (fix: field is `pvalue` not `p_value`)
-- ✗ **Change** — `rowCountDelta` hardcoded `""`, needs prev-run comparison logic
+**1.0.185 deployed.** Model serving metrics now collected per endpoint from Prometheus API:
+- ✓ **Requests** — `request_count` (sum across served entities)
+- ✓ **4xx / 5xx Errors** — `request_4xx_count`, `request_5xx_count`
+- ✓ **Avg Latency (ms)** — `avg_request_latency` (avg across served entities)
+- ✓ **CPU% / Mem%** — `cpu_usage_percentage`, `mem_usage_percentage` (avg across served entities)
 
-**1.0.184 confirmed working** — Row Count, Change (+N/-N/0), and Drifted Cols all populate.
+All metrics added as new columns to the Model Serving Endpoints portlet (view 47). Fields blank if endpoint is idle (no Prometheus data returned).
 
 ---
 
 ## Backlog (priority order)
 
-1. **Model serving metrics** — per-endpoint latency/throughput from Databricks metrics API
-2. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
-3. **Tier 9** — Lakewatch SIEM (blocked: Private Preview, no public API)
-4. **AUI nav icon** — custom.svg workaround or await Quest platform team guidance
-5. **Multi-workspace** — numbered config pairs (`workspace.1.url`, etc.)
+1. **Tier 9 Lakewatch SIEM** — now GA, implementation pending
+2. **AUI nav icon** — custom.svg workaround or await Quest platform team guidance
+3. **Multi-workspace** — numbered config pairs (`workspace.1.url`, etc.)
 
 ---
 

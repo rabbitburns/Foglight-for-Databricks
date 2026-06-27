@@ -495,6 +495,24 @@
                 <node pattern="routeOptimized">
                   <value var="$v"><attr name="routeOptimized" target="{{$seVar}}" val="{$v}"/></value>
                 </node>
+                <node pattern="requestCount">
+                  <value var="$v"><attr name="requestCount" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="errorCount4xx">
+                  <value var="$v"><attr name="errorCount4xx" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="errorCount5xx">
+                  <value var="$v"><attr name="errorCount5xx" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="cpuUsagePct">
+                  <value var="$v"><attr name="cpuUsagePct" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="memUsagePct">
+                  <value var="$v"><attr name="memUsagePct" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
+                <node pattern="avgLatencyMs">
+                  <value var="$v"><attr name="avgLatencyMs" target="{{$seVar}}" val="{$v}"/></value>
+                </node>
 
                 <node pattern="servedModels">
                   <node>
